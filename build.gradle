@@ -1,0 +1,252 @@
+// SPDX-FileCopyrightText: 2021 Paul Schaub <info@pgpainless.org>
+//
+// SPDX-License-Identifier: Apache-2.0
+
+buildscript {
+
+    repositories {
+
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "gradle.plugin.org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.12.0"
+    }
+}
+
+plugins {
+    id 'ru.vyarus.animalsniffer' version '1.5.3'
+}
+
+apply from: 'version.gradle'
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
+    apply plugin: 'jacoco'
+    apply plugin: 'checkstyle'
+
+    // For non-cli modules enable android api compatibility check
+    if (it.name.equals('sop-java')) {
+        // animalsniffer
+        apply plugin: 'ru.vyarus.animalsniffer'
+        dependencies {
+            signature "net.sf.androidscents.signature:android-api-level-${minAndroidSdk}:2.3.3_r2@signature"
+        }
+        animalsniffer {
+            sourceSets = [sourceSets.main]
+        }
+    }
+
+    // checkstyle
+    checkstyle {
+        toolVersion = '8.18'
+    }
+
+    group 'org.pgpainless'
+    description = "Stateless OpenPGP Protocol API for Java"
+    version = shortVersion
+
+    sourceCompatibility = javaSourceCompatibility
+
+    repositories {
+        mavenCentral()
+    }
+
+    // Reproducible Builds
+    tasks.withType(AbstractArchiveTask) {
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+    }
+
+    project.ext {
+        slf4jVersion = '1.7.32'
+        logbackVersion = '1.2.9'
+        junitVersion = '5.8.2'
+        picocliVersion = '4.6.2'
+        rootConfigDir = new File(rootDir, 'config')
+        gitCommit = getGitCommit()
+        isContinuousIntegrationEnvironment = Boolean.parseBoolean(System.getenv('CI'))
+        isReleaseVersion = !isSnapshot
+        signingRequired = !(isSnapshot || isContinuousIntegrationEnvironment)
+        sonatypeCredentialsAvailable = project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')
+        sonatypeSnapshotUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
+        sonatypeStagingUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+    }
+
+    if (isSnapshot) {
+        version = version + '-SNAPSHOT'
+    }
+    def projectDirFile = new File("$projectDir")
+    if (!project.ext.isSnapshot && !'git describe --exact-match HEAD'.execute(null, projectDirFile).text.trim().equals(ext.shortVersion)) {
+        throw new InvalidUserDataException('Untagged version detected! Please tag every release.')
+    }
+    if (!version.endsWith('-SNAPSHOT') && version != 'git tag --points-at HEAD'.execute(null, projectDirFile).text.trim()) {
+        throw new InvalidUserDataException(
+                'Tag mismatch detected, version is ' + version + ' but should be ' +
+                        'git tag --points-at HEAD'.execute(null, projectDirFile).text.trim())
+    }
+
+    jacoco {
+        toolVersion = "0.8.7"
+    }
+
+    jacocoTestReport {
+        dependsOn test
+        sourceDirectories.setFrom(project.files(sourceSets.main.allSource.srcDirs))
+        classDirectories.setFrom(project.files(sourceSets.main.output))
+        reports {
+            xml.enabled true
+        }
+    }
+
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events "passed", "skipped", "failed"
+            exceptionFormat "full"
+        }
+    }
+}
+
+subprojects {
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+    task testsJar(type: Jar, dependsOn: testClasses) {
+        classifier = 'tests'
+        from sourceSets.test.output
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifact sourcesJar
+                artifact javadocJar
+                artifact testsJar
+                pom {
+                    name = 'SOP for Java'
+                    description = 'Stateless OpenPGP Protocol API for Java'
+                    url = 'https://github.com/pgpainless/sop-java'
+                    inceptionYear = '2020'
+
+                    scm {
+                        url = 'https://github.com/pgpainless/sop-java'
+                        connection = 'scm:https://github.com/pgpainless/sop-java'
+                        developerConnection = 'scm:git://github.com/pgpainless/sop-java.git'
+                    }
+
+                    licenses {
+                        license {
+                            name = 'The Apache Software License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution = 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'vanitasvitae'
+                            name = 'Paul Schaub'
+                            email = 'vanitasvitae@fsfe.org'
+                        }
+                    }
+                }
+            }
+        }
+        repositories {
+            if (sonatypeCredentialsAvailable) {
+                maven {
+                    url isSnapshot ? sonatypeSnapshotUrl : sonatypeStagingUrl
+                    credentials {
+                        username = sonatypeUsername
+                        password = sonatypePassword
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        useGpgCmd()
+        required { signingRequired }
+        sign publishing.publications.mavenJava
+    }
+}
+
+def getGitCommit() {
+    def projectDirFile = new File("$projectDir")
+    def dotGit = new File("$projectDir/.git")
+    if (!dotGit.isDirectory()) return 'non-git build'
+
+    def cmd = 'git describe --always --tags --dirty=+'
+    def proc = cmd.execute(null, projectDirFile)
+    def gitCommit = proc.text.trim()
+    assert !gitCommit.isEmpty()
+
+    def srCmd = 'git symbolic-ref --short HEAD'
+    def srProc = srCmd.execute(null, projectDirFile)
+    srProc.waitForOrKill(10 * 1000)
+    if (srProc.exitValue() == 0) {
+        // Only add the information if the git command was
+        // successful. There may be no symbolic reference for HEAD if
+        // e.g. in detached mode.
+        def symbolicReference = srProc.text.trim()
+        assert !symbolicReference.isEmpty()
+        gitCommit += "-$symbolicReference"
+    }
+
+    gitCommit
+}
+
+apply plugin: "com.github.kt3k.coveralls"
+coveralls {
+	sourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs).files.absolutePath
+}
+
+task jacocoRootReport(type: JacocoReport) {
+    dependsOn = subprojects.jacocoTestReport
+    sourceDirectories.setFrom(files(subprojects.sourceSets.main.allSource.srcDirs))
+    classDirectories.setFrom(files(subprojects.sourceSets.main.output))
+    executionData.setFrom(files(subprojects.jacocoTestReport.executionData))
+    reports {
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    }
+    // We could remove the following setOnlyIf line, but then
+    // jacocoRootReport would silently be SKIPPED if something with
+    // the projectsWithUnitTests is wrong (e.g. a project is missing
+    // in there).
+    setOnlyIf { true }
+}
+
+task javadocAll(type: Javadoc) {
+    def currentJavaVersion = JavaVersion.current()
+    if (currentJavaVersion.compareTo(JavaVersion.VERSION_1_9) >= 0) {
+        options.addStringOption("-release", "8");
+    }
+    source subprojects.collect {project ->
+        project.sourceSets.main.allJava }
+    destinationDir = new File(buildDir, 'javadoc')
+    // Might need a classpath
+    classpath = files(subprojects.collect {project ->
+        project.sourceSets.main.compileClasspath})
+    options.linkSource = true
+    options.use = true
+    options.links = [
+            "https://docs.oracle.com/javase/${sourceCompatibility.getMajorVersion()}/docs/api/",
+    ] as String[]
+}
