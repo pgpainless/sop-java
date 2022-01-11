@@ -42,6 +42,12 @@ allprojects {
         }
     }
 
+    // Only generate jar for submodules
+    // https://stackoverflow.com/a/25445035
+    jar {
+        onlyIf { !sourceSets.main.allSource.files.isEmpty() }
+    }
+
     // checkstyle
     checkstyle {
         toolVersion = '8.18'
