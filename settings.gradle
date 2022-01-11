@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: CC0-1.0
 
-rootProject.name = 'PGPainless'
+rootProject.name = 'SOP-Java'
 
 include 'sop-java',
         'sop-java-picocli'
