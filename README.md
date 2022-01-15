@@ -6,6 +6,12 @@ SPDX-License-Identifier: Apache-2.0
 
 # SOP for Java
 
+[![Travis (.com)](https://travis-ci.com/pgpainless/sop-java.svg?branch=master)](https://travis-ci.com/pgpainless/sop-java)
+[![Maven Central](https://badgen.net/maven/v/maven-central/org.pgpainless/sop-java)](https://search.maven.org/artifact/org.pgpainless/sop-java)
+[![Spec Revision: 3](https://img.shields.io/badge/Spec%20Revision-3-blue)](https://datatracker.ietf.org/doc/html/draft-dkg-openpgp-stateless-cli-03)
+[![Coverage Status](https://coveralls.io/repos/github/pgpainless/sop-java/badge.svg?branch=master)](https://coveralls.io/github/pgpainless/sop-java?branch=master)
+[![REUSE status](https://api.reuse.software/badge/github.com/pgpainless/sop-java)](https://api.reuse.software/info/github.com/pgpainless/sop-java)
+
 The [Stateless OpenPGP Protocol](https://datatracker.ietf.org/doc/html/draft-dkg-openpgp-stateless-cli-03) specification
 defines a generic stateless CLI for dealing with OpenPGP messages.
 Its goal is to provide a minimal, yet powerful API for the most common OpenPGP related operations.

@@ -6,11 +6,6 @@ SPDX-License-Identifier: Apache-2.0
 
 # SOP-Java
 
-[![Spec Revision: 3](https://img.shields.io/badge/Spec%20Revision-3-blue)](https://datatracker.ietf.org/doc/html/draft-dkg-openpgp-stateless-cli-03)
-[![Maven Central](https://badgen.net/maven/v/maven-central/org.pgpainless/sop-java)](https://search.maven.org/artifact/org.pgpainless/sop-java)
-[![JavaDoc](https://badgen.net/badge/javadoc/yes/green)](https://pgpainless.org/releases/latest/javadoc/sop/SOP.html)
-[![REUSE status](https://api.reuse.software/badge/github.com/pgpainless/pgpainless)](https://api.reuse.software/info/github.com/pgpainless/pgpainless)
-
 Stateless OpenPGP Protocol for Java.
 
 This module contains interfaces that model the API described by the 
