@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2021 Paul Schaub <vanitasvitae@fsfe.org>
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # SOP for Java
 
 The [Stateless OpenPGP Protocol](https://datatracker.ietf.org/doc/html/draft-dkg-openpgp-stateless-cli-03) specification
