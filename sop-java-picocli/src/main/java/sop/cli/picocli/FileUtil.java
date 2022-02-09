@@ -10,9 +10,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 import sop.exception.SOPGPException;
+import sop.util.UTF8Util;
 
 public class FileUtil {
 
@@ -106,7 +106,7 @@ public class FileUtil {
             while ((read = inputStream.read(buf)) != -1) {
                 byteOut.write(buf, 0, read);
             }
-            return new String(byteOut.toByteArray(), Charset.forName("UTF8"));
+            return UTF8Util.decodeUTF8(byteOut.toByteArray());
         } finally {
             inputStream.close();
         }

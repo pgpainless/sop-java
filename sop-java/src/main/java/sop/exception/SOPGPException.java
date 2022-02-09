@@ -4,8 +4,6 @@
 
 package sop.exception;
 
-import java.io.IOException;
-
 public abstract class SOPGPException extends RuntimeException {
 
     public SOPGPException() {
@@ -132,10 +130,6 @@ public abstract class SOPGPException extends RuntimeException {
 
         public PasswordNotHumanReadable() {
             super();
-        }
-
-        public PasswordNotHumanReadable(String message, IOException e) {
-            super(message, e);
         }
 
         @Override
