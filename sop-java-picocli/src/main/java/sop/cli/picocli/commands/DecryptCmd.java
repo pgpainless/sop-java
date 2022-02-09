@@ -199,7 +199,7 @@ public class DecryptCmd implements Runnable {
             try {
                 sessionKey = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(sessionKeyFile));
             } catch (IOException e) {
-                throw new SOPGPException.BadData("Cannot read session key from session key file " + sessionKeyFile, e);
+                throw new RuntimeException(e);
             }
             if (!sessionKeyPattern.matcher(sessionKey).matches()) {
                 throw new IllegalArgumentException("Session keys are expected in the format 'ALGONUM:HEXKEY'.");
@@ -224,7 +224,7 @@ public class DecryptCmd implements Runnable {
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
                 throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, "--with-password"), unsupportedOption);
             } catch (IOException e) {
-                throw new SOPGPException.PasswordNotHumanReadable("Cannot read password from password file " + passwordFile, e);
+                throw new RuntimeException(e);
             }
         }
     }

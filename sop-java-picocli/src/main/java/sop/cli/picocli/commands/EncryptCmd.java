@@ -75,7 +75,7 @@ public class EncryptCmd implements Runnable {
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
                 throw new SOPGPException.UnsupportedOption("Unsupported option '--with-password'.", unsupportedOption);
             } catch (IOException e) {
-                throw new SOPGPException.PasswordNotHumanReadable("Cannot read password from the provided password file " + passwordFileName, e);
+                throw new RuntimeException(e);
             }
         }
 

@@ -26,6 +26,8 @@ public class VersionCmdTest {
         version = mock(Version.class);
         when(version.getName()).thenReturn("MockSop");
         when(version.getVersion()).thenReturn("1.0");
+        when(version.getExtendedVersion()).thenReturn("MockSop Extended Version Information");
+        when(version.getBackendVersion()).thenReturn("Foo");
         when(sop.version()).thenReturn(version);
 
         SopCLI.setSopInstance(sop);
@@ -36,6 +38,18 @@ public class VersionCmdTest {
         SopCLI.main(new String[] {"version"});
         verify(version, times(1)).getVersion();
         verify(version, times(1)).getName();
+    }
+
+    @Test
+    public void assertExtendedVersionCommandWorks() {
+        SopCLI.main(new String[] {"version", "--extended"});
+        verify(version, times(1)).getExtendedVersion();
+    }
+
+    @Test
+    public void assertBackendVersionCommandWorks() {
+        SopCLI.main(new String[] {"version", "--backend"});
+        verify(version, times(1)).getBackendVersion();
     }
 
     @Test

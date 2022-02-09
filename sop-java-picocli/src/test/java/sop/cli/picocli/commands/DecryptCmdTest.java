@@ -346,6 +346,18 @@ public class DecryptCmdTest {
     }
 
     @Test
+    @ExpectSystemExitWithStatus(61)
+    public void assertMissingPassphraseFileCausesExit61() {
+        SopCLI.main(new String[] {"decrypt", "--with-password", "missing"});
+    }
+
+    @Test
+    @ExpectSystemExitWithStatus(61)
+    public void assertMissingSessionKeyFileCausesExit61() {
+        SopCLI.main(new String[] {"decrypt", "--with-session-key", "missing"});
+    }
+
+    @Test
     @ExpectSystemExitWithStatus(23)
     public void verifyOutWithoutVerifyWithCausesExit23() {
         SopCLI.main(new String[] {"decrypt", "--verify-out", "out.file"});
