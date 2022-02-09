@@ -13,6 +13,7 @@ import java.util.List;
 
 import picocli.CommandLine;
 import sop.Ready;
+import sop.cli.picocli.FileUtil;
 import sop.cli.picocli.SopCLI;
 import sop.enums.EncryptAs;
 import sop.exception.SOPGPException;
@@ -34,7 +35,7 @@ public class EncryptCmd implements Runnable {
     EncryptAs type;
 
     @CommandLine.Option(names = "--with-password",
-            description = "Encrypt the message with a password",
+            description = "Encrypt the message with a password provided by the given password file",
             paramLabel = "PASSWORD")
     List<String> withPassword = new ArrayList<>();
 
@@ -64,14 +65,17 @@ public class EncryptCmd implements Runnable {
         }
 
         if (withPassword.isEmpty() && certs.isEmpty()) {
-            throw new SOPGPException.MissingArg("At least one password or cert file required for encryption.");
+            throw new SOPGPException.MissingArg("At least one password file or cert file required for encryption.");
         }
 
-        for (String password : withPassword) {
+        for (String passwordFileName : withPassword) {
             try {
+                String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFileName));
                 encrypt.withPassword(password);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
                 throw new SOPGPException.UnsupportedOption("Unsupported option '--with-password'.", unsupportedOption);
+            } catch (IOException e) {
+                throw new SOPGPException.PasswordNotHumanReadable("Cannot read password from the provided password file " + passwordFileName, e);
             }
         }
 

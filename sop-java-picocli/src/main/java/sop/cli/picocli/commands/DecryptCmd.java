@@ -47,13 +47,13 @@ public class DecryptCmd implements Runnable {
 
     @CommandLine.Option(
             names = {"--with-session-key"},
-            description = "Enables decryption of the \"CIPHERTEXT\" using the session key directly against the \"SEIPD\" packet",
+            description = "Provide a session key file. Enables decryption of the \"CIPHERTEXT\" using the session key directly against the \"SEIPD\" packet",
             paramLabel = "SESSIONKEY")
     List<String> withSessionKey = new ArrayList<>();
 
     @CommandLine.Option(
             names = {"--with-password"},
-            description = "Enables decryption based on any \"SKESK\" packets in the \"CIPHERTEXT\"",
+            description = "Provide a password file. Enables decryption based on any \"SKESK\" packets in the \"CIPHERTEXT\"",
             paramLabel = "PASSWORD")
     List<String> withPassword = new ArrayList<>();
 
@@ -194,7 +194,13 @@ public class DecryptCmd implements Runnable {
 
     private void setWithSessionKeys(List<String> withSessionKey, Decrypt decrypt) {
         Pattern sessionKeyPattern = Pattern.compile("^\\d+:[0-9A-F]+$");
-        for (String sessionKey : withSessionKey) {
+        for (String sessionKeyFile : withSessionKey) {
+            String sessionKey;
+            try {
+                sessionKey = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(sessionKeyFile));
+            } catch (IOException e) {
+                throw new SOPGPException.BadData("Cannot read session key from session key file " + sessionKeyFile, e);
+            }
             if (!sessionKeyPattern.matcher(sessionKey).matches()) {
                 throw new IllegalArgumentException("Session keys are expected in the format 'ALGONUM:HEXKEY'.");
             }
@@ -211,11 +217,14 @@ public class DecryptCmd implements Runnable {
     }
 
     private void setWithPasswords(List<String> withPassword, Decrypt decrypt) {
-        for (String password : withPassword) {
+        for (String passwordFile : withPassword) {
             try {
+                String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFile));
                 decrypt.withPassword(password);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
                 throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, "--with-password"), unsupportedOption);
+            } catch (IOException e) {
+                throw new SOPGPException.PasswordNotHumanReadable("Cannot read password from password file " + passwordFile, e);
             }
         }
     }

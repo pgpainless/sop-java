@@ -4,10 +4,13 @@
 
 package sop.cli.picocli;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import sop.exception.SOPGPException;
 
@@ -94,5 +97,18 @@ public class FileUtil {
             throw new IOException(String.format(ERROR_CANNOT_CREATE_FILE, file.getAbsolutePath(), e.getMessage()));
         }
         return file;
+    }
+
+    public static String stringFromInputStream(InputStream inputStream) throws IOException {
+        try {
+            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+            byte[] buf = new byte[4096]; int read;
+            while ((read = inputStream.read(buf)) != -1) {
+                byteOut.write(buf, 0, read);
+            }
+            return new String(byteOut.toByteArray(), Charset.forName("UTF8"));
+        } finally {
+            inputStream.close();
+        }
     }
 }

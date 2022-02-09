@@ -38,6 +38,7 @@ import sop.SessionKey;
 import sop.Verification;
 import sop.cli.picocli.DateParser;
 import sop.cli.picocli.SopCLI;
+import sop.cli.picocli.TestFileUtil;
 import sop.exception.SOPGPException;
 import sop.operation.Decrypt;
 import sop.util.HexUtil;
@@ -90,22 +91,25 @@ public class DecryptCmdTest {
     @Test
     @ExpectSystemExitWithStatus(31)
     public void assertNotHumanReadablePasswordCausesExit31() throws SOPGPException.PasswordNotHumanReadable,
-            SOPGPException.UnsupportedOption {
+            SOPGPException.UnsupportedOption, IOException {
+        File passwordFile = TestFileUtil.writeTempStringFile("pretendThisIsNotReadable");
         when(decrypt.withPassword(any())).thenThrow(new SOPGPException.PasswordNotHumanReadable());
-        SopCLI.main(new String[] {"decrypt", "--with-password", "pretendThisIsNotReadable"});
+        SopCLI.main(new String[] {"decrypt", "--with-password", passwordFile.getAbsolutePath()});
     }
 
     @Test
-    public void assertWithPasswordPassesPasswordDown() throws SOPGPException.PasswordNotHumanReadable, SOPGPException.UnsupportedOption {
-        SopCLI.main(new String[] {"decrypt", "--with-password", "orange"});
+    public void assertWithPasswordPassesPasswordDown() throws SOPGPException.PasswordNotHumanReadable, SOPGPException.UnsupportedOption, IOException {
+        File passwordFile = TestFileUtil.writeTempStringFile("orange");
+        SopCLI.main(new String[] {"decrypt", "--with-password", passwordFile.getAbsolutePath()});
         verify(decrypt, times(1)).withPassword("orange");
     }
 
     @Test
     @ExpectSystemExitWithStatus(37)
-    public void assertUnsupportedWithPasswordCausesExit37() throws SOPGPException.PasswordNotHumanReadable, SOPGPException.UnsupportedOption {
+    public void assertUnsupportedWithPasswordCausesExit37() throws SOPGPException.PasswordNotHumanReadable, SOPGPException.UnsupportedOption, IOException {
+        File passwordFile = TestFileUtil.writeTempStringFile("swordfish");
         when(decrypt.withPassword(any())).thenThrow(new SOPGPException.UnsupportedOption("Decrypting with password not supported."));
-        SopCLI.main(new String[] {"decrypt", "--with-password", "swordfish"});
+        SopCLI.main(new String[] {"decrypt", "--with-password", passwordFile.getAbsolutePath()});
     }
 
     @Test
@@ -289,21 +293,26 @@ public class DecryptCmdTest {
     }
 
     @Test
-    public void assertWithSessionKeyIsPassedDown() throws SOPGPException.UnsupportedOption {
+    public void assertWithSessionKeyIsPassedDown() throws SOPGPException.UnsupportedOption, IOException {
         SessionKey key1 = new SessionKey((byte) 9, HexUtil.hexToBytes("C7CBDAF42537776F12509B5168793C26B93294E5ABDFA73224FB0177123E9137"));
         SessionKey key2 = new SessionKey((byte) 9, HexUtil.hexToBytes("FCA4BEAF687F48059CACC14FB019125CD57392BAB7037C707835925CBF9F7BCD"));
+
+        File sessionKeyFile1 = TestFileUtil.writeTempStringFile(key1.toString());
+        File sessionKeyFile2 = TestFileUtil.writeTempStringFile(key2.toString());
+
         SopCLI.main(new String[] {"decrypt",
-                "--with-session-key", "9:C7CBDAF42537776F12509B5168793C26B93294E5ABDFA73224FB0177123E9137",
-                "--with-session-key", "9:FCA4BEAF687F48059CACC14FB019125CD57392BAB7037C707835925CBF9F7BCD"});
+                "--with-session-key", sessionKeyFile1.getAbsolutePath(),
+                "--with-session-key", sessionKeyFile2.getAbsolutePath()});
         verify(decrypt).withSessionKey(key1);
         verify(decrypt).withSessionKey(key2);
     }
 
     @Test
     @ExpectSystemExitWithStatus(1)
-    public void assertMalformedSessionKeysResultInExit1() {
+    public void assertMalformedSessionKeysResultInExit1() throws IOException {
+        File sessionKeyFile = TestFileUtil.writeTempStringFile("C7CBDAF42537776F12509B5168793C26B93294E5ABDFA73224FB0177123E9137");
         SopCLI.main(new String[] {"decrypt",
-                "--with-session-key", "C7CBDAF42537776F12509B5168793C26B93294E5ABDFA73224FB0177123E9137"});
+                "--with-session-key", sessionKeyFile.getAbsolutePath()});
     }
 
     @Test

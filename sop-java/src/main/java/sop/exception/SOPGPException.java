@@ -4,6 +4,8 @@
 
 package sop.exception;
 
+import java.io.IOException;
+
 public abstract class SOPGPException extends RuntimeException {
 
     public SOPGPException() {
@@ -128,6 +130,14 @@ public abstract class SOPGPException extends RuntimeException {
 
         public static final int EXIT_CODE = 31;
 
+        public PasswordNotHumanReadable() {
+            super();
+        }
+
+        public PasswordNotHumanReadable(String message, IOException e) {
+            super(message, e);
+        }
+
         @Override
         public int getExitCode() {
             return EXIT_CODE;
@@ -162,12 +172,16 @@ public abstract class SOPGPException extends RuntimeException {
 
         public static final int EXIT_CODE = 41;
 
-        public BadData(Throwable e) {
-            super(e);
+        public BadData(String message) {
+            super(message);
         }
 
-        public BadData(String message, BadData badData) {
-            super(message, badData);
+        public BadData(Throwable throwable) {
+            super(throwable);
+        }
+
+        public BadData(String message, Throwable throwable) {
+            super(message, throwable);
         }
 
         @Override
