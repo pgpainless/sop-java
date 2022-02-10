@@ -106,6 +106,7 @@ public class FileUtil {
             while ((read = inputStream.read(buf)) != -1) {
                 byteOut.write(buf, 0, read);
             }
+            // TODO: For decrypt operations we MUST accept non-UTF8 passwords
             return UTF8Util.decodeUTF8(byteOut.toByteArray());
         } finally {
             inputStream.close();
