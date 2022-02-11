@@ -5,6 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 -->
 # SOP-Java-Picocli
 
+[![javadoc](https://javadoc.io/badge2/org.pgpainless/sop-java-picocli/javadoc.svg)](https://javadoc.io/doc/org.pgpainless/sop-java-picocli)
+[![Maven Central](https://badgen.net/maven/v/maven-central/org.pgpainless/sop-java-picocli)](https://search.maven.org/artifact/org.pgpainless/sop-java-picocli)
+
 Implementation of the [Stateless OpenPGP Command Line Interface](https://tools.ietf.org/html/draft-dkg-openpgp-stateless-cli-01) specification.
 This terminal application allows generation of OpenPGP keys, extraction of public key certificates,
 armoring and de-armoring of data, as well as - of course - encryption/decryption of messages and creation/verification of signatures.

@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # SOP-Java
 
+[![javadoc](https://javadoc.io/badge2/org.pgpainless/sop-java/javadoc.svg)](https://javadoc.io/doc/org.pgpainless/sop-java)
+[![Maven Central](https://badgen.net/maven/v/maven-central/org.pgpainless/sop-java)](https://search.maven.org/artifact/org.pgpainless/sop-java)
+
 Stateless OpenPGP Protocol for Java.
 
 This module contains interfaces that model the API described by the 
