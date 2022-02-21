@@ -15,7 +15,7 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:4.3.1'
 
     implementation(project(":sop-java"))
-    implementation "info.picocli:picocli:4.6.2"
+    implementation "info.picocli:picocli:4.6.3"
 
     // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
