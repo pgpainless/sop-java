@@ -6,6 +6,12 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 1.2.1-SNAPSHOT
+- Bump dependencies
+  - `com.ginsberg:junit5-system-exit` from `1.1.1` to `1.1.2`
+  - `org.mockito:mockito-core` from `4.2.0` to `4.3.1`
+  - `info.picocli:picocli` from `4.6.2` to `4.6.3`
+
 ## 1.2.0
 - `encrypt`, `decrypt`: Interpret arguments of `--with-password` and `--with-session-key` as indirect data types (e.g. file references instead of strings)
 
