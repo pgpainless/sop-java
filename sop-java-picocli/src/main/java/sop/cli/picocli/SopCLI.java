@@ -4,6 +4,7 @@
 
 package sop.cli.picocli;
 
+import picocli.AutoComplete;
 import picocli.CommandLine;
 import sop.SOP;
 import sop.cli.picocli.commands.ArmorCmd;
@@ -30,7 +31,8 @@ import sop.cli.picocli.commands.VersionCmd;
                 GenerateKeyCmd.class,
                 SignCmd.class,
                 VerifyCmd.class,
-                VersionCmd.class
+                VersionCmd.class,
+                AutoComplete.GenerateCompletion.class
         }
 )
 public class SopCLI {
@@ -47,12 +49,17 @@ public class SopCLI {
     }
 
     public static int execute(String[] args) {
-        return new CommandLine(SopCLI.class)
-                .setCommandName(EXECUTABLE_NAME)
+        CommandLine cmd = new CommandLine(SopCLI.class);
+        // Hide generate-completion command
+        CommandLine gen = cmd.getSubcommands().get("generate-completion");
+        gen.getCommandSpec().usageMessage().hidden(true);
+
+        cmd.setCommandName(EXECUTABLE_NAME)
                 .setExecutionExceptionHandler(new SOPExecutionExceptionHandler())
                 .setExitCodeExceptionMapper(new SOPExceptionExitCodeMapper())
-                .setCaseInsensitiveEnumValuesAllowed(true)
-                .execute(args);
+                .setCaseInsensitiveEnumValuesAllowed(true);
+
+        return cmd.execute(args);
     }
 
     public static SOP getSop() {
