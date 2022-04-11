@@ -70,7 +70,6 @@ allprojects {
     }
 
     project.ext {
-        junitVersion = '5.8.2'
         rootConfigDir = new File(rootDir, 'config')
         gitCommit = getGitCommit()
         isContinuousIntegrationEnvironment = Boolean.parseBoolean(System.getenv('CI'))
