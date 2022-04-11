@@ -33,6 +33,28 @@ import sop.cli.picocli.commands.VersionCmd;
                 VerifyCmd.class,
                 VersionCmd.class,
                 AutoComplete.GenerateCompletion.class
+        },
+        exitCodeListHeading = "Exit Codes:%n",
+        exitCodeList = {
+                " 0:Successful program execution",
+                " 1:Generic program error",
+                " 3:Verification requested but no verifiable signature found",
+                "13:Unsupported asymmetric algorithm",
+                "17:Certificate is not encryption capable",
+                "19:Usage error: Missing argument",
+                "23:Incomplete verification instructions",
+                "29:Unable to decrypt",
+                "31:Password is not human-readable",
+                "37:Unsupported Option",
+                "41:Invalid data or data of wrong type encountered",
+                "53:Non-text input received where text was expected",
+                "59:Output file already exists",
+                "61:Input file does not exist",
+                "67:Key is password protected",
+                "69:Unsupported subcommand",
+                "71:Unsupported special prefix (e.g. \"@env/@fd\") of indirect parameter",
+                "73:Ambiguous input (a filename matching the designator already exists)",
+                "79:Key is not signing capable"
         }
 )
 public class SopCLI {
