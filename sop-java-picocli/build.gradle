@@ -28,6 +28,8 @@ application {
 }
 
 jar {
+    dependsOn(":sop-java:jar")
+
     manifest {
         attributes 'Main-Class': "$mainClassName"
     }
