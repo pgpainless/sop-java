@@ -23,6 +23,10 @@ dependencies {
 
 mainClassName = 'sop.cli.picocli.SopCLI'
 
+application {
+    mainClass = mainClassName
+}
+
 jar {
     manifest {
         attributes 'Main-Class': "$mainClassName"
