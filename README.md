@@ -16,9 +16,12 @@ The [Stateless OpenPGP Protocol](https://datatracker.ietf.org/doc/html/draft-dkg
 defines a generic stateless CLI for dealing with OpenPGP messages.
 Its goal is to provide a minimal, yet powerful API for the most common OpenPGP related operations.
 
-`sop-java` defines a set of Java interfaces describing said API.
+## Modules
 
-`sop-java-picocli` contains a wrapper application that transforms the `sop-java` API into a command line application
+The repository contains the following modules:
+
+* [sop-java](/sop-java) defines a set of Java interfaces describing the Stateless OpenPGP Protocol.
+* [sop-java-picocli](/sop-java-picocli) contains a wrapper application that transforms the `sop-java` API into a command line application
 compatible with the SOP-CLI specification.
 
 ## Known Implementations
