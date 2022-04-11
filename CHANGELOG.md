@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 1.2.2
+- Add SOP parent command name and description
+
 ## 1.2.1
 - Bump dependencies
   - `com.ginsberg:junit5-system-exit` from `1.1.1` to `1.1.2`
