@@ -19,6 +19,8 @@ import sop.cli.picocli.commands.VerifyCmd;
 import sop.cli.picocli.commands.VersionCmd;
 
 @CommandLine.Command(
+        name = "sop",
+        description = "Stateless OpenPGP Protocol",
         exitCodeOnInvalidInput = 69,
         subcommands = {
                 CommandLine.HelpCommand.class,
