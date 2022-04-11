@@ -28,6 +28,8 @@ public interface Sign {
      *
      * @param mode signature mode
      * @return builder instance
+     *
+     * @throws sop.exception.SOPGPException.UnsupportedOption if this option is not supported
      */
     Sign mode(SignAs mode) throws SOPGPException.UnsupportedOption;
 
@@ -36,6 +38,10 @@ public interface Sign {
      *
      * @param key input stream containing encoded keys
      * @return builder instance
+     *
+     * @throws sop.exception.SOPGPException.KeyIsProtected if the key is password protected
+     * @throws sop.exception.SOPGPException.BadData if the {@link InputStream} does not contain an OpenPGP key
+     * @throws IOException in case of an IO error
      */
     Sign key(InputStream key) throws SOPGPException.KeyIsProtected, SOPGPException.BadData, IOException;
 
@@ -44,6 +50,10 @@ public interface Sign {
      *
      * @param key byte array containing encoded keys
      * @return builder instance
+     *
+     * @throws sop.exception.SOPGPException.KeyIsProtected if the key is password protected
+     * @throws sop.exception.SOPGPException.BadData if the byte array does not contain an OpenPGP key
+     * @throws IOException in case of an IO error
      */
     default Sign key(byte[] key) throws SOPGPException.KeyIsProtected, SOPGPException.BadData, IOException {
         return key(new ByteArrayInputStream(key));
@@ -54,6 +64,9 @@ public interface Sign {
      *
      * @param data input stream containing data
      * @return ready
+     *
+     * @throws IOException in case of an IO error
+     * @throws sop.exception.SOPGPException.ExpectedText if text data was expected, but binary data was encountered
      */
     ReadyWithResult<SigningResult> data(InputStream data) throws IOException, SOPGPException.ExpectedText;
 
@@ -62,6 +75,9 @@ public interface Sign {
      *
      * @param data byte array containing data
      * @return ready
+     *
+     * @throws IOException in case of an IO error
+     * @throws sop.exception.SOPGPException.ExpectedText if text data was expected, but binary data was encountered
      */
     default ReadyWithResult<SigningResult> data(byte[] data) throws IOException, SOPGPException.ExpectedText {
         return data(new ByteArrayInputStream(data));

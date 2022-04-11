@@ -31,6 +31,10 @@ public interface GenerateKey {
      * Generate the OpenPGP key and return it encoded as an {@link InputStream}.
      *
      * @return key
+     *
+     * @throws sop.exception.SOPGPException.MissingArg if no user-id was provided
+     * @throws sop.exception.SOPGPException.UnsupportedAsymmetricAlgo if the generated key uses an unsupported asymmetric algorithm
+     * @throws IOException in case of an IO error
      */
     Ready generate() throws SOPGPException.MissingArg, SOPGPException.UnsupportedAsymmetricAlgo, IOException;
 }

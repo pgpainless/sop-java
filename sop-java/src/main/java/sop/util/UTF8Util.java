@@ -24,8 +24,9 @@ public class UTF8Util {
      * Detect non-valid UTF8 data.
      *
      * @see <a href="https://stackoverflow.com/a/1471193">ante on StackOverflow</a>
-     * @param data
-     * @return
+     * @param data utf-8 encoded bytes
+     *
+     * @return decoded string
      */
     public static String decodeUTF8(byte[] data) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(data);

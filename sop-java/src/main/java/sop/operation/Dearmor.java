@@ -18,6 +18,9 @@ public interface Dearmor {
      *
      * @param data armored OpenPGP data
      * @return input stream of unarmored data
+     *
+     * @throws sop.exception.SOPGPException.BadData in case of non-OpenPGP data
+     * @throws IOException in case of an IO error
      */
     Ready data(InputStream data) throws SOPGPException.BadData, IOException;
 
@@ -26,6 +29,9 @@ public interface Dearmor {
      *
      * @param data armored OpenPGP data
      * @return input stream of unarmored data
+     *
+     * @throws sop.exception.SOPGPException.BadData in case of non-OpenPGP data
+     * @throws IOException in case of an IO error
      */
     default Ready data(byte[] data) throws SOPGPException.BadData, IOException {
         return data(new ByteArrayInputStream(data));
