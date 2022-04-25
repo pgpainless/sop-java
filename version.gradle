@@ -12,5 +12,6 @@ allprojects {
         junitSysExitVersion = '1.1.2'
         picocliVersion = '4.6.3'
         mockitoVersion = '4.5.1'
+        jsrVersion = '3.0.2'
     }
 }
