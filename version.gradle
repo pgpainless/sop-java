@@ -4,8 +4,8 @@
 
 allprojects {
     ext {
-        shortVersion = '1.2.3'
-        isSnapshot = false
+        shortVersion = '1.2.4'
+        isSnapshot = true
         minAndroidSdk = 10
         javaSourceCompatibility = 1.8
         junitVersion = '5.8.2'
