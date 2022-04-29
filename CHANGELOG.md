@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 1.2.3-SNAPSHOT
+## 1.2.3
 - Bump Mockito version to `4.5.1`
 
 ## 1.2.2
