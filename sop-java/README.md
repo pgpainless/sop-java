@@ -12,7 +12,7 @@ SPDX-License-Identifier: Apache-2.0
 Stateless OpenPGP Protocol for Java.
 
 This module contains interfaces that model the API described by the 
-[Stateless OpenPGP Command Line Interface](https://datatracker.ietf.org/doc/html/draft-dkg-openpgp-stateless-cli-03) specification.
+[Stateless OpenPGP Command Line Interface](https://datatracker.ietf.org/doc/draft-dkg-openpgp-stateless-cli/) specification.
 
 This module is not a command line application! For that, see `sop-java-picocli`.
 
