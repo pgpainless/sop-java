@@ -40,6 +40,10 @@ public class SignCmd implements Runnable {
             paramLabel = "KEYS")
     List<File> secretKeyFile = new ArrayList<>();
 
+    @CommandLine.Option(names = "--with-key-password", description = "Password(s) to unlock the secret key(s) with",
+            paramLabel = "PASSWORD")
+    List<String> withKeyPassword = new ArrayList<>();
+
     @CommandLine.Option(names = "--micalg-out", description = "Emits the digest algorithm used to the specified file in a way that can be used to populate the micalg parameter for the PGP/MIME Content-Type (RFC3156)",
             paramLabel = "MICALG")
     File micAlgOut;
@@ -68,6 +72,10 @@ public class SignCmd implements Runnable {
         if (secretKeyFile.isEmpty()) {
             Print.errln("Missing required parameter 'KEYS'.");
             System.exit(19);
+        }
+
+        for (String password : withKeyPassword) {
+            sign.withKeyPassword(password);
         }
 
         for (File keyFile : secretKeyFile) {
