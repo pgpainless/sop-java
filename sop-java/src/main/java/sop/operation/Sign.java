@@ -47,6 +47,20 @@ public interface Sign {
     Sign key(InputStream key) throws SOPGPException.KeyIsProtected, SOPGPException.BadData, IOException;
 
     /**
+     * Add one or more signing keys.
+     *
+     * @param key byte array containing encoded keys
+     * @return builder instance
+     *
+     * @throws sop.exception.SOPGPException.KeyIsProtected if the key is password protected
+     * @throws sop.exception.SOPGPException.BadData if the byte array does not contain an OpenPGP key
+     * @throws IOException in case of an IO error
+     */
+    default Sign key(byte[] key) throws SOPGPException.KeyIsProtected, SOPGPException.BadData, IOException {
+        return key(new ByteArrayInputStream(key));
+    }
+
+    /**
      * Provide the decryption password for the secret key.
      *
      * @param password password
@@ -63,20 +77,6 @@ public interface Sign {
      * @return builder instance
      */
     Sign withKeyPassword(byte[] password);
-
-    /**
-     * Add one or more signing keys.
-     *
-     * @param key byte array containing encoded keys
-     * @return builder instance
-     *
-     * @throws sop.exception.SOPGPException.KeyIsProtected if the key is password protected
-     * @throws sop.exception.SOPGPException.BadData if the byte array does not contain an OpenPGP key
-     * @throws IOException in case of an IO error
-     */
-    default Sign key(byte[] key) throws SOPGPException.KeyIsProtected, SOPGPException.BadData, IOException {
-        return key(new ByteArrayInputStream(key));
-    }
 
     /**
      * Signs data.
