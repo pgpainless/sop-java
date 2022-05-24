@@ -87,6 +87,11 @@ public class DecryptCmd implements Runnable {
             paramLabel = "KEY")
     List<File> keys = new ArrayList<>();
 
+    @CommandLine.Option(names = "--with-key-password",
+    description = "Provide indirect file type pointing at passphrase(s) for secret key(s)",
+    paramLabel = "PASSWORD")
+    List<String> withKeyPassword = new ArrayList<>();
+
     @Override
     public void run() {
         throwIfOutputExists(verifyOut, VERIFY_OUT);
@@ -101,6 +106,7 @@ public class DecryptCmd implements Runnable {
         setNotBefore(notBefore, decrypt);
         setWithPasswords(withPassword, decrypt);
         setWithSessionKeys(withSessionKey, decrypt);
+        setWithKeyPassword(withKeyPassword, decrypt);
         setVerifyWith(certs, decrypt);
         setDecryptWith(keys, decrypt);
 
@@ -223,6 +229,19 @@ public class DecryptCmd implements Runnable {
                 decrypt.withPassword(password);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
                 throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, "--with-password"), unsupportedOption);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void setWithKeyPassword(List<String> withKeyPassword, Decrypt decrypt) {
+        for (String passwordFile : withKeyPassword) {
+            try {
+                String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFile));
+                decrypt.withKeyPassword(password);
+            } catch (SOPGPException.UnsupportedOption unsupportedOption) {
+                throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, "--with-key-password"), unsupportedOption);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
