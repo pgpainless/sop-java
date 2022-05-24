@@ -16,16 +16,20 @@ import picocli.CommandLine;
 import sop.MicAlg;
 import sop.ReadyWithResult;
 import sop.SigningResult;
+import sop.cli.picocli.FileUtil;
 import sop.cli.picocli.Print;
 import sop.cli.picocli.SopCLI;
 import sop.enums.SignAs;
 import sop.exception.SOPGPException;
+import sop.operation.Decrypt;
 import sop.operation.Sign;
 
 @CommandLine.Command(name = "sign",
         description = "Create a detached signature on the data from standard input",
         exitCodeOnInvalidInput = 37)
 public class SignCmd implements Runnable {
+
+    private static final String ERROR_UNSUPPORTED_OPTION = "Option '%s' is not supported.";
 
     @CommandLine.Option(names = "--no-armor",
             description = "ASCII armor the output",
@@ -74,8 +78,15 @@ public class SignCmd implements Runnable {
             System.exit(19);
         }
 
-        for (String password : withKeyPassword) {
-            sign.withKeyPassword(password);
+        for (String passwordFile : withKeyPassword) {
+            try {
+                String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFile));
+                sign.withKeyPassword(password);
+            } catch (SOPGPException.UnsupportedOption unsupportedOption) {
+                throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, "--with-key-password"), unsupportedOption);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         for (File keyFile : secretKeyFile) {
