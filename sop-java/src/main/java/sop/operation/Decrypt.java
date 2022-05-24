@@ -4,15 +4,16 @@
 
 package sop.operation;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-
 import sop.DecryptionResult;
 import sop.ReadyWithResult;
 import sop.SessionKey;
 import sop.exception.SOPGPException;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.Date;
 
 public interface Decrypt {
 
@@ -120,6 +121,24 @@ public interface Decrypt {
             SOPGPException.UnsupportedAsymmetricAlgo {
         return withKey(new ByteArrayInputStream(key));
     }
+
+    /**
+     * Provide the decryption password for the secret key.
+     *
+     * @param password password
+     * @return builder instance
+     */
+    default Decrypt withKeyPassword(String password) {
+        return withKeyPassword(password.getBytes(Charset.forName("UTF8")));
+    }
+
+    /**
+     * Provide the decryption password for the secret key.
+     *
+     * @param password password
+     * @return builder instance
+     */
+    Decrypt withKeyPassword(byte[] password);
 
     /**
      * Decrypts the given ciphertext, returning verification results and plaintext.
