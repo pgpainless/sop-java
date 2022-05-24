@@ -17,7 +17,7 @@ import sop.operation.InlineDetach;
 @CommandLine.Command(name = "detach-inband-signature-and-message",
         description = "Split a clearsigned message",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
-public class DetachInbandSignatureAndMessageCmd implements Runnable {
+public class InlineDetachCmd implements Runnable {
 
     @CommandLine.Option(
             names = {"--signatures-out"},
