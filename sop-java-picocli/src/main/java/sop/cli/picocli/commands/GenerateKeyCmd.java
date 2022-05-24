@@ -28,6 +28,10 @@ public class GenerateKeyCmd implements Runnable {
     @CommandLine.Parameters(description = "User-ID, eg. \"Alice <alice@example.com>\"")
     List<String> userId = new ArrayList<>();
 
+    @CommandLine.Option(names = "--with-key-password",
+            description = "Password to protect the key")
+    String withKeyPassword;
+
     @Override
     public void run() {
         GenerateKey generateKey = SopCLI.getSop().generateKey();
@@ -41,6 +45,10 @@ public class GenerateKeyCmd implements Runnable {
 
         if (!armor) {
             generateKey.noArmor();
+        }
+
+        if (withKeyPassword != null && !withKeyPassword.trim().isEmpty()) {
+            generateKey.withKeyPassword(withKeyPassword.trim());
         }
 
         try {
