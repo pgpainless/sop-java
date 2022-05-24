@@ -12,7 +12,7 @@ import picocli.CommandLine;
 import sop.Signatures;
 import sop.cli.picocli.SopCLI;
 import sop.exception.SOPGPException;
-import sop.operation.DetachInbandSignatureAndMessage;
+import sop.operation.InlineDetach;
 
 @CommandLine.Command(name = "detach-inband-signature-and-message",
         description = "Split a clearsigned message",
@@ -32,7 +32,7 @@ public class DetachInbandSignatureAndMessageCmd implements Runnable {
 
     @Override
     public void run() {
-        DetachInbandSignatureAndMessage detach = SopCLI.getSop().detachInbandSignatureAndMessage();
+        InlineDetach detach = SopCLI.getSop().detachInbandSignatureAndMessage();
         if (detach == null) {
             throw new SOPGPException.UnsupportedSubcommand("Command 'detach-inband-signature-and-message' not implemented.");
         }

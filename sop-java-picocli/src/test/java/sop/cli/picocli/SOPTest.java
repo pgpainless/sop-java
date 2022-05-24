@@ -17,7 +17,7 @@ import sop.SOP;
 import sop.operation.Armor;
 import sop.operation.Dearmor;
 import sop.operation.Decrypt;
-import sop.operation.DetachInbandSignatureAndMessage;
+import sop.operation.InlineDetach;
 import sop.operation.Encrypt;
 import sop.operation.ExtractCert;
 import sop.operation.GenerateKey;
@@ -93,7 +93,7 @@ public class SOPTest {
             }
 
             @Override
-            public DetachInbandSignatureAndMessage detachInbandSignatureAndMessage() {
+            public InlineDetach detachInbandSignatureAndMessage() {
                 return null;
             }
         };

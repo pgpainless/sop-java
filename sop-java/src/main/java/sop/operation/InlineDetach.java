@@ -14,13 +14,13 @@ import sop.Signatures;
 /**
  * Split cleartext signed messages up into data and signatures.
  */
-public interface DetachInbandSignatureAndMessage {
+public interface InlineDetach {
 
     /**
      * Do not wrap the signatures in ASCII armor.
      * @return builder
      */
-    DetachInbandSignatureAndMessage noArmor();
+    InlineDetach noArmor();
 
     /**
      * Detach the provided cleartext signed message from its signatures.
