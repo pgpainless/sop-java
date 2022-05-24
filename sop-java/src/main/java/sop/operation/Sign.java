@@ -7,6 +7,7 @@ package sop.operation;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import sop.ReadyWithResult;
 import sop.SigningResult;
@@ -44,6 +45,24 @@ public interface Sign {
      * @throws IOException in case of an IO error
      */
     Sign key(InputStream key) throws SOPGPException.KeyIsProtected, SOPGPException.BadData, IOException;
+
+    /**
+     * Provide the decryption password for the secret key.
+     *
+     * @param password password
+     * @return builder instance
+     */
+    default Sign withKeyPassword(String password) {
+        return withKeyPassword(password.getBytes(Charset.forName("UTF8")));
+    }
+
+    /**
+     * Provide the decryption password for the secret key.
+     *
+     * @param password password
+     * @return builder instance
+     */
+    Sign withKeyPassword(byte[] password);
 
     /**
      * Add one or more signing keys.
