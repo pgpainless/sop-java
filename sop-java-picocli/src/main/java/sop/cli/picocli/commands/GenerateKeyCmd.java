@@ -10,6 +10,7 @@ import java.util.List;
 
 import picocli.CommandLine;
 import sop.Ready;
+import sop.cli.picocli.FileUtil;
 import sop.cli.picocli.Print;
 import sop.cli.picocli.SopCLI;
 import sop.exception.SOPGPException;
@@ -29,7 +30,7 @@ public class GenerateKeyCmd implements Runnable {
     List<String> userId = new ArrayList<>();
 
     @CommandLine.Option(names = "--with-key-password",
-            description = "Password to protect the key",
+            description = "Indirect file type pointing to file containing password to protect the key",
             paramLabel = "PASSWORD")
     String withKeyPassword;
 
@@ -48,8 +49,15 @@ public class GenerateKeyCmd implements Runnable {
             generateKey.noArmor();
         }
 
-        if (withKeyPassword != null && !withKeyPassword.trim().isEmpty()) {
-            generateKey.withKeyPassword(withKeyPassword.trim());
+        if (withKeyPassword != null) {
+            try {
+                String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(withKeyPassword));
+                generateKey.withKeyPassword(password);
+            } catch (SOPGPException.UnsupportedOption e) {
+                throw new SOPGPException.UnsupportedOption("Option '--with-key-password' is not supported.");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         try {
