@@ -9,6 +9,7 @@ import java.io.InputStream;
 
 import sop.Ready;
 import sop.exception.SOPGPException;
+import sop.util.UTF8Util;
 
 public interface GenerateKey {
 
@@ -26,6 +27,27 @@ public interface GenerateKey {
      * @return builder instance
      */
     GenerateKey userId(String userId);
+
+    /**
+     * Set a password for the key.
+     *
+     * @param password password to protect the key
+     * @return builder instance
+     */
+    GenerateKey withKeyPassword(String password);
+
+    /**
+     * Set a password for the key.
+     *
+     * @param password password to protect the key
+     * @return builder instance
+     *
+     * @throws sop.exception.SOPGPException.PasswordNotHumanReadable in case of a non-UTF8 password
+     */
+    default GenerateKey withKeyPassword(byte[] password)
+            throws SOPGPException.PasswordNotHumanReadable {
+        return withKeyPassword(UTF8Util.decodeUTF8(password));
+    }
 
     /**
      * Generate the OpenPGP key and return it encoded as an {@link InputStream}.
