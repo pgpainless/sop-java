@@ -29,7 +29,8 @@ public class GenerateKeyCmd implements Runnable {
     List<String> userId = new ArrayList<>();
 
     @CommandLine.Option(names = "--with-key-password",
-            description = "Password to protect the key")
+            description = "Password to protect the key",
+            paramLabel = "PASSWORD")
     String withKeyPassword;
 
     @Override
