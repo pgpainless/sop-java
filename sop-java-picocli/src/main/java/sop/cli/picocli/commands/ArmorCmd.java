@@ -17,17 +17,16 @@ import sop.operation.Armor;
 @CommandLine.Command(name = "armor",
         description = "Add ASCII Armor to standard input",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
-public class ArmorCmd implements Runnable {
+public class ArmorCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = {"--label"}, description = "Label to be used in the header and tail of the armoring.", paramLabel = "{auto|sig|key|cert|message}")
     ArmorLabel label;
 
     @Override
     public void run() {
-        Armor armor = SopCLI.getSop().armor();
-        if (armor == null) {
-            throw new SOPGPException.UnsupportedSubcommand("Command 'armor' not implemented.");
-        }
+        Armor armor = throwIfUnsupportedSubcommand(
+                SopCLI.getSop().armor(),
+        "armor");
 
         if (label != null) {
             try {

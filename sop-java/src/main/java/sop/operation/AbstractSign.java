@@ -49,7 +49,7 @@ public interface AbstractSign<T> {
     }
 
     /**
-     * Provide the decryption password for the secret key.
+     * Provide the password for the secret key used for signing.
      *
      * @param password password
      * @return builder instance
@@ -59,7 +59,7 @@ public interface AbstractSign<T> {
     }
 
     /**
-     * Provide the decryption password for the secret key.
+     * Provide the password for the secret key used for signing.
      *
      * @param password password
      * @return builder instance

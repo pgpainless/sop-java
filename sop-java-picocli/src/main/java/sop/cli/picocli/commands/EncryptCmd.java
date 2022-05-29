@@ -22,7 +22,7 @@ import sop.operation.Encrypt;
 @CommandLine.Command(name = "encrypt",
         description = "Encrypt a message from standard input",
         exitCodeOnInvalidInput = 37)
-public class EncryptCmd implements Runnable {
+public class EncryptCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
             description = "ASCII armor the output",
@@ -31,7 +31,7 @@ public class EncryptCmd implements Runnable {
 
     @CommandLine.Option(names = {"--as"},
             description = "Type of the input data. Defaults to 'binary'",
-            paramLabel = "{binary|text|mime}")
+            paramLabel = "{binary|text}")
     EncryptAs type;
 
     @CommandLine.Option(names = "--with-password",
@@ -44,6 +44,11 @@ public class EncryptCmd implements Runnable {
             paramLabel = "KEY")
     List<File> signWith = new ArrayList<>();
 
+    @CommandLine.Option(names = "--with-key-password",
+            description = "Provide indirect file type pointing at passphrase(s) for secret key(s)",
+            paramLabel = "PASSWORD")
+    List<String> withKeyPassword = new ArrayList<>();
+
     @CommandLine.Parameters(description = "Certificates the message gets encrypted to",
             index = "0..*",
             paramLabel = "CERTS")
@@ -51,10 +56,8 @@ public class EncryptCmd implements Runnable {
 
     @Override
     public void run() {
-        Encrypt encrypt = SopCLI.getSop().encrypt();
-        if (encrypt == null) {
-            throw new SOPGPException.UnsupportedSubcommand("Command 'encrypt' not implemented.");
-        }
+        Encrypt encrypt = throwIfUnsupportedSubcommand(
+                SopCLI.getSop().encrypt(), "encrypt");
 
         if (type != null) {
             try {
@@ -74,6 +77,17 @@ public class EncryptCmd implements Runnable {
                 encrypt.withPassword(password);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
                 throw new SOPGPException.UnsupportedOption("Unsupported option '--with-password'.", unsupportedOption);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        for (String passwordFileName : withKeyPassword) {
+            try {
+                String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFileName));
+                encrypt.withKeyPassword(password);
+            } catch (SOPGPException.UnsupportedOption unsupportedOption) {
+                throw new SOPGPException.UnsupportedOption("Unsupported option '--with-key-password'.", unsupportedOption);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

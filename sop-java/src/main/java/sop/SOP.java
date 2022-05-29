@@ -7,10 +7,12 @@ package sop;
 import sop.operation.Armor;
 import sop.operation.Dearmor;
 import sop.operation.Decrypt;
-import sop.operation.InlineDetach;
 import sop.operation.Encrypt;
 import sop.operation.ExtractCert;
 import sop.operation.GenerateKey;
+import sop.operation.InlineDetach;
+import sop.operation.InlineSign;
+import sop.operation.InlineVerify;
 import sop.operation.Sign;
 import sop.operation.Verify;
 import sop.operation.Version;
@@ -91,5 +93,9 @@ public interface SOP {
      */
     Dearmor dearmor();
 
-    InlineDetach detachInbandSignatureAndMessage();
+    InlineDetach inlineDetach();
+
+    InlineSign inlineSign();
+
+    InlineVerify inlineVerify();
 }

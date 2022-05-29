@@ -1,8 +1,19 @@
-// SPDX-FileCopyrightText: 2021 Paul Schaub <vanitasvitae@fsfe.org>
+// SPDX-FileCopyrightText: 2022 Paul Schaub <vanitasvitae@fsfe.org>
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package sop.cli.picocli.commands;
+
+import picocli.CommandLine;
+import sop.MicAlg;
+import sop.ReadyWithResult;
+import sop.SigningResult;
+import sop.cli.picocli.FileUtil;
+import sop.cli.picocli.Print;
+import sop.cli.picocli.SopCLI;
+import sop.enums.InlineSignAs;
+import sop.exception.SOPGPException;
+import sop.operation.InlineSign;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,30 +23,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import picocli.CommandLine;
-import sop.MicAlg;
-import sop.ReadyWithResult;
-import sop.SigningResult;
-import sop.cli.picocli.FileUtil;
-import sop.cli.picocli.Print;
-import sop.cli.picocli.SopCLI;
-import sop.enums.SignAs;
-import sop.exception.SOPGPException;
-import sop.operation.Sign;
-
-@CommandLine.Command(name = "sign",
-        description = "Create a detached signature on the data from standard input",
+@CommandLine.Command(name = "inline-sign",
+        description = "Create an inline-signed message from data on standard input",
         exitCodeOnInvalidInput = 37)
-public class SignCmd extends AbstractSopCmd {
+public class InlineSignCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
             description = "ASCII armor the output",
             negatable = true)
     boolean armor = true;
 
-    @CommandLine.Option(names = "--as", description = "Defaults to 'binary'. If '--as=text' and the input data is not valid UTF-8, sign fails with return code 53.",
-            paramLabel = "{binary|text}")
-    SignAs type;
+    @CommandLine.Option(names = "--as", description = "Defaults to 'binary'. If '--as=text' and the input data is not valid UTF-8, inline-sign fails with return code 53.",
+            paramLabel = "{binary|text|cleartextsigned}")
+    InlineSignAs type;
 
     @CommandLine.Parameters(description = "Secret keys used for signing",
             paramLabel = "KEYS")
@@ -51,15 +51,14 @@ public class SignCmd extends AbstractSopCmd {
 
     @Override
     public void run() {
-        Sign sign = throwIfUnsupportedSubcommand(
-                SopCLI.getSop().sign(), "sign");
+        InlineSign inlineSign = throwIfUnsupportedSubcommand(
+                SopCLI.getSop().inlineSign(), "inline-sign");
 
         throwIfOutputExists(micAlgOut, "--micalg-out");
-        throwIfEmptyParameters(secretKeyFile, "KEYS");
 
         if (type != null) {
             try {
-                sign.mode(type);
+                inlineSign.mode(type);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
                 Print.errln("Unsupported option '--as'");
                 Print.trace(unsupportedOption);
@@ -67,10 +66,15 @@ public class SignCmd extends AbstractSopCmd {
             }
         }
 
+        if (secretKeyFile.isEmpty()) {
+            Print.errln("Missing required parameter 'KEYS'.");
+            System.exit(19);
+        }
+
         for (String passwordFile : withKeyPassword) {
             try {
                 String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFile));
-                sign.withKeyPassword(password);
+                inlineSign.withKeyPassword(password);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
                 throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, "--with-key-password"), unsupportedOption);
             } catch (IOException e) {
@@ -80,7 +84,7 @@ public class SignCmd extends AbstractSopCmd {
 
         for (File keyFile : secretKeyFile) {
             try (FileInputStream keyIn = new FileInputStream(keyFile)) {
-                sign.key(keyIn);
+                inlineSign.key(keyIn);
             } catch (FileNotFoundException e) {
                 Print.errln("File " + keyFile.getAbsolutePath() + " does not exist.");
                 Print.trace(e);
@@ -101,11 +105,11 @@ public class SignCmd extends AbstractSopCmd {
         }
 
         if (!armor) {
-            sign.noArmor();
+            inlineSign.noArmor();
         }
 
         try {
-            ReadyWithResult<SigningResult> ready = sign.data(System.in);
+            ReadyWithResult<SigningResult> ready = inlineSign.data(System.in);
             SigningResult result = ready.writeTo(System.out);
 
             MicAlg micAlg = result.getMicAlg();

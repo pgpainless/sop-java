@@ -15,7 +15,7 @@ import sop.operation.ExtractCert;
 @CommandLine.Command(name = "extract-cert",
         description = "Extract a public key certificate from a secret key from standard input",
         exitCodeOnInvalidInput = 37)
-public class ExtractCertCmd implements Runnable {
+public class ExtractCertCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
             description = "ASCII armor the output",
@@ -24,10 +24,8 @@ public class ExtractCertCmd implements Runnable {
 
     @Override
     public void run() {
-        ExtractCert extractCert = SopCLI.getSop().extractCert();
-        if (extractCert == null) {
-            throw new SOPGPException.UnsupportedSubcommand("Command 'extract-cert' not implemented.");
-        }
+        ExtractCert extractCert = throwIfUnsupportedSubcommand(
+                SopCLI.getSop().extractCert(), "extract-cert");
 
         if (!armor) {
             extractCert.noArmor();

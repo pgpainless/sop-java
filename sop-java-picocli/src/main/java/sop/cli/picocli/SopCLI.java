@@ -14,6 +14,8 @@ import sop.cli.picocli.commands.InlineDetachCmd;
 import sop.cli.picocli.commands.EncryptCmd;
 import sop.cli.picocli.commands.ExtractCertCmd;
 import sop.cli.picocli.commands.GenerateKeyCmd;
+import sop.cli.picocli.commands.InlineSignCmd;
+import sop.cli.picocli.commands.InlineVerifyCmd;
 import sop.cli.picocli.commands.SignCmd;
 import sop.cli.picocli.commands.VerifyCmd;
 import sop.cli.picocli.commands.VersionCmd;
@@ -33,6 +35,8 @@ import sop.cli.picocli.commands.VersionCmd;
                 GenerateKeyCmd.class,
                 SignCmd.class,
                 VerifyCmd.class,
+                InlineSignCmd.class,
+                InlineVerifyCmd.class,
                 VersionCmd.class,
                 AutoComplete.GenerateCompletion.class
         },

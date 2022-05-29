@@ -14,10 +14,10 @@ import sop.cli.picocli.SopCLI;
 import sop.exception.SOPGPException;
 import sop.operation.InlineDetach;
 
-@CommandLine.Command(name = "detach-inband-signature-and-message",
+@CommandLine.Command(name = "inline-detach",
         description = "Split a clearsigned message",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
-public class InlineDetachCmd implements Runnable {
+public class InlineDetachCmd extends AbstractSopCmd {
 
     @CommandLine.Option(
             names = {"--signatures-out"},
@@ -32,25 +32,20 @@ public class InlineDetachCmd implements Runnable {
 
     @Override
     public void run() {
-        InlineDetach detach = SopCLI.getSop().detachInbandSignatureAndMessage();
-        if (detach == null) {
-            throw new SOPGPException.UnsupportedSubcommand("Command 'detach-inband-signature-and-message' not implemented.");
-        }
+        InlineDetach inlineDetach = throwIfUnsupportedSubcommand(
+                SopCLI.getSop().inlineDetach(), "inline-detach");
 
-        if (signaturesOut == null) {
-            throw new SOPGPException.MissingArg("--signatures-out is required.");
-        }
+        throwIfOutputExists(signaturesOut, "--signatures-out");
+        throwIfMissingArg(signaturesOut, "--signatures-out");
 
         if (!armor) {
-            detach.noArmor();
+            inlineDetach.noArmor();
         }
 
         try {
-            Signatures signatures = detach
+            Signatures signatures = inlineDetach
                     .message(System.in).writeTo(System.out);
-            if (!signaturesOut.createNewFile()) {
-                throw new SOPGPException.OutputExists("Destination of --signatures-out already exists.");
-            }
+            signaturesOut.createNewFile();
             signatures.writeTo(new FileOutputStream(signaturesOut));
         } catch (IOException e) {
             throw new RuntimeException(e);

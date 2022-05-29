@@ -19,7 +19,7 @@ import sop.operation.GenerateKey;
 @CommandLine.Command(name = "generate-key",
         description = "Generate a secret key",
         exitCodeOnInvalidInput = 37)
-public class GenerateKeyCmd implements Runnable {
+public class GenerateKeyCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
             description = "ASCII armor the output",
@@ -36,10 +36,8 @@ public class GenerateKeyCmd implements Runnable {
 
     @Override
     public void run() {
-        GenerateKey generateKey = SopCLI.getSop().generateKey();
-        if (generateKey == null) {
-            throw new SOPGPException.UnsupportedSubcommand("Command 'generate-key' not implemented.");
-        }
+        GenerateKey generateKey = throwIfUnsupportedSubcommand(
+                SopCLI.getSop().generateKey(), "generate-key");
 
         for (String userId : userId) {
             generateKey.userId(userId);

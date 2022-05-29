@@ -7,6 +7,7 @@ package sop.operation;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import sop.Ready;
 import sop.enums.EncryptAs;
@@ -67,6 +68,24 @@ public interface Encrypt {
             SOPGPException.BadData {
         return signWith(new ByteArrayInputStream(key));
     }
+
+    /**
+     * Provide the password for the secret key used for signing.
+     *
+     * @param password password
+     * @return builder instance
+     */
+    default Encrypt withKeyPassword(String password) {
+        return withKeyPassword(password.getBytes(Charset.forName("UTF8")));
+    }
+
+    /**
+     * Provide the password for the secret key used for sigining.
+     *
+     * @param password password
+     * @return builder instance
+     */
+    Encrypt withKeyPassword(byte[] password);
 
     /**
      * Encrypt with the given password.

@@ -15,19 +15,15 @@ import sop.operation.Dearmor;
 @CommandLine.Command(name = "dearmor",
         description = "Remove ASCII Armor from standard input",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
-public class DearmorCmd implements Runnable {
+public class DearmorCmd extends AbstractSopCmd {
 
     @Override
     public void run() {
-        Dearmor dearmor = SopCLI.getSop().dearmor();
-        if (dearmor == null) {
-            throw new SOPGPException.UnsupportedSubcommand("Command 'dearmor' not implemented.");
-        }
+        Dearmor dearmor = throwIfUnsupportedSubcommand(
+                SopCLI.getSop().dearmor(), "dearmor");
 
         try {
-            SopCLI.getSop()
-                    .dearmor()
-                    .data(System.in)
+            dearmor.data(System.in)
                     .writeTo(System.out);
         } catch (SOPGPException.BadData e) {
             Print.errln("Bad data.");

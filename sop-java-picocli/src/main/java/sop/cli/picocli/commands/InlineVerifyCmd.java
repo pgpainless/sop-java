@@ -1,36 +1,32 @@
-// SPDX-FileCopyrightText: 2021 Paul Schaub <vanitasvitae@fsfe.org>
+// SPDX-FileCopyrightText: 2022 Paul Schaub <vanitasvitae@fsfe.org>
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package sop.cli.picocli.commands;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import picocli.CommandLine;
+import sop.ReadyWithResult;
 import sop.Verification;
 import sop.cli.picocli.DateParser;
 import sop.cli.picocli.Print;
 import sop.cli.picocli.SopCLI;
 import sop.exception.SOPGPException;
-import sop.operation.Verify;
+import sop.operation.InlineVerify;
 
-@CommandLine.Command(name = "verify",
-        description = "Verify a detached signature over the data from standard input",
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+@CommandLine.Command(name = "inline-verify",
+        description = "Verify inline-signed data from standard input",
         exitCodeOnInvalidInput = 37)
-public class VerifyCmd extends AbstractSopCmd {
+public class InlineVerifyCmd extends AbstractSopCmd {
 
-    @CommandLine.Parameters(index = "0",
-            description = "Detached signature",
-            paramLabel = "SIGNATURE")
-    File signature;
-
-    @CommandLine.Parameters(index = "0..*",
-            arity = "1..*",
+    @CommandLine.Parameters(arity = "1..*",
             description = "Public key certificates",
             paramLabel = "CERT")
     List<File> certificates = new ArrayList<>();
@@ -50,14 +46,20 @@ public class VerifyCmd extends AbstractSopCmd {
             paramLabel = "DATE")
     String notAfter = "now";
 
+    @CommandLine.Option(names = "--verifications-out",
+            description = "File to write details over successful verifications to")
+    File verificationsOut;
+
     @Override
     public void run() {
-        Verify verify = throwIfUnsupportedSubcommand(
-                SopCLI.getSop().verify(), "verify");
+        InlineVerify inlineVerify = throwIfUnsupportedSubcommand(
+                SopCLI.getSop().inlineVerify(), "inline-verify");
+
+        throwIfOutputExists(verificationsOut, "--verifications-out");
 
         if (notAfter != null) {
             try {
-                verify.notAfter(DateParser.parseNotAfter(notAfter));
+                inlineVerify.notAfter(DateParser.parseNotAfter(notAfter));
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
                 Print.errln("Unsupported option '--not-after'.");
                 Print.trace(unsupportedOption);
@@ -66,7 +68,7 @@ public class VerifyCmd extends AbstractSopCmd {
         }
         if (notBefore != null) {
             try {
-                verify.notBefore(DateParser.parseNotBefore(notBefore));
+                inlineVerify.notBefore(DateParser.parseNotBefore(notBefore));
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
                 Print.errln("Unsupported option '--not-before'.");
                 Print.trace(unsupportedOption);
@@ -76,7 +78,7 @@ public class VerifyCmd extends AbstractSopCmd {
 
         for (File certFile : certificates) {
             try (FileInputStream certIn = new FileInputStream(certFile)) {
-                verify.cert(certIn);
+                inlineVerify.cert(certIn);
             } catch (FileNotFoundException fileNotFoundException) {
                 Print.errln("Certificate file " + certFile.getAbsolutePath() + " not found.");
 
@@ -93,27 +95,10 @@ public class VerifyCmd extends AbstractSopCmd {
             }
         }
 
-        if (signature != null) {
-            try (FileInputStream sigIn = new FileInputStream(signature)) {
-                verify.signatures(sigIn);
-            } catch (FileNotFoundException e) {
-                Print.errln("Signature file " + signature.getAbsolutePath() + " does not exist.");
-                Print.trace(e);
-                System.exit(1);
-            } catch (IOException e) {
-                Print.errln("IO Error.");
-                Print.trace(e);
-                System.exit(1);
-            } catch (SOPGPException.BadData badData) {
-                Print.errln("File " + signature.getAbsolutePath() + " does not contain a valid OpenPGP signature.");
-                Print.trace(badData);
-                System.exit(badData.getExitCode());
-            }
-        }
-
         List<Verification> verifications = null;
         try {
-            verifications = verify.data(System.in);
+            ReadyWithResult<List<Verification>> ready = inlineVerify.data(System.in);
+            verifications = ready.writeTo(System.out);
         } catch (SOPGPException.NoSignature e) {
             Print.errln("No verifiable signature found.");
             Print.trace(e);
@@ -127,8 +112,19 @@ public class VerifyCmd extends AbstractSopCmd {
             Print.trace(badData);
             System.exit(badData.getExitCode());
         }
-        for (Verification verification : verifications) {
-            Print.outln(verification.toString());
+
+        if (verificationsOut != null) {
+            try {
+                verificationsOut.createNewFile();
+                PrintWriter pw = new PrintWriter(verificationsOut);
+                for (Verification verification : verifications) {
+                    // CHECKSTYLE:OFF
+                    pw.println(verification);
+                    // CHECKSTYLE:ON
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

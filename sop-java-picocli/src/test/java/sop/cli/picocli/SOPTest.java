@@ -21,6 +21,8 @@ import sop.operation.InlineDetach;
 import sop.operation.Encrypt;
 import sop.operation.ExtractCert;
 import sop.operation.GenerateKey;
+import sop.operation.InlineSign;
+import sop.operation.InlineVerify;
 import sop.operation.Sign;
 import sop.operation.Verify;
 import sop.operation.Version;
@@ -93,7 +95,17 @@ public class SOPTest {
             }
 
             @Override
-            public InlineDetach detachInbandSignatureAndMessage() {
+            public InlineDetach inlineDetach() {
+                return null;
+            }
+
+            @Override
+            public InlineSign inlineSign() {
+                return null;
+            }
+
+            @Override
+            public InlineVerify inlineVerify() {
                 return null;
             }
         };
@@ -103,7 +115,7 @@ public class SOPTest {
         commands.add(new String[] {"armor"});
         commands.add(new String[] {"dearmor"});
         commands.add(new String[] {"decrypt"});
-        commands.add(new String[] {"detach-inband-signature-and-message"});
+        commands.add(new String[] {"inline-detach", "--signatures-out", "sigs.asc"});
         commands.add(new String[] {"encrypt"});
         commands.add(new String[] {"extract-cert"});
         commands.add(new String[] {"generate-key"});

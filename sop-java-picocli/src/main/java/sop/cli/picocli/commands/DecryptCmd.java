@@ -30,51 +30,54 @@ import sop.util.HexUtil;
 @CommandLine.Command(name = "decrypt",
         description = "Decrypt a message from standard input",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
-public class DecryptCmd implements Runnable {
+public class DecryptCmd extends AbstractSopCmd {
 
-    private static final String SESSION_KEY_OUT = "--session-key-out";
-    private static final String VERIFY_OUT = "--verify-out";
+    private static final String OPT_WITH_SESSION_KEY = "--with-session-key";
+    private static final String OPT_WITH_PASSWORD = "--with-password";
+    private static final String OPT_NOT_BEFORE = "--not-before";
+    private static final String OPT_NOT_AFTER = "--not-after";
+    private static final String OPT_SESSION_KEY_OUT = "--session-key-out";
+    private static final String OPT_VERIFY_OUT = "--verify-out";
+    private static final String OPT_VERIFY_WITH = "--verify-with";
+    private static final String OPT_WITH_KEY_PASSWORD = "--with-key-password";
 
-    private static final String ERROR_UNSUPPORTED_OPTION = "Option '%s' is not supported.";
-    private static final String ERROR_FILE_NOT_EXIST = "File '%s' does not exist.";
-    private static final String ERROR_OUTPUT_OF_OPTION_EXISTS = "Target %s of option %s already exists.";
 
     @CommandLine.Option(
-            names = {SESSION_KEY_OUT},
+            names = {OPT_SESSION_KEY_OUT},
             description = "Can be used to learn the session key on successful decryption",
             paramLabel = "SESSIONKEY")
     File sessionKeyOut;
 
     @CommandLine.Option(
-            names = {"--with-session-key"},
+            names = {OPT_WITH_SESSION_KEY},
             description = "Provide a session key file. Enables decryption of the \"CIPHERTEXT\" using the session key directly against the \"SEIPD\" packet",
             paramLabel = "SESSIONKEY")
     List<String> withSessionKey = new ArrayList<>();
 
     @CommandLine.Option(
-            names = {"--with-password"},
+            names = {OPT_WITH_PASSWORD},
             description = "Provide a password file. Enables decryption based on any \"SKESK\" packets in the \"CIPHERTEXT\"",
             paramLabel = "PASSWORD")
     List<String> withPassword = new ArrayList<>();
 
-    @CommandLine.Option(names = {VERIFY_OUT},
+    @CommandLine.Option(names = {OPT_VERIFY_OUT},
             description = "Produces signature verification status to the designated file",
             paramLabel = "VERIFICATIONS")
     File verifyOut;
 
-    @CommandLine.Option(names = {"--verify-with"},
+    @CommandLine.Option(names = {OPT_VERIFY_WITH},
             description = "Certificates whose signatures would be acceptable for signatures over this message",
             paramLabel = "CERT")
     List<File> certs = new ArrayList<>();
 
-    @CommandLine.Option(names = {"--not-before"},
+    @CommandLine.Option(names = {OPT_NOT_BEFORE},
             description = "ISO-8601 formatted UTC date (eg. '2020-11-23T16:35Z)\n" +
                     "Reject signatures with a creation date not in range.\n" +
                     "Defaults to beginning of time (\"-\").",
             paramLabel = "DATE")
     String notBefore = "-";
 
-    @CommandLine.Option(names = {"--not-after"},
+    @CommandLine.Option(names = {OPT_NOT_AFTER},
             description = "ISO-8601 formatted UTC date (eg. '2020-11-23T16:35Z)\n" +
                     "Reject signatures with a creation date not in range.\n" +
                     "Defaults to current system time (\"now\").\n" +
@@ -87,20 +90,18 @@ public class DecryptCmd implements Runnable {
             paramLabel = "KEY")
     List<File> keys = new ArrayList<>();
 
-    @CommandLine.Option(names = "--with-key-password",
+    @CommandLine.Option(names = {OPT_WITH_KEY_PASSWORD},
     description = "Provide indirect file type pointing at passphrase(s) for secret key(s)",
     paramLabel = "PASSWORD")
     List<String> withKeyPassword = new ArrayList<>();
 
     @Override
     public void run() {
-        throwIfOutputExists(verifyOut, VERIFY_OUT);
-        throwIfOutputExists(sessionKeyOut, SESSION_KEY_OUT);
+        Decrypt decrypt = throwIfUnsupportedSubcommand(
+                SopCLI.getSop().decrypt(), "decrypt");
 
-        Decrypt decrypt = SopCLI.getSop().decrypt();
-        if (decrypt == null) {
-            throw new SOPGPException.UnsupportedSubcommand("Command 'decrypt' not implemented.");
-        }
+        throwIfOutputExists(verifyOut, OPT_VERIFY_OUT);
+        throwIfOutputExists(sessionKeyOut, OPT_SESSION_KEY_OUT);
 
         setNotAfter(notAfter, decrypt);
         setNotBefore(notBefore, decrypt);
@@ -112,7 +113,7 @@ public class DecryptCmd implements Runnable {
 
         if (verifyOut != null && certs.isEmpty()) {
             String errorMessage = "Option %s is requested, but no option %s was provided.";
-            throw new SOPGPException.IncompleteVerification(String.format(errorMessage, VERIFY_OUT, "--verify-with"));
+            throw new SOPGPException.IncompleteVerification(String.format(errorMessage, OPT_VERIFY_OUT, OPT_VERIFY_WITH));
         }
 
         try {
@@ -124,16 +125,6 @@ public class DecryptCmd implements Runnable {
             throw new SOPGPException.BadData("No valid OpenPGP message found on Standard Input.", badData);
         } catch (IOException ioException) {
             throw new RuntimeException(ioException);
-        }
-    }
-
-    private void throwIfOutputExists(File outputFile, String optionName) {
-        if (outputFile == null) {
-            return;
-        }
-
-        if (outputFile.exists()) {
-            throw new SOPGPException.OutputExists(String.format(ERROR_OUTPUT_OF_OPTION_EXISTS, outputFile.getAbsolutePath(), optionName));
         }
     }
 
@@ -158,7 +149,8 @@ public class DecryptCmd implements Runnable {
 
             try (FileOutputStream outputStream = new FileOutputStream(sessionKeyOut)) {
                 if (!result.getSessionKey().isPresent()) {
-                    throw new SOPGPException.UnsupportedOption("Session key not extracted. Possibly the feature --session-key-out is not supported.");
+                    String errorMsg = "Session key not extracted. Possibly the feature %s is not supported.";
+                    throw new SOPGPException.UnsupportedOption(String.format(errorMsg, OPT_SESSION_KEY_OUT));
                 } else {
                     SessionKey sessionKey = result.getSessionKey().get();
                     outputStream.write(sessionKey.getAlgorithm());
@@ -217,7 +209,7 @@ public class DecryptCmd implements Runnable {
             try {
                 decrypt.withSessionKey(new SessionKey(algorithm, key));
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, "--with-session-key"), unsupportedOption);
+                throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, OPT_WITH_SESSION_KEY), unsupportedOption);
             }
         }
     }
@@ -228,7 +220,7 @@ public class DecryptCmd implements Runnable {
                 String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFile));
                 decrypt.withPassword(password);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, "--with-password"), unsupportedOption);
+                throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, OPT_WITH_PASSWORD), unsupportedOption);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -241,7 +233,7 @@ public class DecryptCmd implements Runnable {
                 String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFile));
                 decrypt.withKeyPassword(password);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, "--with-key-password"), unsupportedOption);
+                throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, OPT_WITH_KEY_PASSWORD), unsupportedOption);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -253,7 +245,7 @@ public class DecryptCmd implements Runnable {
         try {
             decrypt.verifyNotAfter(notAfterDate);
         } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-            throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, "--not-after"), unsupportedOption);
+            throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, OPT_NOT_AFTER), unsupportedOption);
         }
     }
 
@@ -262,7 +254,7 @@ public class DecryptCmd implements Runnable {
         try {
             decrypt.verifyNotBefore(notBeforeDate);
         } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-            throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, "--not-before"), unsupportedOption);
+            throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, OPT_NOT_BEFORE), unsupportedOption);
         }
     }
 }
