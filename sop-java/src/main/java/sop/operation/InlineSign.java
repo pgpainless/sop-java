@@ -20,6 +20,6 @@ public interface InlineSign extends AbstractSign<InlineSign> {
      *
      * @throws sop.exception.SOPGPException.UnsupportedOption if this option is not supported
      */
-    Sign mode(InlineSignAs mode) throws SOPGPException.UnsupportedOption;
+    DetachedSign mode(InlineSignAs mode) throws SOPGPException.UnsupportedOption;
 
 }

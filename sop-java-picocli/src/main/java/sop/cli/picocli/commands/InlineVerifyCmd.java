@@ -7,91 +7,76 @@ package sop.cli.picocli.commands;
 import picocli.CommandLine;
 import sop.ReadyWithResult;
 import sop.Verification;
-import sop.cli.picocli.DateParser;
-import sop.cli.picocli.Print;
 import sop.cli.picocli.SopCLI;
 import sop.exception.SOPGPException;
 import sop.operation.InlineVerify;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 @CommandLine.Command(name = "inline-verify",
-        description = "Verify inline-signed data from standard input",
+        resourceBundle = "sop",
         exitCodeOnInvalidInput = 37)
 public class InlineVerifyCmd extends AbstractSopCmd {
 
     @CommandLine.Parameters(arity = "1..*",
-            description = "Public key certificates",
+            descriptionKey = "sop.inline-verify.usage.parameter.certs",
             paramLabel = "CERT")
-    List<File> certificates = new ArrayList<>();
+    List<String> certificates = new ArrayList<>();
 
     @CommandLine.Option(names = {"--not-before"},
-            description = "ISO-8601 formatted UTC date (eg. '2020-11-23T16:35Z)\n" +
-                    "Reject signatures with a creation date not in range.\n" +
-                    "Defaults to beginning of time (\"-\").",
+            descriptionKey = "sop.inline-verify.usage.option.not_before",
             paramLabel = "DATE")
     String notBefore = "-";
 
     @CommandLine.Option(names = {"--not-after"},
-            description = "ISO-8601 formatted UTC date (eg. '2020-11-23T16:35Z)\n" +
-                    "Reject signatures with a creation date not in range.\n" +
-                    "Defaults to current system time (\"now\").\n" +
-                    "Accepts special value \"-\" for end of time.",
+            descriptionKey = "sop.inline-verify.usage.option.not_after",
             paramLabel = "DATE")
     String notAfter = "now";
 
     @CommandLine.Option(names = "--verifications-out",
-            description = "File to write details over successful verifications to")
-    File verificationsOut;
+            descriptionKey = "sop.inline-verify.usage.option.verifications_out")
+    String verificationsOut;
 
     @Override
     public void run() {
         InlineVerify inlineVerify = throwIfUnsupportedSubcommand(
                 SopCLI.getSop().inlineVerify(), "inline-verify");
 
-        throwIfOutputExists(verificationsOut, "--verifications-out");
+        throwIfOutputExists(verificationsOut);
 
         if (notAfter != null) {
             try {
-                inlineVerify.notAfter(DateParser.parseNotAfter(notAfter));
+                inlineVerify.notAfter(parseNotAfter(notAfter));
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                Print.errln("Unsupported option '--not-after'.");
-                Print.trace(unsupportedOption);
-                System.exit(unsupportedOption.getExitCode());
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--not-after");
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             }
         }
         if (notBefore != null) {
             try {
-                inlineVerify.notBefore(DateParser.parseNotBefore(notBefore));
+                inlineVerify.notBefore(parseNotBefore(notBefore));
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                Print.errln("Unsupported option '--not-before'.");
-                Print.trace(unsupportedOption);
-                System.exit(unsupportedOption.getExitCode());
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--not-before");
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             }
         }
 
-        for (File certFile : certificates) {
-            try (FileInputStream certIn = new FileInputStream(certFile)) {
+        for (String certInput : certificates) {
+            try (InputStream certIn = getInput(certInput)) {
                 inlineVerify.cert(certIn);
-            } catch (FileNotFoundException fileNotFoundException) {
-                Print.errln("Certificate file " + certFile.getAbsolutePath() + " not found.");
-
-                Print.trace(fileNotFoundException);
-                System.exit(1);
             } catch (IOException ioException) {
-                Print.errln("IO Error.");
-                Print.trace(ioException);
-                System.exit(1);
+                throw new RuntimeException(ioException);
+            } catch (SOPGPException.UnsupportedAsymmetricAlgo unsupportedAsymmetricAlgo) {
+                String errorMsg = getMsg("sop.error.runtime.cert_uses_unsupported_asymmetric_algorithm", certInput);
+                throw new SOPGPException.UnsupportedAsymmetricAlgo(errorMsg, unsupportedAsymmetricAlgo);
             } catch (SOPGPException.BadData badData) {
-                Print.errln("Certificate file " + certFile.getAbsolutePath() + " appears to not contain a valid OpenPGP certificate.");
-                Print.trace(badData);
-                System.exit(badData.getExitCode());
+                String errorMsg = getMsg("sop.error.input.not_a_certificate", certInput);
+                throw new SOPGPException.BadData(errorMsg, badData);
             }
         }
 
@@ -100,23 +85,18 @@ public class InlineVerifyCmd extends AbstractSopCmd {
             ReadyWithResult<List<Verification>> ready = inlineVerify.data(System.in);
             verifications = ready.writeTo(System.out);
         } catch (SOPGPException.NoSignature e) {
-            Print.errln("No verifiable signature found.");
-            Print.trace(e);
-            System.exit(e.getExitCode());
+            String errorMsg = getMsg("sop.error.runtime.no_verifiable_signature_found");
+            throw new SOPGPException.NoSignature(errorMsg, e);
         } catch (IOException ioException) {
-            Print.errln("IO Error.");
-            Print.trace(ioException);
-            System.exit(1);
+            throw new RuntimeException(ioException);
         } catch (SOPGPException.BadData badData) {
-            Print.errln("Standard Input appears not to contain a valid OpenPGP message.");
-            Print.trace(badData);
-            System.exit(badData.getExitCode());
+            String errorMsg = getMsg("sop.error.input.stdin_not_a_message");
+            throw new SOPGPException.BadData(errorMsg, badData);
         }
 
         if (verificationsOut != null) {
-            try {
-                verificationsOut.createNewFile();
-                PrintWriter pw = new PrintWriter(verificationsOut);
+            try (OutputStream outputStream = getOutput(verificationsOut)) {
+                PrintWriter pw = new PrintWriter(outputStream);
                 for (Verification verification : verifications) {
                     // CHECKSTYLE:OFF
                     pw.println(verification);

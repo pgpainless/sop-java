@@ -35,6 +35,10 @@ public abstract class SOPGPException extends RuntimeException {
             super("No verifiable signature found.");
         }
 
+        public NoSignature(String errorMsg, NoSignature e) {
+            super(errorMsg, e);
+        }
+
         @Override
         public int getExitCode() {
             return EXIT_CODE;
@@ -225,6 +229,10 @@ public abstract class SOPGPException extends RuntimeException {
             super(message, cause);
         }
 
+        public MissingInput(String errorMsg) {
+            super(errorMsg);
+        }
+
         @Override
         public int getExitCode() {
             return EXIT_CODE;
@@ -275,6 +283,10 @@ public abstract class SOPGPException extends RuntimeException {
     public static class UnsupportedSpecialPrefix extends SOPGPException {
 
         public static final int EXIT_CODE = 71;
+
+        public UnsupportedSpecialPrefix(String errorMsg) {
+            super(errorMsg);
+        }
 
         @Override
         public int getExitCode() {

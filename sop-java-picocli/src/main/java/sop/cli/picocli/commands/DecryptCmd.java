@@ -4,31 +4,27 @@
 
 package sop.cli.picocli.commands;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import picocli.CommandLine;
+import sop.DecryptionResult;
+import sop.ReadyWithResult;
+import sop.SessionKey;
+import sop.Verification;
+import sop.cli.picocli.SopCLI;
+import sop.exception.SOPGPException;
+import sop.operation.Decrypt;
+import sop.util.HexUtil;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import picocli.CommandLine;
-import sop.DecryptionResult;
-import sop.ReadyWithResult;
-import sop.SessionKey;
-import sop.Verification;
-import sop.cli.picocli.DateParser;
-import sop.cli.picocli.FileUtil;
-import sop.cli.picocli.SopCLI;
-import sop.exception.SOPGPException;
-import sop.operation.Decrypt;
-import sop.util.HexUtil;
-
 @CommandLine.Command(name = "decrypt",
-        description = "Decrypt a message from standard input",
+        resourceBundle = "sop",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class DecryptCmd extends AbstractSopCmd {
 
@@ -44,54 +40,49 @@ public class DecryptCmd extends AbstractSopCmd {
 
     @CommandLine.Option(
             names = {OPT_SESSION_KEY_OUT},
-            description = "Can be used to learn the session key on successful decryption",
+            descriptionKey = "sop.decrypt.usage.option.session_key_out",
             paramLabel = "SESSIONKEY")
-    File sessionKeyOut;
+    String sessionKeyOut;
 
     @CommandLine.Option(
             names = {OPT_WITH_SESSION_KEY},
-            description = "Provide a session key file. Enables decryption of the \"CIPHERTEXT\" using the session key directly against the \"SEIPD\" packet",
+            descriptionKey = "sop.decrypt.usage.option.with_session_key",
             paramLabel = "SESSIONKEY")
     List<String> withSessionKey = new ArrayList<>();
 
     @CommandLine.Option(
             names = {OPT_WITH_PASSWORD},
-            description = "Provide a password file. Enables decryption based on any \"SKESK\" packets in the \"CIPHERTEXT\"",
+            descriptionKey = "sop.decrypt.usage.option.with_password",
             paramLabel = "PASSWORD")
     List<String> withPassword = new ArrayList<>();
 
     @CommandLine.Option(names = {OPT_VERIFY_OUT},
-            description = "Produces signature verification status to the designated file",
+            descriptionKey = "sop.decrypt.usage.option.verify_out",
             paramLabel = "VERIFICATIONS")
-    File verifyOut;
+    String verifyOut;
 
     @CommandLine.Option(names = {OPT_VERIFY_WITH},
-            description = "Certificates whose signatures would be acceptable for signatures over this message",
+            descriptionKey = "sop.decrypt.usage.option.certs",
             paramLabel = "CERT")
-    List<File> certs = new ArrayList<>();
+    List<String> certs = new ArrayList<>();
 
     @CommandLine.Option(names = {OPT_NOT_BEFORE},
-            description = "ISO-8601 formatted UTC date (eg. '2020-11-23T16:35Z)\n" +
-                    "Reject signatures with a creation date not in range.\n" +
-                    "Defaults to beginning of time (\"-\").",
+            descriptionKey = "sop.decrypt.usage.option.not_before",
             paramLabel = "DATE")
     String notBefore = "-";
 
     @CommandLine.Option(names = {OPT_NOT_AFTER},
-            description = "ISO-8601 formatted UTC date (eg. '2020-11-23T16:35Z)\n" +
-                    "Reject signatures with a creation date not in range.\n" +
-                    "Defaults to current system time (\"now\").\n" +
-                    "Accepts special value \"-\" for end of time.",
+            descriptionKey = "sop.decrypt.usage.option.not_after",
             paramLabel = "DATE")
     String notAfter = "now";
 
     @CommandLine.Parameters(index = "0..*",
-            description = "Secret keys to attempt decryption with",
+            descriptionKey = "sop.decrypt.usage.param.keys",
             paramLabel = "KEY")
-    List<File> keys = new ArrayList<>();
+    List<String> keys = new ArrayList<>();
 
     @CommandLine.Option(names = {OPT_WITH_KEY_PASSWORD},
-    description = "Provide indirect file type pointing at passphrase(s) for secret key(s)",
+    descriptionKey = "sop.decrypt.usage.option.with_key_password",
     paramLabel = "PASSWORD")
     List<String> withKeyPassword = new ArrayList<>();
 
@@ -100,8 +91,8 @@ public class DecryptCmd extends AbstractSopCmd {
         Decrypt decrypt = throwIfUnsupportedSubcommand(
                 SopCLI.getSop().decrypt(), "decrypt");
 
-        throwIfOutputExists(verifyOut, OPT_VERIFY_OUT);
-        throwIfOutputExists(sessionKeyOut, OPT_SESSION_KEY_OUT);
+        throwIfOutputExists(verifyOut);
+        throwIfOutputExists(sessionKeyOut);
 
         setNotAfter(notAfter, decrypt);
         setNotBefore(notBefore, decrypt);
@@ -112,8 +103,8 @@ public class DecryptCmd extends AbstractSopCmd {
         setDecryptWith(keys, decrypt);
 
         if (verifyOut != null && certs.isEmpty()) {
-            String errorMessage = "Option %s is requested, but no option %s was provided.";
-            throw new SOPGPException.IncompleteVerification(String.format(errorMessage, OPT_VERIFY_OUT, OPT_VERIFY_WITH));
+            String errorMsg = getMsg("sop.error.usage.option_requires_other_option", OPT_VERIFY_OUT, OPT_VERIFY_WITH);
+            throw new SOPGPException.IncompleteVerification(errorMsg);
         }
 
         try {
@@ -122,7 +113,8 @@ public class DecryptCmd extends AbstractSopCmd {
             writeSessionKeyOut(result);
             writeVerifyOut(result);
         } catch (SOPGPException.BadData badData) {
-            throw new SOPGPException.BadData("No valid OpenPGP message found on Standard Input.", badData);
+            String errorMsg = getMsg("sop.error.input.stdin_not_a_message");
+            throw new SOPGPException.BadData(errorMsg, badData);
         } catch (IOException ioException) {
             throw new RuntimeException(ioException);
         }
@@ -130,9 +122,8 @@ public class DecryptCmd extends AbstractSopCmd {
 
     private void writeVerifyOut(DecryptionResult result) throws IOException {
         if (verifyOut != null) {
-            FileUtil.createNewFileOrThrow(verifyOut);
-            try (FileOutputStream outputStream = new FileOutputStream(verifyOut)) {
-                PrintWriter writer = new PrintWriter(outputStream);
+            try (OutputStream fileOut = getOutput(verifyOut)) {
+                PrintWriter writer = new PrintWriter(fileOut);
                 for (Verification verification : result.getVerifications()) {
                     // CHECKSTYLE:OFF
                     writer.println(verification.toString());
@@ -145,11 +136,9 @@ public class DecryptCmd extends AbstractSopCmd {
 
     private void writeSessionKeyOut(DecryptionResult result) throws IOException {
         if (sessionKeyOut != null) {
-            FileUtil.createNewFileOrThrow(sessionKeyOut);
-
-            try (FileOutputStream outputStream = new FileOutputStream(sessionKeyOut)) {
+            try (OutputStream outputStream = getOutput(sessionKeyOut)) {
                 if (!result.getSessionKey().isPresent()) {
-                    String errorMsg = "Session key not extracted. Possibly the feature %s is not supported.";
+                    String errorMsg = getMsg("sop.error.runtime.no_session_key_extracted");
                     throw new SOPGPException.UnsupportedOption(String.format(errorMsg, OPT_SESSION_KEY_OUT));
                 } else {
                     SessionKey sessionKey = result.getSessionKey().get();
@@ -160,30 +149,29 @@ public class DecryptCmd extends AbstractSopCmd {
         }
     }
 
-    private void setDecryptWith(List<File> keys, Decrypt decrypt) {
-        for (File key : keys) {
-            try (FileInputStream keyIn = new FileInputStream(key)) {
+    private void setDecryptWith(List<String> keys, Decrypt decrypt) {
+        for (String key : keys) {
+            try (InputStream keyIn = getInput(key)) {
                 decrypt.withKey(keyIn);
             } catch (SOPGPException.KeyIsProtected keyIsProtected) {
-                throw new SOPGPException.KeyIsProtected("Key in file " + key.getAbsolutePath() + " is password protected.", keyIsProtected);
+                String errorMsg = getMsg("sop.error.runtime.cannot_unlock_key", key);
+                throw new SOPGPException.KeyIsProtected(errorMsg, keyIsProtected);
             } catch (SOPGPException.BadData badData) {
-                throw new SOPGPException.BadData("File " + key.getAbsolutePath() + " does not contain a private key.", badData);
-            } catch (FileNotFoundException e) {
-                throw new SOPGPException.MissingInput(String.format(ERROR_FILE_NOT_EXIST, key.getAbsolutePath()), e);
+                String errorMsg = getMsg("sop.error.input.not_a_private_key", key);
+                throw new SOPGPException.BadData(errorMsg, badData);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    private void setVerifyWith(List<File> certs, Decrypt decrypt) {
-        for (File cert : certs) {
-            try (FileInputStream certIn = new FileInputStream(cert)) {
+    private void setVerifyWith(List<String> certs, Decrypt decrypt) {
+        for (String cert : certs) {
+            try (InputStream certIn = getInput(cert)) {
                 decrypt.verifyWithCert(certIn);
-            } catch (FileNotFoundException e) {
-                throw new SOPGPException.MissingInput(String.format(ERROR_FILE_NOT_EXIST, cert.getAbsolutePath()), e);
             } catch (SOPGPException.BadData badData) {
-                throw new SOPGPException.BadData("File " + cert.getAbsolutePath() + " does not contain a valid certificate.", badData);
+                String errorMsg = getMsg("sop.error.input.not_a_certificate", cert);
+                throw new SOPGPException.BadData(errorMsg, badData);
             } catch (IOException ioException) {
                 throw new RuntimeException(ioException);
             }
@@ -195,12 +183,13 @@ public class DecryptCmd extends AbstractSopCmd {
         for (String sessionKeyFile : withSessionKey) {
             String sessionKey;
             try {
-                sessionKey = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(sessionKeyFile));
+                sessionKey = stringFromInputStream(getInput(sessionKeyFile));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             if (!sessionKeyPattern.matcher(sessionKey).matches()) {
-                throw new IllegalArgumentException("Session keys are expected in the format 'ALGONUM:HEXKEY'.");
+                String errorMsg = getMsg("sop.error.input.malformed_session_key");
+                throw new IllegalArgumentException(errorMsg);
             }
             String[] split = sessionKey.split(":");
             byte algorithm = (byte) Integer.parseInt(split[0]);
@@ -209,7 +198,8 @@ public class DecryptCmd extends AbstractSopCmd {
             try {
                 decrypt.withSessionKey(new SessionKey(algorithm, key));
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, OPT_WITH_SESSION_KEY), unsupportedOption);
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", OPT_WITH_SESSION_KEY);
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             }
         }
     }
@@ -217,10 +207,12 @@ public class DecryptCmd extends AbstractSopCmd {
     private void setWithPasswords(List<String> withPassword, Decrypt decrypt) {
         for (String passwordFile : withPassword) {
             try {
-                String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFile));
+                String password = stringFromInputStream(getInput(passwordFile));
                 decrypt.withPassword(password);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, OPT_WITH_PASSWORD), unsupportedOption);
+
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", OPT_WITH_PASSWORD);
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -230,10 +222,12 @@ public class DecryptCmd extends AbstractSopCmd {
     private void setWithKeyPassword(List<String> withKeyPassword, Decrypt decrypt) {
         for (String passwordFile : withKeyPassword) {
             try {
-                String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFile));
+                String password = stringFromInputStream(getInput(passwordFile));
                 decrypt.withKeyPassword(password);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, OPT_WITH_KEY_PASSWORD), unsupportedOption);
+
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", OPT_WITH_KEY_PASSWORD);
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -241,20 +235,22 @@ public class DecryptCmd extends AbstractSopCmd {
     }
 
     private void setNotAfter(String notAfter, Decrypt decrypt) {
-        Date notAfterDate = DateParser.parseNotAfter(notAfter);
+        Date notAfterDate = parseNotAfter(notAfter);
         try {
             decrypt.verifyNotAfter(notAfterDate);
         } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-            throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, OPT_NOT_AFTER), unsupportedOption);
+            String errorMsg = getMsg("sop.error.feature_support.option_not_supported", OPT_NOT_AFTER);
+            throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
         }
     }
 
     private void setNotBefore(String notBefore, Decrypt decrypt) {
-        Date notBeforeDate = DateParser.parseNotBefore(notBefore);
+        Date notBeforeDate = parseNotBefore(notBefore);
         try {
             decrypt.verifyNotBefore(notBeforeDate);
         } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-            throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, OPT_NOT_BEFORE), unsupportedOption);
+            String errorMsg = getMsg("sop.error.feature_support.option_not_supported", OPT_NOT_BEFORE);
+            throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
         }
     }
 }

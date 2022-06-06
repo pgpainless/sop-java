@@ -127,7 +127,7 @@ public class EncryptCmdTest {
 
     @Test
     @ExpectSystemExitWithStatus(79)
-    public void signWith_certCannotSignCausesExit1() throws IOException, SOPGPException.KeyIsProtected, SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.KeyCannotSign, SOPGPException.BadData {
+    public void signWith_certCannotSignCausesExit79() throws IOException, SOPGPException.KeyIsProtected, SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.KeyCannotSign, SOPGPException.BadData {
         when(encrypt.signWith((InputStream) any())).thenThrow(new SOPGPException.KeyCannotSign());
         File keyFile = File.createTempFile("sign-with", ".asc");
         File passwordFile = TestFileUtil.writeTempStringFile("dragon");

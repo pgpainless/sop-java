@@ -4,29 +4,28 @@
 
 package sop.cli.picocli.commands;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import picocli.CommandLine;
 import sop.Signatures;
 import sop.cli.picocli.SopCLI;
 import sop.exception.SOPGPException;
 import sop.operation.InlineDetach;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 @CommandLine.Command(name = "inline-detach",
-        description = "Split a clearsigned message",
+        resourceBundle = "sop",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class InlineDetachCmd extends AbstractSopCmd {
 
     @CommandLine.Option(
             names = {"--signatures-out"},
-            description = "Destination to which a detached signatures block will be written",
+            descriptionKey = "sop.inline-detach.usage.option.signatures_out",
             paramLabel = "SIGNATURES")
-    File signaturesOut;
+    String signaturesOut;
 
     @CommandLine.Option(names = "--no-armor",
-            description = "ASCII armor the output",
+            descriptionKey = "sop.inline-detach.usage.option.armor",
             negatable = true)
     boolean armor = true;
 
@@ -35,18 +34,17 @@ public class InlineDetachCmd extends AbstractSopCmd {
         InlineDetach inlineDetach = throwIfUnsupportedSubcommand(
                 SopCLI.getSop().inlineDetach(), "inline-detach");
 
-        throwIfOutputExists(signaturesOut, "--signatures-out");
+        throwIfOutputExists(signaturesOut);
         throwIfMissingArg(signaturesOut, "--signatures-out");
 
         if (!armor) {
             inlineDetach.noArmor();
         }
 
-        try {
+        try (OutputStream outputStream = getOutput(signaturesOut)) {
             Signatures signatures = inlineDetach
                     .message(System.in).writeTo(System.out);
-            signaturesOut.createNewFile();
-            signatures.writeTo(new FileOutputStream(signaturesOut));
+            signatures.writeTo(outputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

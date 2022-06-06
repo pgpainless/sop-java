@@ -4,16 +4,15 @@
 
 package sop.cli.picocli.commands;
 
-import java.io.IOException;
-
 import picocli.CommandLine;
-import sop.cli.picocli.Print;
 import sop.cli.picocli.SopCLI;
 import sop.exception.SOPGPException;
 import sop.operation.Dearmor;
 
+import java.io.IOException;
+
 @CommandLine.Command(name = "dearmor",
-        description = "Remove ASCII Armor from standard input",
+        resourceBundle = "sop",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class DearmorCmd extends AbstractSopCmd {
 
@@ -26,13 +25,10 @@ public class DearmorCmd extends AbstractSopCmd {
             dearmor.data(System.in)
                     .writeTo(System.out);
         } catch (SOPGPException.BadData e) {
-            Print.errln("Bad data.");
-            Print.trace(e);
-            System.exit(e.getExitCode());
+            String errorMsg = getMsg("sop.error.input.stdin_not_openpgp_data");
+            throw new SOPGPException.BadData(errorMsg, e);
         } catch (IOException e) {
-            Print.errln("IO Error.");
-            Print.trace(e);
-            System.exit(1);
+            throw new RuntimeException(e);
         }
     }
 }

@@ -12,9 +12,9 @@ import java.util.Date;
 
 /**
  * Common API methods shared between verification of inline signatures ({@link InlineVerify})
- * and verification of detached signatures ({@link Verify}).
+ * and verification of detached signatures ({@link DetachedVerify}).
  *
- * @param <T> Builder type ({@link Verify}, {@link InlineVerify})
+ * @param <T> Builder type ({@link DetachedVerify}, {@link InlineVerify})
  */
 public interface AbstractVerify<T> {
 

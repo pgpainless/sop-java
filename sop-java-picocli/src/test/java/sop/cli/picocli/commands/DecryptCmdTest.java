@@ -36,7 +36,6 @@ import sop.ReadyWithResult;
 import sop.SOP;
 import sop.SessionKey;
 import sop.Verification;
-import sop.cli.picocli.DateParser;
 import sop.cli.picocli.SopCLI;
 import sop.cli.picocli.TestFileUtil;
 import sop.exception.SOPGPException;
@@ -116,7 +115,7 @@ public class DecryptCmdTest {
     public void assertDefaultTimeRangesAreUsedIfNotOverwritten() throws SOPGPException.UnsupportedOption {
         Date now = new Date();
         SopCLI.main(new String[] {"decrypt"});
-        verify(decrypt, times(1)).verifyNotBefore(DateParser.BEGINNING_OF_TIME);
+        verify(decrypt, times(1)).verifyNotBefore(AbstractSopCmd.BEGINNING_OF_TIME);
         verify(decrypt, times(1)).verifyNotAfter(
                 ArgumentMatchers.argThat(argument -> {
                     // allow 1-second difference
@@ -127,8 +126,8 @@ public class DecryptCmdTest {
     @Test
     public void assertVerifyNotAfterAndBeforeDashResultsInMaxTimeRange() throws SOPGPException.UnsupportedOption {
         SopCLI.main(new String[] {"decrypt", "--not-before", "-", "--not-after", "-"});
-        verify(decrypt, times(1)).verifyNotBefore(DateParser.BEGINNING_OF_TIME);
-        verify(decrypt, times(1)).verifyNotAfter(DateParser.END_OF_TIME);
+        verify(decrypt, times(1)).verifyNotBefore(AbstractSopCmd.BEGINNING_OF_TIME);
+        verify(decrypt, times(1)).verifyNotAfter(AbstractSopCmd.END_OF_TIME);
     }
 
     @Test

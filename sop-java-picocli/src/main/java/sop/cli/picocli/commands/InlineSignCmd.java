@@ -8,99 +8,90 @@ import picocli.CommandLine;
 import sop.MicAlg;
 import sop.ReadyWithResult;
 import sop.SigningResult;
-import sop.cli.picocli.FileUtil;
-import sop.cli.picocli.Print;
 import sop.cli.picocli.SopCLI;
 import sop.enums.InlineSignAs;
 import sop.exception.SOPGPException;
 import sop.operation.InlineSign;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 @CommandLine.Command(name = "inline-sign",
-        description = "Create an inline-signed message from data on standard input",
+        resourceBundle = "sop",
         exitCodeOnInvalidInput = 37)
 public class InlineSignCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
-            description = "ASCII armor the output",
+            descriptionKey = "sop.inline-sign.usage.option.armor",
             negatable = true)
     boolean armor = true;
 
-    @CommandLine.Option(names = "--as", description = "Defaults to 'binary'. If '--as=text' and the input data is not valid UTF-8, inline-sign fails with return code 53.",
+    @CommandLine.Option(names = "--as",
+            descriptionKey = "sop.inline-sign.usage.option.as",
             paramLabel = "{binary|text|cleartextsigned}")
     InlineSignAs type;
 
-    @CommandLine.Parameters(description = "Secret keys used for signing",
+    @CommandLine.Parameters(descriptionKey = "sop.inline-sign.usage.parameter.keys",
             paramLabel = "KEYS")
-    List<File> secretKeyFile = new ArrayList<>();
+    List<String> secretKeyFile = new ArrayList<>();
 
-    @CommandLine.Option(names = "--with-key-password", description = "Password(s) to unlock the secret key(s) with",
+    @CommandLine.Option(names = "--with-key-password",
+            descriptionKey = "sop.inline-sign.usage.option.with_key_password",
             paramLabel = "PASSWORD")
     List<String> withKeyPassword = new ArrayList<>();
 
-    @CommandLine.Option(names = "--micalg-out", description = "Emits the digest algorithm used to the specified file in a way that can be used to populate the micalg parameter for the PGP/MIME Content-Type (RFC3156)",
+    @CommandLine.Option(names = "--micalg-out",
+            descriptionKey = "sop.inline-sign.usage.option.micalg",
             paramLabel = "MICALG")
-    File micAlgOut;
+    String micAlgOut;
 
     @Override
     public void run() {
         InlineSign inlineSign = throwIfUnsupportedSubcommand(
                 SopCLI.getSop().inlineSign(), "inline-sign");
 
-        throwIfOutputExists(micAlgOut, "--micalg-out");
+        throwIfOutputExists(micAlgOut);
 
         if (type != null) {
             try {
                 inlineSign.mode(type);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                Print.errln("Unsupported option '--as'");
-                Print.trace(unsupportedOption);
-                System.exit(unsupportedOption.getExitCode());
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--as");
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             }
         }
 
         if (secretKeyFile.isEmpty()) {
-            Print.errln("Missing required parameter 'KEYS'.");
-            System.exit(19);
+            String errorMsg = getMsg("sop.error.usage.parameter_required", "KEYS");
+            throw new SOPGPException.MissingArg(errorMsg);
         }
 
         for (String passwordFile : withKeyPassword) {
             try {
-                String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFile));
+                String password = stringFromInputStream(getInput(passwordFile));
                 inlineSign.withKeyPassword(password);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                throw new SOPGPException.UnsupportedOption(String.format(ERROR_UNSUPPORTED_OPTION, "--with-key-password"), unsupportedOption);
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--with-key-password");
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        for (File keyFile : secretKeyFile) {
-            try (FileInputStream keyIn = new FileInputStream(keyFile)) {
+        for (String keyInput : secretKeyFile) {
+            try (InputStream keyIn = getInput(keyInput)) {
                 inlineSign.key(keyIn);
-            } catch (FileNotFoundException e) {
-                Print.errln("File " + keyFile.getAbsolutePath() + " does not exist.");
-                Print.trace(e);
-                System.exit(1);
             } catch (IOException e) {
-                Print.errln("Cannot access file " + keyFile.getAbsolutePath());
-                Print.trace(e);
-                System.exit(1);
+                throw new RuntimeException(e);
             } catch (SOPGPException.KeyIsProtected e) {
-                Print.errln("Key " + keyFile.getName() + " is password protected.");
-                Print.trace(e);
-                System.exit(1);
+                String errorMsg = getMsg("sop.error.runtime.cannot_unlock_key", keyInput);
+                throw new SOPGPException.KeyIsProtected(errorMsg, e);
             } catch (SOPGPException.BadData badData) {
-                Print.errln("Bad data in key file " + keyFile.getAbsolutePath() + ":");
-                Print.trace(badData);
-                System.exit(badData.getExitCode());
+                String errorMsg = getMsg("sop.error.input.not_a_private_key", keyInput);
+                throw new SOPGPException.BadData(errorMsg, badData);
             }
         }
 
@@ -115,19 +106,12 @@ public class InlineSignCmd extends AbstractSopCmd {
             MicAlg micAlg = result.getMicAlg();
             if (micAlgOut != null) {
                 // Write micalg out
-                micAlgOut.createNewFile();
-                FileOutputStream micAlgOutStream = new FileOutputStream(micAlgOut);
+                OutputStream micAlgOutStream = getOutput(micAlgOut);
                 micAlg.writeTo(micAlgOutStream);
                 micAlgOutStream.close();
             }
         } catch (IOException e) {
-            Print.errln("IO Error.");
-            Print.trace(e);
-            System.exit(1);
-        } catch (SOPGPException.ExpectedText expectedText) {
-            Print.errln("Expected text input, but got binary data.");
-            Print.trace(expectedText);
-            System.exit(expectedText.getExitCode());
+            throw new RuntimeException(e);
         }
     }
 }

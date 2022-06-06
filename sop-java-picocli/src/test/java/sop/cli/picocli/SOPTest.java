@@ -23,8 +23,8 @@ import sop.operation.ExtractCert;
 import sop.operation.GenerateKey;
 import sop.operation.InlineSign;
 import sop.operation.InlineVerify;
-import sop.operation.Sign;
-import sop.operation.Verify;
+import sop.operation.DetachedSign;
+import sop.operation.DetachedVerify;
 import sop.operation.Version;
 
 public class SOPTest {
@@ -65,12 +65,12 @@ public class SOPTest {
             }
 
             @Override
-            public Sign sign() {
+            public DetachedSign detachedSign() {
                 return null;
             }
 
             @Override
-            public Verify verify() {
+            public DetachedVerify detachedVerify() {
                 return null;
             }
 

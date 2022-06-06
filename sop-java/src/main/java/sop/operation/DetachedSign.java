@@ -9,7 +9,7 @@ import sop.exception.SOPGPException;
 
 import java.io.InputStream;
 
-public interface Sign extends AbstractSign<Sign> {
+public interface DetachedSign extends AbstractSign<DetachedSign> {
 
     /**
      * Sets the signature mode.
@@ -20,6 +20,6 @@ public interface Sign extends AbstractSign<Sign> {
      *
      * @throws sop.exception.SOPGPException.UnsupportedOption if this option is not supported
      */
-    Sign mode(SignAs mode) throws SOPGPException.UnsupportedOption;
+    DetachedSign mode(SignAs mode) throws SOPGPException.UnsupportedOption;
 
 }

@@ -4,22 +4,23 @@
 
 package sop.cli.picocli.commands;
 
-import java.io.IOException;
-
 import picocli.CommandLine;
 import sop.Ready;
-import sop.cli.picocli.Print;
 import sop.cli.picocli.SopCLI;
 import sop.enums.ArmorLabel;
 import sop.exception.SOPGPException;
 import sop.operation.Armor;
 
+import java.io.IOException;
+
 @CommandLine.Command(name = "armor",
-        description = "Add ASCII Armor to standard input",
+        resourceBundle = "sop",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class ArmorCmd extends AbstractSopCmd {
 
-    @CommandLine.Option(names = {"--label"}, description = "Label to be used in the header and tail of the armoring.", paramLabel = "{auto|sig|key|cert|message}")
+    @CommandLine.Option(names = {"--label"},
+            descriptionKey = "sop.armor.usage.option.label",
+            paramLabel = "{auto|sig|key|cert|message}")
     ArmorLabel label;
 
     @Override
@@ -32,8 +33,8 @@ public class ArmorCmd extends AbstractSopCmd {
             try {
                 armor.label(label);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                Print.errln("Armor labels not supported.");
-                System.exit(unsupportedOption.getExitCode());
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--label");
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             }
         }
 
@@ -41,13 +42,10 @@ public class ArmorCmd extends AbstractSopCmd {
             Ready ready = armor.data(System.in);
             ready.writeTo(System.out);
         } catch (SOPGPException.BadData badData) {
-            Print.errln("Bad data.");
-            Print.trace(badData);
-            System.exit(badData.getExitCode());
+            String errorMsg = getMsg("sop.error.input.stdin_not_openpgp_data");
+            throw new SOPGPException.BadData(errorMsg, badData);
         } catch (IOException e) {
-            Print.errln("IO Error.");
-            Print.trace(e);
-            System.exit(1);
+            throw new RuntimeException(e);
         }
     }
 }

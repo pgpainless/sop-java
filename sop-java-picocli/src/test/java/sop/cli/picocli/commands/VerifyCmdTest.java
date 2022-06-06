@@ -27,15 +27,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import sop.SOP;
 import sop.Verification;
-import sop.cli.picocli.DateParser;
 import sop.cli.picocli.SopCLI;
 import sop.exception.SOPGPException;
-import sop.operation.Verify;
+import sop.operation.DetachedVerify;
 import sop.util.UTCUtil;
 
 public class VerifyCmdTest {
 
-    Verify verify;
+    DetachedVerify detachedVerify;
     File signature;
     File cert;
 
@@ -45,12 +44,12 @@ public class VerifyCmdTest {
     public void prepare() throws SOPGPException.UnsupportedOption, SOPGPException.BadData, SOPGPException.NoSignature, IOException {
         originalSout = System.out;
 
-        verify = mock(Verify.class);
-        when(verify.notBefore(any())).thenReturn(verify);
-        when(verify.notAfter(any())).thenReturn(verify);
-        when(verify.cert((InputStream) any())).thenReturn(verify);
-        when(verify.signatures((InputStream) any())).thenReturn(verify);
-        when(verify.data((InputStream) any())).thenReturn(
+        detachedVerify = mock(DetachedVerify.class);
+        when(detachedVerify.notBefore(any())).thenReturn(detachedVerify);
+        when(detachedVerify.notAfter(any())).thenReturn(detachedVerify);
+        when(detachedVerify.cert((InputStream) any())).thenReturn(detachedVerify);
+        when(detachedVerify.signatures((InputStream) any())).thenReturn(detachedVerify);
+        when(detachedVerify.data((InputStream) any())).thenReturn(
                 Collections.singletonList(
                         new Verification(
                                 UTCUtil.parseUTCDate("2019-10-29T18:36:45Z"),
@@ -60,7 +59,7 @@ public class VerifyCmdTest {
         );
 
         SOP sop = mock(SOP.class);
-        when(sop.verify()).thenReturn(verify);
+        when(sop.detachedVerify()).thenReturn(detachedVerify);
 
         SopCLI.setSopInstance(sop);
 
@@ -77,26 +76,26 @@ public class VerifyCmdTest {
     public void notAfter_passedDown() throws SOPGPException.UnsupportedOption {
         Date date = UTCUtil.parseUTCDate("2019-10-29T18:36:45Z");
         SopCLI.main(new String[] {"verify", "--not-after", "2019-10-29T18:36:45Z", signature.getAbsolutePath(), cert.getAbsolutePath()});
-        verify(verify, times(1)).notAfter(date);
+        verify(detachedVerify, times(1)).notAfter(date);
     }
 
     @Test
     public void notAfter_now() throws SOPGPException.UnsupportedOption {
         Date now = new Date();
         SopCLI.main(new String[] {"verify", "--not-after", "now", signature.getAbsolutePath(), cert.getAbsolutePath()});
-        verify(verify, times(1)).notAfter(dateMatcher(now));
+        verify(detachedVerify, times(1)).notAfter(dateMatcher(now));
     }
 
     @Test
     public void notAfter_dashCountsAsEndOfTime() throws SOPGPException.UnsupportedOption {
         SopCLI.main(new String[] {"verify", "--not-after", "-", signature.getAbsolutePath(), cert.getAbsolutePath()});
-        verify(verify, times(1)).notAfter(DateParser.END_OF_TIME);
+        verify(detachedVerify, times(1)).notAfter(AbstractSopCmd.END_OF_TIME);
     }
 
     @Test
     @ExpectSystemExitWithStatus(37)
     public void notAfter_unsupportedOptionCausesExit37() throws SOPGPException.UnsupportedOption {
-        when(verify.notAfter(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting upper signature date boundary not supported."));
+        when(detachedVerify.notAfter(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting upper signature date boundary not supported."));
         SopCLI.main(new String[] {"verify", "--not-after", "2019-10-29T18:36:45Z", signature.getAbsolutePath(), cert.getAbsolutePath()});
     }
 
@@ -104,34 +103,34 @@ public class VerifyCmdTest {
     public void notBefore_passedDown() throws SOPGPException.UnsupportedOption {
         Date date = UTCUtil.parseUTCDate("2019-10-29T18:36:45Z");
         SopCLI.main(new String[] {"verify", "--not-before", "2019-10-29T18:36:45Z", signature.getAbsolutePath(), cert.getAbsolutePath()});
-        verify(verify, times(1)).notBefore(date);
+        verify(detachedVerify, times(1)).notBefore(date);
     }
 
     @Test
     public void notBefore_now() throws SOPGPException.UnsupportedOption {
         Date now = new Date();
         SopCLI.main(new String[] {"verify", "--not-before", "now", signature.getAbsolutePath(), cert.getAbsolutePath()});
-        verify(verify, times(1)).notBefore(dateMatcher(now));
+        verify(detachedVerify, times(1)).notBefore(dateMatcher(now));
     }
 
     @Test
     public void notBefore_dashCountsAsBeginningOfTime() throws SOPGPException.UnsupportedOption {
         SopCLI.main(new String[] {"verify", "--not-before", "-", signature.getAbsolutePath(), cert.getAbsolutePath()});
-        verify(verify, times(1)).notBefore(DateParser.BEGINNING_OF_TIME);
+        verify(detachedVerify, times(1)).notBefore(AbstractSopCmd.BEGINNING_OF_TIME);
     }
 
     @Test
     @ExpectSystemExitWithStatus(37)
     public void notBefore_unsupportedOptionCausesExit37() throws SOPGPException.UnsupportedOption {
-        when(verify.notBefore(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting lower signature date boundary not supported."));
+        when(detachedVerify.notBefore(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting lower signature date boundary not supported."));
         SopCLI.main(new String[] {"verify", "--not-before", "2019-10-29T18:36:45Z", signature.getAbsolutePath(), cert.getAbsolutePath()});
     }
 
     @Test
     public void notBeforeAndNotAfterAreCalledWithDefaultValues() throws SOPGPException.UnsupportedOption {
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), cert.getAbsolutePath()});
-        verify(verify, times(1)).notAfter(dateMatcher(new Date()));
-        verify(verify, times(1)).notBefore(DateParser.BEGINNING_OF_TIME);
+        verify(detachedVerify, times(1)).notAfter(dateMatcher(new Date()));
+        verify(detachedVerify, times(1)).notBefore(AbstractSopCmd.BEGINNING_OF_TIME);
     }
 
     private static Date dateMatcher(Date date) {
@@ -139,48 +138,48 @@ public class VerifyCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(1)
-    public void cert_fileNotFoundCausesExit1() {
+    @ExpectSystemExitWithStatus(61)
+    public void cert_fileNotFoundCausesExit61() {
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), "invalid.asc"});
     }
 
     @Test
     @ExpectSystemExitWithStatus(41)
     public void cert_badDataCausesExit41() throws SOPGPException.BadData {
-        when(verify.cert((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
+        when(detachedVerify.cert((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), cert.getAbsolutePath()});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(1)
-    public void signature_fileNotFoundCausesExit1() {
+    @ExpectSystemExitWithStatus(61)
+    public void signature_fileNotFoundCausesExit61() {
         SopCLI.main(new String[] {"verify", "invalid.sig", cert.getAbsolutePath()});
     }
 
     @Test
     @ExpectSystemExitWithStatus(41)
     public void signature_badDataCausesExit41() throws SOPGPException.BadData {
-        when(verify.signatures((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
+        when(detachedVerify.signatures((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), cert.getAbsolutePath()});
     }
 
     @Test
     @ExpectSystemExitWithStatus(3)
     public void data_noSignaturesCausesExit3() throws SOPGPException.NoSignature, IOException, SOPGPException.BadData {
-        when(verify.data((InputStream) any())).thenThrow(new SOPGPException.NoSignature());
+        when(detachedVerify.data((InputStream) any())).thenThrow(new SOPGPException.NoSignature());
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), cert.getAbsolutePath()});
     }
 
     @Test
     @ExpectSystemExitWithStatus(41)
     public void data_badDataCausesExit41() throws SOPGPException.NoSignature, IOException, SOPGPException.BadData {
-        when(verify.data((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
+        when(detachedVerify.data((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), cert.getAbsolutePath()});
     }
 
     @Test
     public void resultIsPrintedProperly() throws SOPGPException.NoSignature, IOException, SOPGPException.BadData {
-        when(verify.data((InputStream) any())).thenReturn(Arrays.asList(
+        when(detachedVerify.data((InputStream) any())).thenReturn(Arrays.asList(
                 new Verification(UTCUtil.parseUTCDate("2019-10-29T18:36:45Z"),
                         "EB85BB5FA33A75E15E944E63F231550C4F47E38E",
                         "EB85BB5FA33A75E15E944E63F231550C4F47E38E"),

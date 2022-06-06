@@ -20,9 +20,13 @@ import sop.cli.picocli.commands.SignCmd;
 import sop.cli.picocli.commands.VerifyCmd;
 import sop.cli.picocli.commands.VersionCmd;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 @CommandLine.Command(
         name = "sop",
-        description = "Stateless OpenPGP Protocol",
+        resourceBundle = "sop",
         exitCodeOnInvalidInput = 69,
         subcommands = {
                 CommandLine.HelpCommand.class,
@@ -39,33 +43,12 @@ import sop.cli.picocli.commands.VersionCmd;
                 InlineVerifyCmd.class,
                 VersionCmd.class,
                 AutoComplete.GenerateCompletion.class
-        },
-        exitCodeListHeading = "Exit Codes:%n",
-        exitCodeList = {
-                " 0:Successful program execution",
-                " 1:Generic program error",
-                " 3:Verification requested but no verifiable signature found",
-                "13:Unsupported asymmetric algorithm",
-                "17:Certificate is not encryption capable",
-                "19:Usage error: Missing argument",
-                "23:Incomplete verification instructions",
-                "29:Unable to decrypt",
-                "31:Password is not human-readable",
-                "37:Unsupported Option",
-                "41:Invalid data or data of wrong type encountered",
-                "53:Non-text input received where text was expected",
-                "59:Output file already exists",
-                "61:Input file does not exist",
-                "67:Key is password protected",
-                "69:Unsupported subcommand",
-                "71:Unsupported special prefix (e.g. \"@env/@fd\") of indirect parameter",
-                "73:Ambiguous input (a filename matching the designator already exists)",
-                "79:Key is not signing capable"
         }
 )
 public class SopCLI {
     // Singleton
     static SOP SOP_INSTANCE;
+    static ResourceBundle cliMsg = ResourceBundle.getBundle("sop");
 
     public static String EXECUTABLE_NAME = "sop";
 
@@ -77,6 +60,13 @@ public class SopCLI {
     }
 
     public static int execute(String[] args) {
+
+        // Set locale
+        new CommandLine(new InitLocale()).parseArgs(args);
+
+        cliMsg = ResourceBundle.getBundle("sop");
+
+        // Prepare CLI
         CommandLine cmd = new CommandLine(SopCLI.class);
         // Hide generate-completion command
         CommandLine gen = cmd.getSubcommands().get("generate-completion");
@@ -92,7 +82,8 @@ public class SopCLI {
 
     public static SOP getSop() {
         if (SOP_INSTANCE == null) {
-            throw new IllegalStateException("No SOP backend set.");
+            String errorMsg = cliMsg.getString("sop.error.runtime.no_backend_set");
+            throw new IllegalStateException(errorMsg);
         }
         return SOP_INSTANCE;
     }
@@ -100,4 +91,19 @@ public class SopCLI {
     public static void setSopInstance(SOP instance) {
         SOP_INSTANCE = instance;
     }
+}
+
+/**
+ * Control the locale.
+ *
+ * @see <a href="https://picocli.info/#_controlling_the_locale">Picocli Readme</a>
+ */
+class InitLocale {
+    @CommandLine.Option(names = { "-l", "--locale" }, descriptionKey = "sop.locale")
+    void setLocale(String locale) {
+        Locale.setDefault(new Locale(locale));
+    }
+
+    @CommandLine.Unmatched
+    List<String> remainder; // ignore any other parameters and options in the first parsing phase
 }

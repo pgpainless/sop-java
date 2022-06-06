@@ -13,8 +13,8 @@ import sop.operation.GenerateKey;
 import sop.operation.InlineDetach;
 import sop.operation.InlineSign;
 import sop.operation.InlineVerify;
-import sop.operation.Sign;
-import sop.operation.Verify;
+import sop.operation.DetachedSign;
+import sop.operation.DetachedVerify;
 import sop.operation.Version;
 
 /**
@@ -47,19 +47,72 @@ public interface SOP {
 
     /**
      * Create detached signatures.
-     * Customize the operation using the builder {@link Sign}.
+     * Customize the operation using the builder {@link DetachedSign}.
+     *
+     * If you want to sign a message inline, use {@link #inlineSign()} instead.
      *
      * @return builder instance
      */
-    Sign sign();
+    default DetachedSign sign() {
+        return detachedSign();
+    }
+
+    /**
+     * Create detached signatures.
+     * Customize the operation using the builder {@link DetachedSign}.
+     *
+     * If you want to sign a message inline, use {@link #inlineSign()} instead.
+     *
+     * @return builder instance
+     */
+    DetachedSign detachedSign();
+
+    /**
+     * Sign a message using inline signatures.
+     *
+     * If you need to create detached signatures, use {@link #detachedSign()} instead.
+     *
+     * @return builder instance
+     */
+    InlineSign inlineSign();
 
     /**
      * Verify detached signatures.
-     * Customize the operation using the builder {@link Verify}.
+     * Customize the operation using the builder {@link DetachedVerify}.
+     *
+     * If you need to verify an inline-signed message, use {@link #inlineVerify()} instead.
      *
      * @return builder instance
      */
-    Verify verify();
+    default DetachedVerify verify() {
+        return detachedVerify();
+    }
+
+    /**
+     * Verify detached signatures.
+     * Customize the operation using the builder {@link DetachedVerify}.
+     *
+     * If you need to verify an inline-signed message, use {@link #inlineVerify()} instead.
+     *
+     * @return builder instance
+     */
+    DetachedVerify detachedVerify();
+
+    /**
+     * Verify signatures of an inline-signed message.
+     *
+     * If you need to verify detached signatures over a message, use {@link #detachedVerify()} instead.
+     *
+     * @return builder instance
+     */
+    InlineVerify inlineVerify();
+
+    /**
+     * Detach signatures from an inline signed message.
+     *
+     * @return builder instance
+     */
+    InlineDetach inlineDetach();
 
     /**
      * Encrypt a message.
@@ -93,9 +146,4 @@ public interface SOP {
      */
     Dearmor dearmor();
 
-    InlineDetach inlineDetach();
-
-    InlineSign inlineSign();
-
-    InlineVerify inlineVerify();
 }

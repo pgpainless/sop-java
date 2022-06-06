@@ -20,7 +20,7 @@ public interface AbstractSign<T> {
      *
      * @return builder instance
      */
-    Sign noArmor();
+    DetachedSign noArmor();
 
     /**
      * Add one or more signing keys.

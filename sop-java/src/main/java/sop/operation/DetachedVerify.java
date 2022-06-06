@@ -12,7 +12,7 @@ import java.io.InputStream;
 /**
  * API for verifying detached signatures.
  */
-public interface Verify extends AbstractVerify<Verify>, VerifySignatures {
+public interface DetachedVerify extends AbstractVerify<DetachedVerify>, VerifySignatures {
 
     /**
      * Provides the detached signatures.

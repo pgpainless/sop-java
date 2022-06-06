@@ -13,12 +13,12 @@ import sop.exception.SOPGPException;
 import sop.operation.ExtractCert;
 
 @CommandLine.Command(name = "extract-cert",
-        description = "Extract a public key certificate from a secret key from standard input",
+        resourceBundle = "sop",
         exitCodeOnInvalidInput = 37)
 public class ExtractCertCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
-            description = "ASCII armor the output",
+            descriptionKey = "sop.extract-cert.usage.option.armor",
             negatable = true)
     boolean armor = true;
 
@@ -37,7 +37,8 @@ public class ExtractCertCmd extends AbstractSopCmd {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (SOPGPException.BadData badData) {
-            throw new SOPGPException.BadData("Standard Input does not contain valid OpenPGP private key material.", badData);
+            String errorMsg = getMsg("sop.error.input.stdin_not_a_private_key");
+            throw new SOPGPException.BadData(errorMsg, badData);
         }
     }
 }

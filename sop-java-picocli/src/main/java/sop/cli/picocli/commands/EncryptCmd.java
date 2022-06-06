@@ -4,55 +4,52 @@
 
 package sop.cli.picocli.commands;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import picocli.CommandLine;
 import sop.Ready;
-import sop.cli.picocli.FileUtil;
 import sop.cli.picocli.SopCLI;
 import sop.enums.EncryptAs;
 import sop.exception.SOPGPException;
 import sop.operation.Encrypt;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 @CommandLine.Command(name = "encrypt",
-        description = "Encrypt a message from standard input",
+        resourceBundle = "sop",
         exitCodeOnInvalidInput = 37)
 public class EncryptCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
-            description = "ASCII armor the output",
+            descriptionKey = "sop.encrypt.usage.option.armor",
             negatable = true)
     boolean armor = true;
 
     @CommandLine.Option(names = {"--as"},
-            description = "Type of the input data. Defaults to 'binary'",
+            descriptionKey = "sop.encrypt.usage.option.type",
             paramLabel = "{binary|text}")
     EncryptAs type;
 
     @CommandLine.Option(names = "--with-password",
-            description = "Encrypt the message with a password provided by the given password file",
+            descriptionKey = "sop.encrypt.usage.option.with_password",
             paramLabel = "PASSWORD")
     List<String> withPassword = new ArrayList<>();
 
     @CommandLine.Option(names = "--sign-with",
-            description = "Sign the output with a private key",
+            descriptionKey = "sop.encrypt.usage.option.sign_with",
             paramLabel = "KEY")
-    List<File> signWith = new ArrayList<>();
+    List<String> signWith = new ArrayList<>();
 
     @CommandLine.Option(names = "--with-key-password",
-            description = "Provide indirect file type pointing at passphrase(s) for secret key(s)",
+            descriptionKey = "sop.encrypt.usage.option.with_key_password",
             paramLabel = "PASSWORD")
     List<String> withKeyPassword = new ArrayList<>();
 
-    @CommandLine.Parameters(description = "Certificates the message gets encrypted to",
+    @CommandLine.Parameters(descriptionKey = "sop.encrypt.usage.param.certs",
             index = "0..*",
             paramLabel = "CERTS")
-    List<File> certs = new ArrayList<>();
+    List<String> certs = new ArrayList<>();
 
     @Override
     public void run() {
@@ -63,20 +60,24 @@ public class EncryptCmd extends AbstractSopCmd {
             try {
                 encrypt.mode(type);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                throw new SOPGPException.UnsupportedOption("Unsupported option '--as'.", unsupportedOption);
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--as");
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             }
         }
 
         if (withPassword.isEmpty() && certs.isEmpty()) {
-            throw new SOPGPException.MissingArg("At least one password file or cert file required for encryption.");
+            String errorMsg = getMsg("sop.error.usage.password_or_cert_required");
+            throw new SOPGPException.MissingArg(errorMsg);
         }
 
         for (String passwordFileName : withPassword) {
             try {
-                String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFileName));
+                String password = stringFromInputStream(getInput(passwordFileName));
                 encrypt.withPassword(password);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                throw new SOPGPException.UnsupportedOption("Unsupported option '--with-password'.", unsupportedOption);
+
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--with-password");
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -84,46 +85,51 @@ public class EncryptCmd extends AbstractSopCmd {
 
         for (String passwordFileName : withKeyPassword) {
             try {
-                String password = FileUtil.stringFromInputStream(FileUtil.getFileInputStream(passwordFileName));
+                String password = stringFromInputStream(getInput(passwordFileName));
                 encrypt.withKeyPassword(password);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                throw new SOPGPException.UnsupportedOption("Unsupported option '--with-key-password'.", unsupportedOption);
+
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--with-key-password");
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        for (File keyFile : signWith) {
-            try (FileInputStream keyIn = new FileInputStream(keyFile)) {
+        for (String keyInput : signWith) {
+            try (InputStream keyIn = getInput(keyInput)) {
                 encrypt.signWith(keyIn);
-            } catch (FileNotFoundException e) {
-                throw new SOPGPException.MissingInput("Key file " + keyFile.getAbsolutePath() + " not found.", e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (SOPGPException.KeyIsProtected keyIsProtected) {
-                throw new SOPGPException.KeyIsProtected("Key from " + keyFile.getAbsolutePath() + " is password protected.", keyIsProtected);
+                String errorMsg = getMsg("sop.error.runtime.cannot_unlock_key", keyInput);
+                throw new SOPGPException.KeyIsProtected(errorMsg, keyIsProtected);
             } catch (SOPGPException.UnsupportedAsymmetricAlgo unsupportedAsymmetricAlgo) {
-                throw new SOPGPException.UnsupportedAsymmetricAlgo("Key from " + keyFile.getAbsolutePath() + " has unsupported asymmetric algorithm.", unsupportedAsymmetricAlgo);
+                String errorMsg = getMsg("sop.error.runtime.key_uses_unsupported_asymmetric_algorithm", keyInput);
+                throw new SOPGPException.UnsupportedAsymmetricAlgo(errorMsg, unsupportedAsymmetricAlgo);
             } catch (SOPGPException.KeyCannotSign keyCannotSign) {
-                throw new SOPGPException.KeyCannotSign("Key from " + keyFile.getAbsolutePath() + " cannot sign.", keyCannotSign);
+                String errorMsg = getMsg("sop.error.runtime.key_cannot_sign", keyInput);
+                throw new SOPGPException.KeyCannotSign(errorMsg, keyCannotSign);
             } catch (SOPGPException.BadData badData) {
-                throw new SOPGPException.BadData("Key file " + keyFile.getAbsolutePath() + " does not contain a valid OpenPGP private key.", badData);
+                String errorMsg = getMsg("sop.error.input.not_a_private_key", keyInput);
+                throw new SOPGPException.BadData(errorMsg, badData);
             }
         }
 
-        for (File certFile : certs) {
-            try (FileInputStream certIn = new FileInputStream(certFile)) {
+        for (String certInput : certs) {
+            try (InputStream certIn = getInput(certInput)) {
                 encrypt.withCert(certIn);
-            } catch (FileNotFoundException e) {
-                throw new SOPGPException.MissingInput("Certificate file " + certFile.getAbsolutePath() + " not found.", e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (SOPGPException.UnsupportedAsymmetricAlgo unsupportedAsymmetricAlgo) {
-                throw new SOPGPException.UnsupportedAsymmetricAlgo("Certificate from " + certFile.getAbsolutePath() + " has unsupported asymmetric algorithm.", unsupportedAsymmetricAlgo);
+                String errorMsg = getMsg("sop.error.runtime.cert_uses_unsupported_asymmetric_algorithm", certInput);
+                throw new SOPGPException.UnsupportedAsymmetricAlgo(errorMsg, unsupportedAsymmetricAlgo);
             } catch (SOPGPException.CertCannotEncrypt certCannotEncrypt) {
-                throw new SOPGPException.CertCannotEncrypt("Certificate from " + certFile.getAbsolutePath() + " is not capable of encryption.", certCannotEncrypt);
+                String errorMsg = getMsg("sop.error.runtime.cert_cannot_encrypt", certInput);
+                throw new SOPGPException.CertCannotEncrypt(errorMsg, certCannotEncrypt);
             } catch (SOPGPException.BadData badData) {
-                throw new SOPGPException.BadData("Certificate file " + certFile.getAbsolutePath() + " does not contain a valid OpenPGP certificate.", badData);
+                String errorMsg = getMsg("sop.error.input.not_a_certificate", certInput);
+                throw new SOPGPException.BadData(errorMsg, badData);
             }
         }
 

@@ -24,17 +24,17 @@ import sop.SOP;
 import sop.SigningResult;
 import sop.cli.picocli.SopCLI;
 import sop.exception.SOPGPException;
-import sop.operation.Sign;
+import sop.operation.DetachedSign;
 
 public class SignCmdTest {
 
-    Sign sign;
+    DetachedSign detachedSign;
     File keyFile;
 
     @BeforeEach
     public void mockComponents() throws IOException, SOPGPException.ExpectedText {
-        sign = mock(Sign.class);
-        when(sign.data((InputStream) any())).thenReturn(new ReadyWithResult<SigningResult>() {
+        detachedSign = mock(DetachedSign.class);
+        when(detachedSign.data((InputStream) any())).thenReturn(new ReadyWithResult<SigningResult>() {
             @Override
             public SigningResult writeTo(OutputStream outputStream) {
                 return SigningResult.builder().build();
@@ -42,7 +42,7 @@ public class SignCmdTest {
         });
 
         SOP sop = mock(SOP.class);
-        when(sop.sign()).thenReturn(sign);
+        when(sop.detachedSign()).thenReturn(detachedSign);
 
         SopCLI.setSopInstance(sop);
 
@@ -65,27 +65,27 @@ public class SignCmdTest {
     @Test
     @ExpectSystemExitWithStatus(37)
     public void as_unsupportedOptionCausesExit37() throws SOPGPException.UnsupportedOption {
-        when(sign.mode(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting signing mode not supported."));
+        when(detachedSign.mode(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting signing mode not supported."));
         SopCLI.main(new String[] {"sign", "--as", "binary", keyFile.getAbsolutePath()});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(1)
-    public void key_nonExistentKeyFileCausesExit1() {
+    @ExpectSystemExitWithStatus(61)
+    public void key_nonExistentKeyFileCausesExit61() {
         SopCLI.main(new String[] {"sign", "invalid.asc"});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(1)
-    public void key_keyIsProtectedCausesExit1() throws SOPGPException.KeyIsProtected, IOException, SOPGPException.BadData {
-        when(sign.key((InputStream) any())).thenThrow(new SOPGPException.KeyIsProtected());
+    @ExpectSystemExitWithStatus(67)
+    public void key_keyIsProtectedCausesExit67() throws SOPGPException.KeyIsProtected, IOException, SOPGPException.BadData {
+        when(detachedSign.key((InputStream) any())).thenThrow(new SOPGPException.KeyIsProtected());
         SopCLI.main(new String[] {"sign", keyFile.getAbsolutePath()});
     }
 
     @Test
     @ExpectSystemExitWithStatus(41)
     public void key_badDataCausesExit41() throws SOPGPException.KeyIsProtected, IOException, SOPGPException.BadData {
-        when(sign.key((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
+        when(detachedSign.key((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         SopCLI.main(new String[] {"sign", keyFile.getAbsolutePath()});
     }
 
@@ -98,19 +98,19 @@ public class SignCmdTest {
     @Test
     public void noArmor_notCalledByDefault() {
         SopCLI.main(new String[] {"sign", keyFile.getAbsolutePath()});
-        verify(sign, never()).noArmor();
+        verify(detachedSign, never()).noArmor();
     }
 
     @Test
     public void noArmor_passedDown() {
         SopCLI.main(new String[] {"sign", "--no-armor", keyFile.getAbsolutePath()});
-        verify(sign, times(1)).noArmor();
+        verify(detachedSign, times(1)).noArmor();
     }
 
     @Test
     @ExpectSystemExitWithStatus(1)
     public void data_ioExceptionCausesExit1() throws IOException, SOPGPException.ExpectedText {
-        when(sign.data((InputStream) any())).thenReturn(new ReadyWithResult<SigningResult>() {
+        when(detachedSign.data((InputStream) any())).thenReturn(new ReadyWithResult<SigningResult>() {
             @Override
             public SigningResult writeTo(OutputStream outputStream) throws IOException {
                 throw new IOException();
@@ -122,7 +122,7 @@ public class SignCmdTest {
     @Test
     @ExpectSystemExitWithStatus(53)
     public void data_expectedTextExceptionCausesExit53() throws IOException, SOPGPException.ExpectedText {
-        when(sign.data((InputStream) any())).thenThrow(new SOPGPException.ExpectedText());
+        when(detachedSign.data((InputStream) any())).thenThrow(new SOPGPException.ExpectedText());
         SopCLI.main(new String[] {"sign", keyFile.getAbsolutePath()});
     }
 }

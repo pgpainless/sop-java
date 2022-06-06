@@ -4,129 +4,101 @@
 
 package sop.cli.picocli.commands;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import picocli.CommandLine;
 import sop.Verification;
-import sop.cli.picocli.DateParser;
 import sop.cli.picocli.Print;
 import sop.cli.picocli.SopCLI;
 import sop.exception.SOPGPException;
-import sop.operation.Verify;
+import sop.operation.DetachedVerify;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 @CommandLine.Command(name = "verify",
-        description = "Verify a detached signature over the data from standard input",
+        resourceBundle = "sop",
         exitCodeOnInvalidInput = 37)
 public class VerifyCmd extends AbstractSopCmd {
 
     @CommandLine.Parameters(index = "0",
-            description = "Detached signature",
+            descriptionKey = "sop.verify.usage.parameter.signature",
             paramLabel = "SIGNATURE")
-    File signature;
+    String signature;
 
     @CommandLine.Parameters(index = "0..*",
             arity = "1..*",
-            description = "Public key certificates",
+            descriptionKey = "sop.verify.usage.parameter.certs",
             paramLabel = "CERT")
-    List<File> certificates = new ArrayList<>();
+    List<String> certificates = new ArrayList<>();
 
     @CommandLine.Option(names = {"--not-before"},
-            description = "ISO-8601 formatted UTC date (eg. '2020-11-23T16:35Z)\n" +
-                    "Reject signatures with a creation date not in range.\n" +
-                    "Defaults to beginning of time (\"-\").",
+            descriptionKey = "sop.verify.usage.option.not_before",
             paramLabel = "DATE")
     String notBefore = "-";
 
     @CommandLine.Option(names = {"--not-after"},
-            description = "ISO-8601 formatted UTC date (eg. '2020-11-23T16:35Z)\n" +
-                    "Reject signatures with a creation date not in range.\n" +
-                    "Defaults to current system time (\"now\").\n" +
-                    "Accepts special value \"-\" for end of time.",
+            descriptionKey = "sop.verify.usage.option.not_after",
             paramLabel = "DATE")
     String notAfter = "now";
 
     @Override
     public void run() {
-        Verify verify = throwIfUnsupportedSubcommand(
-                SopCLI.getSop().verify(), "verify");
+        DetachedVerify detachedVerify = throwIfUnsupportedSubcommand(
+                SopCLI.getSop().detachedVerify(), "verify");
 
         if (notAfter != null) {
             try {
-                verify.notAfter(DateParser.parseNotAfter(notAfter));
+                detachedVerify.notAfter(parseNotAfter(notAfter));
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                Print.errln("Unsupported option '--not-after'.");
-                Print.trace(unsupportedOption);
-                System.exit(unsupportedOption.getExitCode());
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--not-after");
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             }
         }
         if (notBefore != null) {
             try {
-                verify.notBefore(DateParser.parseNotBefore(notBefore));
+                detachedVerify.notBefore(parseNotBefore(notBefore));
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
-                Print.errln("Unsupported option '--not-before'.");
-                Print.trace(unsupportedOption);
-                System.exit(unsupportedOption.getExitCode());
+                String errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--not-before");
+                throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
             }
         }
 
-        for (File certFile : certificates) {
-            try (FileInputStream certIn = new FileInputStream(certFile)) {
-                verify.cert(certIn);
-            } catch (FileNotFoundException fileNotFoundException) {
-                Print.errln("Certificate file " + certFile.getAbsolutePath() + " not found.");
-
-                Print.trace(fileNotFoundException);
-                System.exit(1);
+        for (String certInput : certificates) {
+            try (InputStream certIn = getInput(certInput)) {
+                detachedVerify.cert(certIn);
             } catch (IOException ioException) {
-                Print.errln("IO Error.");
-                Print.trace(ioException);
-                System.exit(1);
+                throw new RuntimeException(ioException);
             } catch (SOPGPException.BadData badData) {
-                Print.errln("Certificate file " + certFile.getAbsolutePath() + " appears to not contain a valid OpenPGP certificate.");
-                Print.trace(badData);
-                System.exit(badData.getExitCode());
+                String errorMsg = getMsg("sop.error.input.not_a_certificate", certInput);
+                throw new SOPGPException.BadData(errorMsg, badData);
             }
         }
 
         if (signature != null) {
-            try (FileInputStream sigIn = new FileInputStream(signature)) {
-                verify.signatures(sigIn);
-            } catch (FileNotFoundException e) {
-                Print.errln("Signature file " + signature.getAbsolutePath() + " does not exist.");
-                Print.trace(e);
-                System.exit(1);
+            try (InputStream sigIn = getInput(signature)) {
+                detachedVerify.signatures(sigIn);
             } catch (IOException e) {
-                Print.errln("IO Error.");
-                Print.trace(e);
-                System.exit(1);
+                throw new RuntimeException(e);
             } catch (SOPGPException.BadData badData) {
-                Print.errln("File " + signature.getAbsolutePath() + " does not contain a valid OpenPGP signature.");
-                Print.trace(badData);
-                System.exit(badData.getExitCode());
+                String errorMsg = getMsg("sop.error.input.not_a_signature", signature);
+                throw new SOPGPException.BadData(errorMsg, badData);
             }
         }
 
-        List<Verification> verifications = null;
+        List<Verification> verifications;
         try {
-            verifications = verify.data(System.in);
+            verifications = detachedVerify.data(System.in);
         } catch (SOPGPException.NoSignature e) {
-            Print.errln("No verifiable signature found.");
-            Print.trace(e);
-            System.exit(e.getExitCode());
+            String errorMsg = getMsg("sop.error.runtime.no_verifiable_signature_found");
+            throw new SOPGPException.NoSignature(errorMsg, e);
         } catch (IOException ioException) {
-            Print.errln("IO Error.");
-            Print.trace(ioException);
-            System.exit(1);
+            throw new RuntimeException(ioException);
         } catch (SOPGPException.BadData badData) {
-            Print.errln("Standard Input appears not to contain a valid OpenPGP message.");
-            Print.trace(badData);
-            System.exit(badData.getExitCode());
+            String errorMsg = getMsg("sop.error.input.stdin_not_a_message");
+            throw new SOPGPException.BadData(errorMsg, badData);
         }
+
         for (Verification verification : verifications) {
             Print.outln(verification.toString());
         }
