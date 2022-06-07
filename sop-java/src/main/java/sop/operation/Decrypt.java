@@ -96,13 +96,11 @@ public interface Decrypt {
      * @param key input stream containing the key(s)
      * @return builder instance
      *
-     * @throws sop.exception.SOPGPException.KeyIsProtected if the key is password protected
      * @throws sop.exception.SOPGPException.BadData if the {@link InputStream} does not provide an OpenPGP key
      * @throws sop.exception.SOPGPException.UnsupportedAsymmetricAlgo if the key uses an unsupported asymmetric algorithm
      */
     Decrypt withKey(InputStream key)
-            throws SOPGPException.KeyIsProtected,
-            SOPGPException.BadData,
+            throws SOPGPException.BadData,
             SOPGPException.UnsupportedAsymmetricAlgo;
 
     /**
