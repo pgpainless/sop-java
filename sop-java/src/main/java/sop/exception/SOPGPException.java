@@ -323,6 +323,10 @@ public abstract class SOPGPException extends RuntimeException {
             super();
         }
 
+        public KeyCannotSign(String message) {
+            super(message);
+        }
+
         public KeyCannotSign(String s, Throwable throwable) {
             super(s, throwable);
         }
