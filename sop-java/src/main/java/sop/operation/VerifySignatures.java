@@ -20,10 +20,13 @@ public interface VerifySignatures {
      * @param data signed data
      * @return list of signature verifications
      * @throws IOException in case of an IO error
-     * @throws SOPGPException.NoSignature when no signature is found
+     * @throws SOPGPException.NoSignature when no valid signature is found
      * @throws SOPGPException.BadData when the data is invalid OpenPGP data
      */
-    List<Verification> data(InputStream data) throws IOException, SOPGPException.NoSignature, SOPGPException.BadData;
+    List<Verification> data(InputStream data)
+            throws IOException,
+            SOPGPException.NoSignature,
+            SOPGPException.BadData;
 
     /**
      * Provide the signed data (without signatures).
@@ -31,10 +34,13 @@ public interface VerifySignatures {
      * @param data signed data
      * @return list of signature verifications
      * @throws IOException in case of an IO error
-     * @throws SOPGPException.NoSignature when no signature is found
+     * @throws SOPGPException.NoSignature when no valid signature is found
      * @throws SOPGPException.BadData when the data is invalid OpenPGP data
      */
-    default List<Verification> data(byte[] data) throws IOException, SOPGPException.NoSignature, SOPGPException.BadData {
+    default List<Verification> data(byte[] data)
+            throws IOException,
+            SOPGPException.NoSignature,
+            SOPGPException.BadData {
         return data(new ByteArrayInputStream(data));
     }
 }

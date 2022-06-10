@@ -33,8 +33,13 @@ public interface GenerateKey {
      *
      * @param password password to protect the key
      * @return builder instance
+     *
+     * @throws sop.exception.SOPGPException.UnsupportedOption if key passwords are not supported
+     * @throws sop.exception.SOPGPException.PasswordNotHumanReadable if the password is not human-readable
      */
-    GenerateKey withKeyPassword(String password);
+    GenerateKey withKeyPassword(String password)
+            throws SOPGPException.PasswordNotHumanReadable,
+            SOPGPException.UnsupportedOption;
 
     /**
      * Set a password for the key.
@@ -42,10 +47,12 @@ public interface GenerateKey {
      * @param password password to protect the key
      * @return builder instance
      *
-     * @throws sop.exception.SOPGPException.PasswordNotHumanReadable in case of a non-UTF8 password
+     * @throws sop.exception.SOPGPException.PasswordNotHumanReadable if the password is not human-readable
+     * @throws sop.exception.SOPGPException.UnsupportedOption if key passwords are not supported
      */
     default GenerateKey withKeyPassword(byte[] password)
-            throws SOPGPException.PasswordNotHumanReadable {
+            throws SOPGPException.PasswordNotHumanReadable,
+            SOPGPException.UnsupportedOption {
         return withKeyPassword(UTF8Util.decodeUTF8(password));
     }
 
@@ -58,5 +65,8 @@ public interface GenerateKey {
      * @throws sop.exception.SOPGPException.UnsupportedAsymmetricAlgo if the generated key uses an unsupported asymmetric algorithm
      * @throws IOException in case of an IO error
      */
-    Ready generate() throws SOPGPException.MissingArg, SOPGPException.UnsupportedAsymmetricAlgo, IOException;
+    Ready generate()
+            throws SOPGPException.MissingArg,
+            SOPGPException.UnsupportedAsymmetricAlgo,
+            IOException;
 }

@@ -4,8 +4,6 @@
 
 package sop.operation;
 
-import sop.ReadyWithResult;
-import sop.SigningResult;
 import sop.exception.SOPGPException;
 
 import java.io.ByteArrayInputStream;
@@ -28,11 +26,16 @@ public interface AbstractSign<T> {
      * @param key input stream containing encoded keys
      * @return builder instance
      *
-     * @throws sop.exception.SOPGPException.KeyIsProtected if the key is password protected
+     * @throws sop.exception.SOPGPException.KeyCannotSign if the key cannot be used for signing
      * @throws sop.exception.SOPGPException.BadData if the {@link InputStream} does not contain an OpenPGP key
+     * @throws sop.exception.SOPGPException.UnsupportedAsymmetricAlgo if the key uses an unsupported asymmetric algorithm
      * @throws IOException in case of an IO error
      */
-    T key(InputStream key) throws SOPGPException.KeyIsProtected, SOPGPException.BadData, IOException;
+    T key(InputStream key)
+            throws SOPGPException.KeyCannotSign,
+            SOPGPException.BadData,
+            SOPGPException.UnsupportedAsymmetricAlgo,
+            IOException;
 
     /**
      * Add one or more signing keys.
@@ -40,11 +43,16 @@ public interface AbstractSign<T> {
      * @param key byte array containing encoded keys
      * @return builder instance
      *
-     * @throws sop.exception.SOPGPException.KeyIsProtected if the key is password protected
+     * @throws sop.exception.SOPGPException.KeyCannotSign if the key cannot be used for signing
      * @throws sop.exception.SOPGPException.BadData if the byte array does not contain an OpenPGP key
+     * @throws sop.exception.SOPGPException.UnsupportedAsymmetricAlgo if the key uses an unsupported asymmetric algorithm
      * @throws IOException in case of an IO error
      */
-    default T key(byte[] key) throws SOPGPException.KeyIsProtected, SOPGPException.BadData, IOException {
+    default T key(byte[] key)
+            throws SOPGPException.KeyCannotSign,
+            SOPGPException.BadData,
+            SOPGPException.UnsupportedAsymmetricAlgo,
+            IOException {
         return key(new ByteArrayInputStream(key));
     }
 
@@ -53,8 +61,12 @@ public interface AbstractSign<T> {
      *
      * @param password password
      * @return builder instance
+     * @throws sop.exception.SOPGPException.UnsupportedOption if key passwords are not supported
+     * @throws sop.exception.SOPGPException.PasswordNotHumanReadable if the provided passphrase is not human-readable
      */
-    default T withKeyPassword(String password) {
+    default T withKeyPassword(String password)
+            throws SOPGPException.UnsupportedOption,
+            SOPGPException.PasswordNotHumanReadable {
         return withKeyPassword(password.getBytes(Charset.forName("UTF8")));
     }
 
@@ -63,30 +75,11 @@ public interface AbstractSign<T> {
      *
      * @param password password
      * @return builder instance
+     * @throws sop.exception.SOPGPException.UnsupportedOption if key passwords are not supported
+     * @throws sop.exception.SOPGPException.PasswordNotHumanReadable if the provided passphrase is not human-readable
      */
-    T withKeyPassword(byte[] password);
+    T withKeyPassword(byte[] password)
+            throws SOPGPException.UnsupportedOption,
+            SOPGPException.PasswordNotHumanReadable;
 
-    /**
-     * Signs data.
-     *
-     * @param data input stream containing data
-     * @return ready
-     *
-     * @throws IOException in case of an IO error
-     * @throws sop.exception.SOPGPException.ExpectedText if text data was expected, but binary data was encountered
-     */
-    ReadyWithResult<SigningResult> data(InputStream data) throws IOException, SOPGPException.ExpectedText;
-
-    /**
-     * Signs data.
-     *
-     * @param data byte array containing data
-     * @return ready
-     *
-     * @throws IOException in case of an IO error
-     * @throws sop.exception.SOPGPException.ExpectedText if text data was expected, but binary data was encountered
-     */
-    default ReadyWithResult<SigningResult> data(byte[] data) throws IOException, SOPGPException.ExpectedText {
-        return data(new ByteArrayInputStream(data));
-    }
 }

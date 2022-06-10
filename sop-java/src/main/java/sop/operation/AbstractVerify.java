@@ -7,6 +7,7 @@ package sop.operation;
 import sop.exception.SOPGPException;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -24,7 +25,8 @@ public interface AbstractVerify<T> {
      * @param timestamp timestamp
      * @return builder instance
      */
-    T notBefore(Date timestamp) throws SOPGPException.UnsupportedOption;
+    T notBefore(Date timestamp)
+            throws SOPGPException.UnsupportedOption;
 
     /**
      * Makes the SOP implementation consider signatures after this date invalid.
@@ -32,23 +34,34 @@ public interface AbstractVerify<T> {
      * @param timestamp timestamp
      * @return builder instance
      */
-    T notAfter(Date timestamp) throws SOPGPException.UnsupportedOption;
+    T notAfter(Date timestamp)
+            throws SOPGPException.UnsupportedOption;
 
     /**
      * Add one or more verification cert.
      *
      * @param cert input stream containing the encoded certs
      * @return builder instance
+     *
+     * @throws sop.exception.SOPGPException.BadData if the input stream does not contain an OpenPGP certificate
+     * @throws IOException in case of an IO error
      */
-    T cert(InputStream cert) throws SOPGPException.BadData;
+    T cert(InputStream cert)
+            throws SOPGPException.BadData,
+            IOException;
 
     /**
      * Add one or more verification cert.
      *
      * @param cert byte array containing the encoded certs
      * @return builder instance
+     *
+     * @throws sop.exception.SOPGPException.BadData if the byte array does not contain an OpenPGP certificate
+     * @throws IOException in case of an IO error
      */
-    default T cert(byte[] cert) throws SOPGPException.BadData {
+    default T cert(byte[] cert)
+            throws SOPGPException.BadData,
+            IOException {
         return cert(new ByteArrayInputStream(cert));
     }
 

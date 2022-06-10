@@ -145,7 +145,7 @@ public class VerifyCmdTest {
 
     @Test
     @ExpectSystemExitWithStatus(41)
-    public void cert_badDataCausesExit41() throws SOPGPException.BadData {
+    public void cert_badDataCausesExit41() throws SOPGPException.BadData, IOException {
         when(detachedVerify.cert((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), cert.getAbsolutePath()});
     }
@@ -158,7 +158,7 @@ public class VerifyCmdTest {
 
     @Test
     @ExpectSystemExitWithStatus(41)
-    public void signature_badDataCausesExit41() throws SOPGPException.BadData {
+    public void signature_badDataCausesExit41() throws SOPGPException.BadData, IOException {
         when(detachedVerify.signatures((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), cert.getAbsolutePath()});
     }

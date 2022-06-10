@@ -48,7 +48,7 @@ public class DecryptCmdTest {
     private Decrypt decrypt;
 
     @BeforeEach
-    public void mockComponents() throws SOPGPException.UnsupportedOption, SOPGPException.MissingArg, SOPGPException.BadData, SOPGPException.KeyIsProtected, SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.PasswordNotHumanReadable, SOPGPException.CannotDecrypt {
+    public void mockComponents() throws SOPGPException.UnsupportedOption, SOPGPException.MissingArg, SOPGPException.BadData, SOPGPException.KeyIsProtected, SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.PasswordNotHumanReadable, SOPGPException.CannotDecrypt, IOException {
         SOP sop = mock(SOP.class);
         decrypt = mock(Decrypt.class);
 
@@ -75,14 +75,14 @@ public class DecryptCmdTest {
 
     @Test
     @ExpectSystemExitWithStatus(19)
-    public void missingArgumentsExceptionCausesExit19() throws SOPGPException.MissingArg, SOPGPException.BadData, SOPGPException.CannotDecrypt {
+    public void missingArgumentsExceptionCausesExit19() throws SOPGPException.MissingArg, SOPGPException.BadData, SOPGPException.CannotDecrypt, IOException {
         when(decrypt.ciphertext((InputStream) any())).thenThrow(new SOPGPException.MissingArg("Missing arguments."));
         SopCLI.main(new String[] {"decrypt"});
     }
 
     @Test
     @ExpectSystemExitWithStatus(41)
-    public void badDataExceptionCausesExit41() throws SOPGPException.MissingArg, SOPGPException.BadData, SOPGPException.CannotDecrypt {
+    public void badDataExceptionCausesExit41() throws SOPGPException.MissingArg, SOPGPException.BadData, SOPGPException.CannotDecrypt, IOException {
         when(decrypt.ciphertext((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         SopCLI.main(new String[] {"decrypt"});
     }
@@ -223,14 +223,14 @@ public class DecryptCmdTest {
 
     @Test
     @ExpectSystemExitWithStatus(29)
-    public void assertUnableToDecryptExceptionResultsInExit29() throws SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData {
+    public void assertUnableToDecryptExceptionResultsInExit29() throws SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData, IOException {
         when(decrypt.ciphertext((InputStream) any())).thenThrow(new SOPGPException.CannotDecrypt());
         SopCLI.main(new String[] {"decrypt"});
     }
 
     @Test
     @ExpectSystemExitWithStatus(3)
-    public void assertNoSignatureExceptionCausesExit3() throws SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData {
+    public void assertNoSignatureExceptionCausesExit3() throws SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData, IOException {
         when(decrypt.ciphertext((InputStream) any())).thenReturn(new ReadyWithResult<DecryptionResult>() {
             @Override
             public DecryptionResult writeTo(OutputStream outputStream) throws SOPGPException.NoSignature {

@@ -5,9 +5,7 @@
 package sop.cli.picocli.commands;
 
 import picocli.CommandLine;
-import sop.MicAlg;
-import sop.ReadyWithResult;
-import sop.SigningResult;
+import sop.Ready;
 import sop.cli.picocli.SopCLI;
 import sop.enums.InlineSignAs;
 import sop.exception.SOPGPException;
@@ -15,7 +13,6 @@ import sop.operation.InlineSign;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,17 +40,10 @@ public class InlineSignCmd extends AbstractSopCmd {
             paramLabel = "PASSWORD")
     List<String> withKeyPassword = new ArrayList<>();
 
-    @CommandLine.Option(names = "--micalg-out",
-            descriptionKey = "sop.inline-sign.usage.option.micalg",
-            paramLabel = "MICALG")
-    String micAlgOut;
-
     @Override
     public void run() {
         InlineSign inlineSign = throwIfUnsupportedSubcommand(
                 SopCLI.getSop().inlineSign(), "inline-sign");
-
-        throwIfOutputExists(micAlgOut);
 
         if (type != null) {
             try {
@@ -100,16 +90,8 @@ public class InlineSignCmd extends AbstractSopCmd {
         }
 
         try {
-            ReadyWithResult<SigningResult> ready = inlineSign.data(System.in);
-            SigningResult result = ready.writeTo(System.out);
-
-            MicAlg micAlg = result.getMicAlg();
-            if (micAlgOut != null) {
-                // Write micalg out
-                OutputStream micAlgOutStream = getOutput(micAlgOut);
-                micAlg.writeTo(micAlgOutStream);
-                micAlgOutStream.close();
-            }
+            Ready ready = inlineSign.data(System.in);
+            ready.writeTo(System.out);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

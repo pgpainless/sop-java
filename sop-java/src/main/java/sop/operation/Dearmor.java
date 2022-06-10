@@ -22,7 +22,9 @@ public interface Dearmor {
      * @throws sop.exception.SOPGPException.BadData in case of non-OpenPGP data
      * @throws IOException in case of an IO error
      */
-    Ready data(InputStream data) throws SOPGPException.BadData, IOException;
+    Ready data(InputStream data)
+            throws SOPGPException.BadData,
+            IOException;
 
     /**
      * Dearmor armored OpenPGP data.
@@ -33,7 +35,9 @@ public interface Dearmor {
      * @throws sop.exception.SOPGPException.BadData in case of non-OpenPGP data
      * @throws IOException in case of an IO error
      */
-    default Ready data(byte[] data) throws SOPGPException.BadData, IOException {
+    default Ready data(byte[] data)
+            throws SOPGPException.BadData,
+            IOException {
         return data(new ByteArrayInputStream(data));
     }
 }

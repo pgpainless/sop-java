@@ -240,7 +240,7 @@ public abstract class SOPGPException extends RuntimeException {
     }
 
     /**
-     * A KEYS input is protected (locked) with a password, and sop cannot unlock it.
+     * A KEYS input is protected (locked) with a password and sop failed to unlock it.
      */
     public static class KeyIsProtected extends SOPGPException {
 
@@ -313,8 +313,7 @@ public abstract class SOPGPException extends RuntimeException {
     }
 
     /**
-     * Key not signature-capable (e.g. expired, revoked, unacceptable usage flags)
-     * (sop sign and sop encrypt with --sign-with).
+     * Key not signature-capable (e.g. expired, revoked, unacceptable usage flags).
      */
     public static class KeyCannotSign extends SOPGPException {
 
@@ -324,8 +323,8 @@ public abstract class SOPGPException extends RuntimeException {
             super();
         }
 
-        public KeyCannotSign(String s, KeyCannotSign keyCannotSign) {
-            super(s, keyCannotSign);
+        public KeyCannotSign(String s, Throwable throwable) {
+            super(s, throwable);
         }
 
         @Override

@@ -46,10 +46,12 @@ public interface Decrypt {
      * @return builder instance
      *
      * @throws sop.exception.SOPGPException.BadData if the {@link InputStream} doesn't provide an OpenPGP certificate
+     * @throws sop.exception.SOPGPException.UnsupportedAsymmetricAlgo if the cert uses an unsupported asymmetric algorithm
      * @throws IOException in case of an IO error
      */
     Decrypt verifyWithCert(InputStream cert)
             throws SOPGPException.BadData,
+            SOPGPException.UnsupportedAsymmetricAlgo,
             IOException;
 
     /**
@@ -59,10 +61,13 @@ public interface Decrypt {
      * @return builder instance
      *
      * @throws sop.exception.SOPGPException.BadData if the byte array doesn't contain an OpenPGP certificate
+     * @throws sop.exception.SOPGPException.UnsupportedAsymmetricAlgo if the cert uses an unsupported asymmetric algorithm
      * @throws IOException in case of an IO error
      */
     default Decrypt verifyWithCert(byte[] cert)
-            throws SOPGPException.BadData, IOException {
+            throws SOPGPException.BadData,
+            SOPGPException.UnsupportedAsymmetricAlgo,
+            IOException {
         return verifyWithCert(new ByteArrayInputStream(cert));
     }
 
@@ -98,10 +103,12 @@ public interface Decrypt {
      *
      * @throws sop.exception.SOPGPException.BadData if the {@link InputStream} does not provide an OpenPGP key
      * @throws sop.exception.SOPGPException.UnsupportedAsymmetricAlgo if the key uses an unsupported asymmetric algorithm
+     * @throws IOException in case of an IO error
      */
     Decrypt withKey(InputStream key)
             throws SOPGPException.BadData,
-            SOPGPException.UnsupportedAsymmetricAlgo;
+            SOPGPException.UnsupportedAsymmetricAlgo,
+            IOException;
 
     /**
      * Adds one or more decryption key.
@@ -109,14 +116,14 @@ public interface Decrypt {
      * @param key byte array containing the key(s)
      * @return builder instance
      *
-     * @throws sop.exception.SOPGPException.KeyIsProtected if the key is password protected
      * @throws sop.exception.SOPGPException.BadData if the byte array does not contain an OpenPGP key
      * @throws sop.exception.SOPGPException.UnsupportedAsymmetricAlgo if the key uses an unsupported asymmetric algorithm
+     * @throws IOException in case of an IO error
      */
     default Decrypt withKey(byte[] key)
-            throws SOPGPException.KeyIsProtected,
-            SOPGPException.BadData,
-            SOPGPException.UnsupportedAsymmetricAlgo {
+            throws SOPGPException.BadData,
+            SOPGPException.UnsupportedAsymmetricAlgo,
+            IOException {
         return withKey(new ByteArrayInputStream(key));
     }
 
@@ -125,8 +132,12 @@ public interface Decrypt {
      *
      * @param password password
      * @return builder instance
+     * @throws sop.exception.SOPGPException.UnsupportedOption if the implementation does not support key passwords
+     * @throws sop.exception.SOPGPException.PasswordNotHumanReadable if the password is not human-readable
      */
-    default Decrypt withKeyPassword(String password) {
+    default Decrypt withKeyPassword(String password)
+            throws SOPGPException.UnsupportedOption,
+            SOPGPException.PasswordNotHumanReadable {
         return withKeyPassword(password.getBytes(Charset.forName("UTF8")));
     }
 
@@ -135,8 +146,12 @@ public interface Decrypt {
      *
      * @param password password
      * @return builder instance
+     * @throws sop.exception.SOPGPException.UnsupportedOption if the implementation does not support key passwords
+     * @throws sop.exception.SOPGPException.PasswordNotHumanReadable if the password is not human-readable
      */
-    Decrypt withKeyPassword(byte[] password);
+    Decrypt withKeyPassword(byte[] password)
+            throws SOPGPException.UnsupportedOption,
+            SOPGPException.PasswordNotHumanReadable;
 
     /**
      * Decrypts the given ciphertext, returning verification results and plaintext.
@@ -144,11 +159,17 @@ public interface Decrypt {
      * @return ready with result
      *
      * @throws sop.exception.SOPGPException.BadData if the {@link InputStream} does not provide an OpenPGP message
-     * @throws sop.exception.SOPGPException.MissingArg in case of missing decryption method (password or key required)
+     * @throws sop.exception.SOPGPException.MissingArg if an argument required for decryption was not provided
      * @throws sop.exception.SOPGPException.CannotDecrypt in case decryption fails for some reason
+     * @throws sop.exception.SOPGPException.KeyIsProtected if the decryption key cannot be unlocked (e.g. missing passphrase)
+     * @throws IOException in case of an IO error
      */
     ReadyWithResult<DecryptionResult> ciphertext(InputStream ciphertext)
-            throws SOPGPException.BadData, SOPGPException.MissingArg, SOPGPException.CannotDecrypt;
+            throws SOPGPException.BadData,
+            SOPGPException.MissingArg,
+            SOPGPException.CannotDecrypt,
+            SOPGPException.KeyIsProtected,
+            IOException;
 
     /**
      * Decrypts the given ciphertext, returning verification results and plaintext.
@@ -158,9 +179,15 @@ public interface Decrypt {
      * @throws sop.exception.SOPGPException.BadData if the byte array does not contain an encrypted OpenPGP message
      * @throws sop.exception.SOPGPException.MissingArg in case of missing decryption method (password or key required)
      * @throws sop.exception.SOPGPException.CannotDecrypt in case decryption fails for some reason
+     * @throws sop.exception.SOPGPException.KeyIsProtected if the decryption key cannot be unlocked (e.g. missing passphrase)
+     * @throws IOException in case of an IO error
      */
     default ReadyWithResult<DecryptionResult> ciphertext(byte[] ciphertext)
-        throws SOPGPException.BadData, SOPGPException.MissingArg, SOPGPException.CannotDecrypt {
+            throws SOPGPException.BadData,
+            SOPGPException.MissingArg,
+            SOPGPException.CannotDecrypt,
+            SOPGPException.KeyIsProtected,
+            IOException {
         return ciphertext(new ByteArrayInputStream(ciphertext));
     }
 }

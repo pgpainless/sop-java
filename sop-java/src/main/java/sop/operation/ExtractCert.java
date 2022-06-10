@@ -29,7 +29,9 @@ public interface ExtractCert {
      * @throws IOException in case of an IO error
      * @throws sop.exception.SOPGPException.BadData if the {@link InputStream} does not contain an OpenPGP key
      */
-    Ready key(InputStream keyInputStream) throws IOException, SOPGPException.BadData;
+    Ready key(InputStream keyInputStream)
+            throws IOException,
+            SOPGPException.BadData;
 
     /**
      * Extract the cert(s) from the provided key(s).
@@ -40,7 +42,9 @@ public interface ExtractCert {
      * @throws IOException in case of an IO error
      * @throws sop.exception.SOPGPException.BadData if the byte array does not contain an OpenPGP key
      */
-    default Ready key(byte[] key) throws IOException, SOPGPException.BadData {
+    default Ready key(byte[] key)
+            throws IOException,
+            SOPGPException.BadData {
         return key(new ByteArrayInputStream(key));
     }
 }

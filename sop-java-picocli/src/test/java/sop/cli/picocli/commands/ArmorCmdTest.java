@@ -32,7 +32,7 @@ public class ArmorCmdTest {
     private SOP sop;
 
     @BeforeEach
-    public void mockComponents() throws SOPGPException.BadData {
+    public void mockComponents() throws SOPGPException.BadData, IOException {
         armor = mock(Armor.class);
         sop = mock(SOP.class);
         when(sop.armor()).thenReturn(armor);
@@ -56,7 +56,7 @@ public class ArmorCmdTest {
     }
 
     @Test
-    public void assertDataIsAlwaysCalled() throws SOPGPException.BadData {
+    public void assertDataIsAlwaysCalled() throws SOPGPException.BadData, IOException {
         SopCLI.main(new String[] {"armor"});
         verify(armor, times(1)).data((InputStream) any());
     }
@@ -77,7 +77,7 @@ public class ArmorCmdTest {
 
     @Test
     @ExpectSystemExitWithStatus(41)
-    public void ifBadDataExit41() throws SOPGPException.BadData {
+    public void ifBadDataExit41() throws SOPGPException.BadData, IOException {
         when(armor.data((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
 
         SopCLI.main(new String[] {"armor"});

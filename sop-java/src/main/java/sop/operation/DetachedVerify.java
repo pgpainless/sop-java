@@ -7,6 +7,7 @@ package sop.operation;
 import sop.exception.SOPGPException;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -19,16 +20,26 @@ public interface DetachedVerify extends AbstractVerify<DetachedVerify>, VerifySi
      * @param signatures input stream containing encoded, detached signatures.
      *
      * @return builder instance
+     *
+     * @throws sop.exception.SOPGPException.BadData if the input stream does not contain OpenPGP signatures
+     * @throws IOException in case of an IO error
      */
-    VerifySignatures signatures(InputStream signatures) throws SOPGPException.BadData;
+    VerifySignatures signatures(InputStream signatures)
+            throws SOPGPException.BadData,
+            IOException;
 
     /**
      * Provides the detached signatures.
      * @param signatures byte array containing encoded, detached signatures.
      *
      * @return builder instance
+     *
+     * @throws sop.exception.SOPGPException.BadData if the byte array does not contain OpenPGP signatures
+     * @throws IOException in case of an IO error
      */
-    default VerifySignatures signatures(byte[] signatures) throws SOPGPException.BadData {
+    default VerifySignatures signatures(byte[] signatures)
+            throws SOPGPException.BadData,
+            IOException {
         return signatures(new ByteArrayInputStream(signatures));
     }
 }
