@@ -57,40 +57,40 @@ public class SignCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(37)
+    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void as_invalidOptionCausesExit37() {
         SopCLI.main(new String[] {"sign", "--as", "Invalid", keyFile.getAbsolutePath()});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(37)
+    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void as_unsupportedOptionCausesExit37() throws SOPGPException.UnsupportedOption {
         when(detachedSign.mode(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting signing mode not supported."));
         SopCLI.main(new String[] {"sign", "--as", "binary", keyFile.getAbsolutePath()});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(61)
+    @ExpectSystemExitWithStatus(SOPGPException.MissingInput.EXIT_CODE)
     public void key_nonExistentKeyFileCausesExit61() {
         SopCLI.main(new String[] {"sign", "invalid.asc"});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(67)
+    @ExpectSystemExitWithStatus(SOPGPException.KeyIsProtected.EXIT_CODE)
     public void key_keyIsProtectedCausesExit67() throws SOPGPException.KeyIsProtected, IOException, SOPGPException.BadData {
         when(detachedSign.key((InputStream) any())).thenThrow(new SOPGPException.KeyIsProtected());
         SopCLI.main(new String[] {"sign", keyFile.getAbsolutePath()});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(41)
+    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
     public void key_badDataCausesExit41() throws SOPGPException.KeyIsProtected, IOException, SOPGPException.BadData {
         when(detachedSign.key((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         SopCLI.main(new String[] {"sign", keyFile.getAbsolutePath()});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(19)
+    @ExpectSystemExitWithStatus(SOPGPException.MissingArg.EXIT_CODE)
     public void key_missingKeyFileCausesExit19() {
         SopCLI.main(new String[] {"sign"});
     }
@@ -120,7 +120,7 @@ public class SignCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(53)
+    @ExpectSystemExitWithStatus(SOPGPException.ExpectedText.EXIT_CODE)
     public void data_expectedTextExceptionCausesExit53() throws IOException, SOPGPException.ExpectedText {
         when(detachedSign.data((InputStream) any())).thenThrow(new SOPGPException.ExpectedText());
         SopCLI.main(new String[] {"sign", keyFile.getAbsolutePath()});

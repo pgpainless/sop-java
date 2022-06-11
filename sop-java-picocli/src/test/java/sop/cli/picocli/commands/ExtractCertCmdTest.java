@@ -68,7 +68,7 @@ public class ExtractCertCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(41)
+    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
     public void key_badDataCausesExit41() throws IOException, SOPGPException.BadData {
         when(extractCert.key((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         SopCLI.main(new String[] {"extract-cert"});

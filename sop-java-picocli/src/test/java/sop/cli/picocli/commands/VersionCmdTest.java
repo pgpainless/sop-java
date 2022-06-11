@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sop.SOP;
 import sop.cli.picocli.SopCLI;
+import sop.exception.SOPGPException;
 import sop.operation.Version;
 
 public class VersionCmdTest {
@@ -53,7 +54,7 @@ public class VersionCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(37)
+    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void assertInvalidOptionResultsInExit37() {
         SopCLI.main(new String[] {"version", "--invalid"});
     }

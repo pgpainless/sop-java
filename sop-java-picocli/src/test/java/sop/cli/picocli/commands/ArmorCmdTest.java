@@ -62,13 +62,13 @@ public class ArmorCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(37)
+    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void assertThrowsForInvalidLabel() {
         SopCLI.main(new String[] {"armor", "--label", "Invalid"});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(37)
+    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void ifLabelsUnsupportedExit37() throws SOPGPException.UnsupportedOption {
         when(armor.label(any())).thenThrow(new SOPGPException.UnsupportedOption("Custom Armor labels are not supported."));
 
@@ -76,7 +76,7 @@ public class ArmorCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(41)
+    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
     public void ifBadDataExit41() throws SOPGPException.BadData, IOException {
         when(armor.data((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
 

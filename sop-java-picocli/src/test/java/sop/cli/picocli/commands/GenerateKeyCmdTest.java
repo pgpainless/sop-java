@@ -69,7 +69,7 @@ public class GenerateKeyCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(19)
+    @ExpectSystemExitWithStatus(SOPGPException.MissingArg.EXIT_CODE)
     public void missingArgumentCausesExit19() throws SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.MissingArg, IOException {
         // TODO: RFC4880-bis and the current Stateless OpenPGP CLI spec allow keys to have no user-ids,
         //  so we might want to change this test in the future.
@@ -78,7 +78,7 @@ public class GenerateKeyCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(13)
+    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedAsymmetricAlgo.EXIT_CODE)
     public void unsupportedAsymmetricAlgorithmCausesExit13() throws SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.MissingArg, IOException {
         when(generateKey.generate()).thenThrow(new SOPGPException.UnsupportedAsymmetricAlgo("Unsupported asymmetric algorithm.", new Exception()));
         SopCLI.main(new String[] {"generate-key", "Alice"});

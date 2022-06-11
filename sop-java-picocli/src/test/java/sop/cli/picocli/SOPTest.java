@@ -14,6 +14,7 @@ import java.util.List;
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import org.junit.jupiter.api.Test;
 import sop.SOP;
+import sop.exception.SOPGPException;
 import sop.operation.Armor;
 import sop.operation.Dearmor;
 import sop.operation.Decrypt;
@@ -30,7 +31,7 @@ import sop.operation.Version;
 public class SOPTest {
 
     @Test
-    @ExpectSystemExitWithStatus(69)
+    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedSubcommand.EXIT_CODE)
     public void assertExitOnInvalidSubcommand() {
         SOP sop = mock(SOP.class);
         SopCLI.setSopInstance(sop);
@@ -125,7 +126,8 @@ public class SOPTest {
 
         for (String[] command : commands) {
             int exit = SopCLI.execute(command);
-            assertEquals(69, exit, "Unexpected exit code for non-implemented command " + Arrays.toString(command) + ": " + exit);
+            assertEquals(SOPGPException.UnsupportedSubcommand.EXIT_CODE, exit,
+                    "Unexpected exit code for non-implemented command " + Arrays.toString(command) + ": " + exit);
         }
     }
 }

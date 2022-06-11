@@ -93,7 +93,7 @@ public class VerifyCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(37)
+    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void notAfter_unsupportedOptionCausesExit37() throws SOPGPException.UnsupportedOption {
         when(detachedVerify.notAfter(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting upper signature date boundary not supported."));
         SopCLI.main(new String[] {"verify", "--not-after", "2019-10-29T18:36:45Z", signature.getAbsolutePath(), cert.getAbsolutePath()});
@@ -120,7 +120,7 @@ public class VerifyCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(37)
+    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void notBefore_unsupportedOptionCausesExit37() throws SOPGPException.UnsupportedOption {
         when(detachedVerify.notBefore(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting lower signature date boundary not supported."));
         SopCLI.main(new String[] {"verify", "--not-before", "2019-10-29T18:36:45Z", signature.getAbsolutePath(), cert.getAbsolutePath()});
@@ -138,40 +138,40 @@ public class VerifyCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(61)
+    @ExpectSystemExitWithStatus(SOPGPException.MissingInput.EXIT_CODE)
     public void cert_fileNotFoundCausesExit61() {
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), "invalid.asc"});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(41)
+    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
     public void cert_badDataCausesExit41() throws SOPGPException.BadData, IOException {
         when(detachedVerify.cert((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), cert.getAbsolutePath()});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(61)
+    @ExpectSystemExitWithStatus(SOPGPException.MissingInput.EXIT_CODE)
     public void signature_fileNotFoundCausesExit61() {
         SopCLI.main(new String[] {"verify", "invalid.sig", cert.getAbsolutePath()});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(41)
+    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
     public void signature_badDataCausesExit41() throws SOPGPException.BadData, IOException {
         when(detachedVerify.signatures((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), cert.getAbsolutePath()});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(3)
+    @ExpectSystemExitWithStatus(SOPGPException.NoSignature.EXIT_CODE)
     public void data_noSignaturesCausesExit3() throws SOPGPException.NoSignature, IOException, SOPGPException.BadData {
         when(detachedVerify.data((InputStream) any())).thenThrow(new SOPGPException.NoSignature());
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), cert.getAbsolutePath()});
     }
 
     @Test
-    @ExpectSystemExitWithStatus(41)
+    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
     public void data_badDataCausesExit41() throws SOPGPException.NoSignature, IOException, SOPGPException.BadData {
         when(detachedVerify.data((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         SopCLI.main(new String[] {"verify", signature.getAbsolutePath(), cert.getAbsolutePath()});

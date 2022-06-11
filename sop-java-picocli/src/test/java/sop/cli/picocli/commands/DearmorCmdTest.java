@@ -53,7 +53,7 @@ public class DearmorCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(41)
+    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
     public void assertBadDataCausesExit41() throws IOException, SOPGPException.BadData {
         when(dearmor.data((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException("invalid armor")));
         SopCLI.main(new String[] {"dearmor"});

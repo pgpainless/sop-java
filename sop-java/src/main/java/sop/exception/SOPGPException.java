@@ -25,7 +25,7 @@ public abstract class SOPGPException extends RuntimeException {
     public abstract int getExitCode();
 
     /**
-     * No acceptable signatures found (sop verify).
+     * No acceptable signatures found (sop verify, inline-verify).
      */
     public static class NoSignature extends SOPGPException {
 
@@ -46,7 +46,7 @@ public abstract class SOPGPException extends RuntimeException {
     }
 
     /**
-     * Asymmetric algorithm unsupported (sop encrypt).
+     * Asymmetric algorithm unsupported (sop encrypt, sign, inline-sign).
      */
     public static class UnsupportedAsymmetricAlgo extends SOPGPException {
 
@@ -250,6 +250,10 @@ public abstract class SOPGPException extends RuntimeException {
             super();
         }
 
+        public KeyIsProtected(String message) {
+            super(message);
+        }
+
         public KeyIsProtected(String message, Throwable cause) {
             super(message, cause);
         }
@@ -295,8 +299,10 @@ public abstract class SOPGPException extends RuntimeException {
     }
 
     /**
-     * A indirect input parameter is a special designator (it starts with @),
-     * and a filename matching the designator is actually present.
+     * Exception that gets thrown if a special designator (starting with @) is given, but the filesystem contains
+     * a file matching the designator.
+     *
+     * E.g. <pre>@ENV:FOO</pre> is given, but <pre>./@ENV:FOO</pre> exists on the filesystem.
      */
     public static class AmbiguousInput extends SOPGPException {
 
