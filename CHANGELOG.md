@@ -6,6 +6,22 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 4.0.0
+- Switch to new versioning format to indicate implemented SOP version
+- Implement SOP specification version 04
+  - Add `--with-key-password` to `sop generate-key`
+  - Add `--with-key-password` to `sop sign`
+  - Add `--with-key-password` to `sop encrypt`
+  - Add `--with-key-password` to `sop decrypt`
+  - Rename `sop detach-inband-signature-and-message` to `sop inline-detach`
+  - `sop inline-detach`: Add support for inline-signed messages
+  - Implement `sop inline-sign`
+  - Implement `sop inline-verify`
+- Rename `Sign` to `DetachedSign`
+- Rename `Verify` to `DetachedVerify`
+- `SignAs`: Remove `Mime` option
+- `sop-java-picocli`: Implement i18n and add German translation
+
 ## 1.2.3
 - Bump Mockito version to `4.5.1`
 
