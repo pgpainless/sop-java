@@ -12,10 +12,15 @@ import java.nio.file.Files;
 
 public class TestFileUtil {
 
-    public static File writeTempStringFile(String string) throws IOException {
-        File tempDir = Files.createTempDirectory("tmpDir").toFile();
+    public static File createTempDir() throws IOException {
+        File tempDir = Files.createTempDirectory("tmpFir").toFile();
         tempDir.deleteOnExit();
         tempDir.mkdirs();
+        return tempDir;
+    }
+
+    public static File writeTempStringFile(String string) throws IOException {
+        File tempDir = createTempDir();
 
         File passwordFile = new File(tempDir, "file");
         passwordFile.createNewFile();
