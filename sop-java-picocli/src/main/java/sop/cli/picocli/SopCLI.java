@@ -72,8 +72,7 @@ public class SopCLI {
         CommandLine gen = cmd.getSubcommands().get("generate-completion");
         gen.getCommandSpec().usageMessage().hidden(true);
 
-        cmd.setCommandName(EXECUTABLE_NAME)
-                .setExecutionExceptionHandler(new SOPExecutionExceptionHandler())
+        cmd.setExecutionExceptionHandler(new SOPExecutionExceptionHandler())
                 .setExitCodeExceptionMapper(new SOPExceptionExitCodeMapper())
                 .setCaseInsensitiveEnumValuesAllowed(true);
 
