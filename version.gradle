@@ -10,7 +10,7 @@ allprojects {
         javaSourceCompatibility = 1.8
         junitVersion = '5.8.2'
         junitSysExitVersion = '1.1.2'
-        picocliVersion = '4.6.3'
+        picocliVersion = '4.7.0'
         mockitoVersion = '4.5.1'
         jsrVersion = '3.0.2'
     }

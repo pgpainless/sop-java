@@ -17,26 +17,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 @CommandLine.Command(name = "inline-sign",
-        resourceBundle = "sop",
+        resourceBundle = "inline-sign",
         exitCodeOnInvalidInput = 37)
 public class InlineSignCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
-            descriptionKey = "sop.inline-sign.usage.option.armor",
+            descriptionKey = "usage.option.armor",
             negatable = true)
     boolean armor = true;
 
     @CommandLine.Option(names = "--as",
-            descriptionKey = "sop.inline-sign.usage.option.as",
+            descriptionKey = "usage.option.as",
             paramLabel = "{binary|text|cleartextsigned}")
     InlineSignAs type;
 
-    @CommandLine.Parameters(descriptionKey = "sop.inline-sign.usage.parameter.keys",
+    @CommandLine.Parameters(descriptionKey = "usage.parameter.keys",
             paramLabel = "KEYS")
     List<String> secretKeyFile = new ArrayList<>();
 
     @CommandLine.Option(names = "--with-key-password",
-            descriptionKey = "sop.inline-sign.usage.option.with_key_password",
+            descriptionKey = "usage.option.with_key_password",
             paramLabel = "PASSWORD")
     List<String> withKeyPassword = new ArrayList<>();
 

@@ -17,36 +17,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 @CommandLine.Command(name = "encrypt",
-        resourceBundle = "sop",
+        resourceBundle = "encrypt",
         exitCodeOnInvalidInput = 37)
 public class EncryptCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
-            descriptionKey = "sop.encrypt.usage.option.armor",
+            descriptionKey = "usage.option.armor",
             negatable = true)
     boolean armor = true;
 
     @CommandLine.Option(names = {"--as"},
-            descriptionKey = "sop.encrypt.usage.option.type",
+            descriptionKey = "usage.option.type",
             paramLabel = "{binary|text}")
     EncryptAs type;
 
     @CommandLine.Option(names = "--with-password",
-            descriptionKey = "sop.encrypt.usage.option.with_password",
+            descriptionKey = "usage.option.with_password",
             paramLabel = "PASSWORD")
     List<String> withPassword = new ArrayList<>();
 
     @CommandLine.Option(names = "--sign-with",
-            descriptionKey = "sop.encrypt.usage.option.sign_with",
+            descriptionKey = "usage.option.sign_with",
             paramLabel = "KEY")
     List<String> signWith = new ArrayList<>();
 
     @CommandLine.Option(names = "--with-key-password",
-            descriptionKey = "sop.encrypt.usage.option.with_key_password",
+            descriptionKey = "usage.option.with_key_password",
             paramLabel = "PASSWORD")
     List<String> withKeyPassword = new ArrayList<>();
 
-    @CommandLine.Parameters(descriptionKey = "sop.encrypt.usage.param.certs",
+    @CommandLine.Parameters(descriptionKey = "usage.param.certs",
             index = "0..*",
             paramLabel = "CERTS")
     List<String> certs = new ArrayList<>();

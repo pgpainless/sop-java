@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @CommandLine.Command(name = "decrypt",
-        resourceBundle = "sop",
+        resourceBundle = "decrypt",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class DecryptCmd extends AbstractSopCmd {
 
@@ -40,49 +40,49 @@ public class DecryptCmd extends AbstractSopCmd {
 
     @CommandLine.Option(
             names = {OPT_SESSION_KEY_OUT},
-            descriptionKey = "sop.decrypt.usage.option.session_key_out",
+            descriptionKey = "usage.option.session_key_out",
             paramLabel = "SESSIONKEY")
     String sessionKeyOut;
 
     @CommandLine.Option(
             names = {OPT_WITH_SESSION_KEY},
-            descriptionKey = "sop.decrypt.usage.option.with_session_key",
+            descriptionKey = "usage.option.with_session_key",
             paramLabel = "SESSIONKEY")
     List<String> withSessionKey = new ArrayList<>();
 
     @CommandLine.Option(
             names = {OPT_WITH_PASSWORD},
-            descriptionKey = "sop.decrypt.usage.option.with_password",
+            descriptionKey = "usage.option.with_password",
             paramLabel = "PASSWORD")
     List<String> withPassword = new ArrayList<>();
 
     @CommandLine.Option(names = {OPT_VERIFY_OUT},
-            descriptionKey = "sop.decrypt.usage.option.verify_out",
+            descriptionKey = "usage.option.verify_out",
             paramLabel = "VERIFICATIONS")
     String verifyOut;
 
     @CommandLine.Option(names = {OPT_VERIFY_WITH},
-            descriptionKey = "sop.decrypt.usage.option.certs",
+            descriptionKey = "usage.option.certs",
             paramLabel = "CERT")
     List<String> certs = new ArrayList<>();
 
     @CommandLine.Option(names = {OPT_NOT_BEFORE},
-            descriptionKey = "sop.decrypt.usage.option.not_before",
+            descriptionKey = "usage.option.not_before",
             paramLabel = "DATE")
     String notBefore = "-";
 
     @CommandLine.Option(names = {OPT_NOT_AFTER},
-            descriptionKey = "sop.decrypt.usage.option.not_after",
+            descriptionKey = "usage.option.not_after",
             paramLabel = "DATE")
     String notAfter = "now";
 
     @CommandLine.Parameters(index = "0..*",
-            descriptionKey = "sop.decrypt.usage.param.keys",
+            descriptionKey = "usage.param.keys",
             paramLabel = "KEY")
     List<String> keys = new ArrayList<>();
 
     @CommandLine.Option(names = {OPT_WITH_KEY_PASSWORD},
-    descriptionKey = "sop.decrypt.usage.option.with_key_password",
+    descriptionKey = "usage.option.with_key_password",
     paramLabel = "PASSWORD")
     List<String> withKeyPassword = new ArrayList<>();
 
