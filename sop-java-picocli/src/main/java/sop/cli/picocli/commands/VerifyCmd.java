@@ -17,28 +17,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 @CommandLine.Command(name = "verify",
-        resourceBundle = "sop",
+        resourceBundle = "detached-verify",
         exitCodeOnInvalidInput = 37)
 public class VerifyCmd extends AbstractSopCmd {
 
     @CommandLine.Parameters(index = "0",
-            descriptionKey = "sop.verify.usage.parameter.signature",
+            descriptionKey = "usage.parameter.signature",
             paramLabel = "SIGNATURE")
     String signature;
 
     @CommandLine.Parameters(index = "0..*",
             arity = "1..*",
-            descriptionKey = "sop.verify.usage.parameter.certs",
+            descriptionKey = "usage.parameter.certs",
             paramLabel = "CERT")
     List<String> certificates = new ArrayList<>();
 
     @CommandLine.Option(names = {"--not-before"},
-            descriptionKey = "sop.verify.usage.option.not_before",
+            descriptionKey = "usage.option.not_before",
             paramLabel = "DATE")
     String notBefore = "-";
 
     @CommandLine.Option(names = {"--not-after"},
-            descriptionKey = "sop.verify.usage.option.not_after",
+            descriptionKey = "usage.option.not_after",
             paramLabel = "DATE")
     String notAfter = "now";
 

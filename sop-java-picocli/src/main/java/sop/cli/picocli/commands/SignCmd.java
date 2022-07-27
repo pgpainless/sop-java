@@ -20,31 +20,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 @CommandLine.Command(name = "sign",
-        resourceBundle = "sop",
+        resourceBundle = "detached-sign",
         exitCodeOnInvalidInput = 37)
 public class SignCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
-            descriptionKey = "sop.sign.usage.option.armor",
+            descriptionKey = "usage.option.armor",
             negatable = true)
     boolean armor = true;
 
     @CommandLine.Option(names = "--as",
-            descriptionKey = "sop.sign.usage.option.as",
+            descriptionKey = "usage.option.as",
             paramLabel = "{binary|text}")
     SignAs type;
 
-    @CommandLine.Parameters(descriptionKey = "sop.sign.usage.parameter.keys",
+    @CommandLine.Parameters(descriptionKey = "usage.parameter.keys",
             paramLabel = "KEYS")
     List<String> secretKeyFile = new ArrayList<>();
 
     @CommandLine.Option(names = "--with-key-password",
-            descriptionKey = "sop.sign.usage.option.with_key_password",
+            descriptionKey = "usage.option.with_key_password",
             paramLabel = "PASSWORD")
     List<String> withKeyPassword = new ArrayList<>();
 
     @CommandLine.Option(names = "--micalg-out",
-            descriptionKey = "sop.sign.usage.option.micalg_out",
+            descriptionKey = "usage.option.micalg_out",
             paramLabel = "MICALG")
     String micAlgOut;
 

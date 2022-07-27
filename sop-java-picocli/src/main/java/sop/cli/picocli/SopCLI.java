@@ -64,15 +64,20 @@ public class SopCLI {
         // Set locale
         new CommandLine(new InitLocale()).parseArgs(args);
 
+        // get error message bundle
         cliMsg = ResourceBundle.getBundle("sop");
 
         // Prepare CLI
         CommandLine cmd = new CommandLine(SopCLI.class);
-        // Hide generate-completion command
-        CommandLine gen = cmd.getSubcommands().get("generate-completion");
-        gen.getCommandSpec().usageMessage().hidden(true);
 
-        cmd.setExecutionExceptionHandler(new SOPExecutionExceptionHandler())
+        // explicitly set help command resource bundle
+        cmd.getSubcommands().get("help").setResourceBundle(ResourceBundle.getBundle("help"));
+
+        // Hide generate-completion command
+        cmd.getSubcommands().get("generate-completion").getCommandSpec().usageMessage().hidden(true);
+
+        cmd.setCommandName(EXECUTABLE_NAME)
+                .setExecutionExceptionHandler(new SOPExecutionExceptionHandler())
                 .setExitCodeExceptionMapper(new SOPExceptionExitCodeMapper())
                 .setCaseInsensitiveEnumValuesAllowed(true);
 
