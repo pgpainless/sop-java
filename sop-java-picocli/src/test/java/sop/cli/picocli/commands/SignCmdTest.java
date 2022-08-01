@@ -23,6 +23,7 @@ import sop.ReadyWithResult;
 import sop.SOP;
 import sop.SigningResult;
 import sop.cli.picocli.SopCLI;
+import sop.cli.picocli.TestFileUtil;
 import sop.exception.SOPGPException;
 import sop.operation.DetachedSign;
 
@@ -30,6 +31,7 @@ public class SignCmdTest {
 
     DetachedSign detachedSign;
     File keyFile;
+    File passFile;
 
     @BeforeEach
     public void mockComponents() throws IOException, SOPGPException.ExpectedText {
@@ -47,6 +49,7 @@ public class SignCmdTest {
         SopCLI.setSopInstance(sop);
 
         keyFile = File.createTempFile("sign-", ".asc");
+        passFile = TestFileUtil.writeTempStringFile("sw0rdf1sh");
     }
 
     @Test
@@ -105,6 +108,12 @@ public class SignCmdTest {
     public void noArmor_passedDown() {
         SopCLI.main(new String[] {"sign", "--no-armor", keyFile.getAbsolutePath()});
         verify(detachedSign, times(1)).noArmor();
+    }
+
+    @Test
+    public void withKeyPassword_passedDown() {
+        SopCLI.main(new String[] {"sign", "--with-key-password", passFile.getAbsolutePath(), keyFile.getAbsolutePath()});
+        verify(detachedSign, times(1)).withKeyPassword("sw0rdf1sh");
     }
 
     @Test
