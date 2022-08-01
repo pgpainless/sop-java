@@ -123,4 +123,37 @@ public class AbstractSopCmdTest {
 
         assertThrows(SOPGPException.MissingInput.class, () -> abstractCmd.getInput(directory.getAbsolutePath()));
     }
+
+    @Test
+    public void getOutput_NullIllegalArg() {
+        assertThrows(IllegalArgumentException.class, () -> abstractCmd.getOutput(null));
+    }
+
+    @Test
+    public void getOutput_EmptyIllegalArg() {
+        assertThrows(IllegalArgumentException.class, () -> abstractCmd.getOutput(""));
+    }
+
+    @Test
+    public void getOutput_BlankIllegalArg() {
+        assertThrows(IllegalArgumentException.class, () -> abstractCmd.getOutput("  "));
+    }
+
+    @Test
+    public void getOutput_envUnsupportedSpecialPrefix() {
+        assertThrows(SOPGPException.UnsupportedSpecialPrefix.class, () -> abstractCmd.getOutput("@ENV:IS_ILLEGAL"));
+    }
+
+    @Test
+    public void getOutput_fdUnsupportedSpecialPrefix() {
+        assertThrows(SOPGPException.UnsupportedSpecialPrefix.class, () -> abstractCmd.getOutput("@FD:IS_ILLEGAL"));
+    }
+
+    @Test
+    public void getOutput_fileExists() throws IOException {
+        File testFile = TestFileUtil.createTempDir();
+        testFile.deleteOnExit();
+
+        assertThrows(SOPGPException.OutputExists.class, () -> abstractCmd.getOutput(testFile.getAbsolutePath()));
+    }
 }
