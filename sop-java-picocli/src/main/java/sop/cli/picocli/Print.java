@@ -6,18 +6,6 @@ package sop.cli.picocli;
 
 public class Print {
 
-    public static void errln(String string) {
-        // CHECKSTYLE:OFF
-        System.err.println(string);
-        // CHECKSTYLE:ON
-    }
-
-    public static void trace(Throwable e) {
-        // CHECKSTYLE:OFF
-        e.printStackTrace();
-        // CHECKSTYLE:ON
-    }
-
     public static void outln(String string) {
         // CHECKSTYLE:OFF
         System.out.println(string);
