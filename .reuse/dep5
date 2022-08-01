@@ -13,3 +13,8 @@ Source: https://pgpainless.org
 Files: gradle*
 Copyright: 2015 the original author or authors.
 License: Apache-2.0
+
+# Woodpecker build files
+Files: .woodpecker/*
+Copyright: 2022 the original author or authors.
+License: Apache-2.0

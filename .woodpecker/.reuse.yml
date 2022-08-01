@@ -1,0 +1,5 @@
+pipeline:
+  reuse:
+    image: fsfe/reuse:latest
+    commands:
+      - reuse lint

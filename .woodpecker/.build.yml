@@ -1,0 +1,7 @@
+pipeline:
+
+  run:
+    image: gradle:7.5-jdk8
+    commands:
+      - gradle --no-daemon assemble test check javadocAll jacocoRootReport coveralls
+    secrets: [COVERALLS_REPO_TOKEN]
