@@ -1,3 +1,5 @@
+# Code is licensed properly
+# See https://reuse.software/
 pipeline:
   reuse:
     image: fsfe/reuse:latest
