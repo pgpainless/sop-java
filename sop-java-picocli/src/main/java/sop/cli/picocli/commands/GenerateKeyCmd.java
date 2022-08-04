@@ -23,7 +23,7 @@ public class GenerateKeyCmd extends AbstractSopCmd {
             negatable = true)
     boolean armor = true;
 
-    @CommandLine.Parameters
+    @CommandLine.Parameters(paramLabel = "USERID")
     List<String> userId = new ArrayList<>();
 
     @CommandLine.Option(names = "--with-key-password",
