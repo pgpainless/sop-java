@@ -6,6 +6,10 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 4.0.1
+- Use shared resources for i18n
+  - Fix strings not being resolved properly when downstream renames `sop` command
+
 ## 4.0.0
 - Switch to new versioning format to indicate implemented SOP version
 - Implement SOP specification version 04
