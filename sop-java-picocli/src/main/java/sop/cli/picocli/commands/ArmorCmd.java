@@ -14,12 +14,11 @@ import sop.operation.Armor;
 import java.io.IOException;
 
 @CommandLine.Command(name = "armor",
-        resourceBundle = "sop",
+        resourceBundle = "msg_armor",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class ArmorCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = {"--label"},
-            descriptionKey = "sop.armor.usage.option.label",
             paramLabel = "{auto|sig|key|cert|message}")
     ArmorLabel label;
 

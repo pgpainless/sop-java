@@ -48,7 +48,7 @@ public abstract class AbstractSopCmd implements Runnable {
     }
 
     public AbstractSopCmd(@Nonnull Locale locale) {
-        messages = ResourceBundle.getBundle("sop", locale);
+        messages = ResourceBundle.getBundle("msg_sop", locale);
     }
 
     void throwIfOutputExists(String output) {

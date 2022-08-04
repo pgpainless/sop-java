@@ -9,7 +9,7 @@ import sop.cli.picocli.Print;
 import sop.cli.picocli.SopCLI;
 import sop.operation.Version;
 
-@CommandLine.Command(name = "version", resourceBundle = "sop",
+@CommandLine.Command(name = "version", resourceBundle = "msg_version",
         exitCodeOnInvalidInput = 37)
 public class VersionCmd extends AbstractSopCmd {
 
@@ -17,12 +17,10 @@ public class VersionCmd extends AbstractSopCmd {
     Exclusive exclusive;
 
     static class Exclusive {
-        @CommandLine.Option(names = "--extended",
-                descriptionKey = "sop.version.usage.option.extended")
+        @CommandLine.Option(names = "--extended")
         boolean extended;
 
-        @CommandLine.Option(names = "--backend",
-                descriptionKey = "sop.version.usage.option.backend")
+        @CommandLine.Option(names = "--backend")
         boolean backend;
     }
 

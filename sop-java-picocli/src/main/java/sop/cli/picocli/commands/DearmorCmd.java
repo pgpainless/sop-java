@@ -12,7 +12,7 @@ import sop.operation.Dearmor;
 import java.io.IOException;
 
 @CommandLine.Command(name = "dearmor",
-        resourceBundle = "sop",
+        resourceBundle = "msg_dearmor",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class DearmorCmd extends AbstractSopCmd {
 
