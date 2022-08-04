@@ -19,27 +19,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @CommandLine.Command(name = "inline-verify",
-        resourceBundle = "inline-verify",
+        resourceBundle = "msg_inline-verify",
         exitCodeOnInvalidInput = 37)
 public class InlineVerifyCmd extends AbstractSopCmd {
 
     @CommandLine.Parameters(arity = "1..*",
-            descriptionKey = "usage.parameter.certs",
             paramLabel = "CERT")
     List<String> certificates = new ArrayList<>();
 
     @CommandLine.Option(names = {"--not-before"},
-            descriptionKey = "usage.option.not_before",
             paramLabel = "DATE")
     String notBefore = "-";
 
     @CommandLine.Option(names = {"--not-after"},
-            descriptionKey = "usage.option.not_after",
             paramLabel = "DATE")
     String notAfter = "now";
 
-    @CommandLine.Option(names = "--verifications-out",
-            descriptionKey = "usage.option.verifications_out")
+    @CommandLine.Option(names = "--verifications-out")
     String verificationsOut;
 
     @Override

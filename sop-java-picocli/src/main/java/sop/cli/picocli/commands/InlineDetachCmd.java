@@ -14,18 +14,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 @CommandLine.Command(name = "inline-detach",
-        resourceBundle = "inline-detach",
+        resourceBundle = "msg_inline-detach",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class InlineDetachCmd extends AbstractSopCmd {
 
     @CommandLine.Option(
             names = {"--signatures-out"},
-            descriptionKey = "usage.option.signatures_out",
             paramLabel = "SIGNATURES")
     String signaturesOut;
 
     @CommandLine.Option(names = "--no-armor",
-            descriptionKey = "usage.option.armor",
             negatable = true)
     boolean armor = true;
 

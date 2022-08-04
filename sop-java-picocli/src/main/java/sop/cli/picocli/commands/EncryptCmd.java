@@ -17,37 +17,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 @CommandLine.Command(name = "encrypt",
-        resourceBundle = "encrypt",
+        resourceBundle = "msg_encrypt",
         exitCodeOnInvalidInput = 37)
 public class EncryptCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
-            descriptionKey = "usage.option.armor",
             negatable = true)
     boolean armor = true;
 
     @CommandLine.Option(names = {"--as"},
-            descriptionKey = "usage.option.type",
             paramLabel = "{binary|text}")
     EncryptAs type;
 
     @CommandLine.Option(names = "--with-password",
-            descriptionKey = "usage.option.with_password",
             paramLabel = "PASSWORD")
     List<String> withPassword = new ArrayList<>();
 
     @CommandLine.Option(names = "--sign-with",
-            descriptionKey = "usage.option.sign_with",
             paramLabel = "KEY")
     List<String> signWith = new ArrayList<>();
 
     @CommandLine.Option(names = "--with-key-password",
-            descriptionKey = "usage.option.with_key_password",
             paramLabel = "PASSWORD")
     List<String> withKeyPassword = new ArrayList<>();
 
-    @CommandLine.Parameters(descriptionKey = "usage.param.certs",
-            index = "0..*",
+    @CommandLine.Parameters(index = "0..*",
             paramLabel = "CERTS")
     List<String> certs = new ArrayList<>();
 

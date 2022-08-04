@@ -15,20 +15,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @CommandLine.Command(name = "generate-key",
-        resourceBundle = "generate-key",
+        resourceBundle = "msg_generate-key",
         exitCodeOnInvalidInput = 37)
 public class GenerateKeyCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
-            descriptionKey = "usage.option.armor",
             negatable = true)
     boolean armor = true;
 
-    @CommandLine.Parameters(descriptionKey = "usage.option.user_id")
+    @CommandLine.Parameters
     List<String> userId = new ArrayList<>();
 
     @CommandLine.Option(names = "--with-key-password",
-            descriptionKey = "usage.option.with_key_password",
             paramLabel = "PASSWORD")
     String withKeyPassword;
 

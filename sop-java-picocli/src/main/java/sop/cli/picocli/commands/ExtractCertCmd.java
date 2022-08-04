@@ -13,12 +13,11 @@ import sop.exception.SOPGPException;
 import sop.operation.ExtractCert;
 
 @CommandLine.Command(name = "extract-cert",
-        resourceBundle = "extract-cert",
+        resourceBundle = "msg_extract-cert",
         exitCodeOnInvalidInput = 37)
 public class ExtractCertCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",
-            descriptionKey = "usage.option.armor",
             negatable = true)
     boolean armor = true;
 

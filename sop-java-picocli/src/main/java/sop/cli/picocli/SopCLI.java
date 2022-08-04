@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
 
 @CommandLine.Command(
         name = "sop",
-        resourceBundle = "sop",
+        resourceBundle = "msg_sop",
         exitCodeOnInvalidInput = 69,
         subcommands = {
                 CommandLine.HelpCommand.class,
@@ -48,7 +48,7 @@ import java.util.ResourceBundle;
 public class SopCLI {
     // Singleton
     static SOP SOP_INSTANCE;
-    static ResourceBundle cliMsg = ResourceBundle.getBundle("sop");
+    static ResourceBundle cliMsg = ResourceBundle.getBundle("msg_sop");
 
     public static String EXECUTABLE_NAME = "sop";
 
@@ -65,13 +65,13 @@ public class SopCLI {
         new CommandLine(new InitLocale()).parseArgs(args);
 
         // get error message bundle
-        cliMsg = ResourceBundle.getBundle("sop");
+        cliMsg = ResourceBundle.getBundle("msg_sop");
 
         // Prepare CLI
         CommandLine cmd = new CommandLine(SopCLI.class);
 
         // explicitly set help command resource bundle
-        cmd.getSubcommands().get("help").setResourceBundle(ResourceBundle.getBundle("help"));
+        cmd.getSubcommands().get("help").setResourceBundle(ResourceBundle.getBundle("msg_help"));
 
         // Hide generate-completion command
         cmd.getSubcommands().get("generate-completion").getCommandSpec().usageMessage().hidden(true);
