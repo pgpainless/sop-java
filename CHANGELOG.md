@@ -6,6 +6,10 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 4.0.2-SNAPSHOT
+- Fix: `verify`: Do not include detached signature in list of certificates
+- Fix: `inline-verify`: Also include the first argument in list of certificates
+
 ## 4.0.1
 - Use shared resources for i18n
   - Fix strings not being resolved properly when downstream renames `sop` command
