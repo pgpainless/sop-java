@@ -23,7 +23,7 @@ import java.util.List;
         exitCodeOnInvalidInput = 37)
 public class InlineVerifyCmd extends AbstractSopCmd {
 
-    @CommandLine.Parameters(arity = "1..*",
+    @CommandLine.Parameters(arity = "0..*",
             paramLabel = "CERT")
     List<String> certificates = new ArrayList<>();
 

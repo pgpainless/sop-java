@@ -25,7 +25,7 @@ public class VerifyCmd extends AbstractSopCmd {
             paramLabel = "SIGNATURE")
     String signature;
 
-    @CommandLine.Parameters(index = "0..*",
+    @CommandLine.Parameters(index = "1..*",
             arity = "1..*",
             paramLabel = "CERT")
     List<String> certificates = new ArrayList<>();
