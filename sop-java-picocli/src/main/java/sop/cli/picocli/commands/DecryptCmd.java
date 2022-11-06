@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -137,7 +138,8 @@ public class DecryptCmd extends AbstractSopCmd {
                 } else {
                     SessionKey sessionKey = result.getSessionKey().get();
                     outputStream.write(sessionKey.getAlgorithm());
-                    outputStream.write(sessionKey.getKey());
+                    // noinspection CharsetObjectCanBeUsed
+                    outputStream.write(sessionKey.toString().getBytes(Charset.forName("UTF8")));
                 }
             }
         }
