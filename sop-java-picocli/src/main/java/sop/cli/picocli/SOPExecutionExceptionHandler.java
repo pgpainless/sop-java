@@ -19,8 +19,13 @@ public class SOPExecutionExceptionHandler implements CommandLine.IExecutionExcep
         // CHECKSTYLE:OFF
         if (ex.getMessage() != null) {
             commandLine.getErr().println(colorScheme.errorText(ex.getMessage()));
+        } else {
+            commandLine.getErr().println(ex.getClass().getName());
         }
-        ex.printStackTrace(commandLine.getErr());
+
+        if (SopCLI.stacktrace) {
+            ex.printStackTrace(commandLine.getErr());
+        }
         // CHECKSTYLE:ON
 
         return exitCode;

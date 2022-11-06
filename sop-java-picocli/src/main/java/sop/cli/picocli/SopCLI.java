@@ -52,6 +52,10 @@ public class SopCLI {
 
     public static String EXECUTABLE_NAME = "sop";
 
+    @CommandLine.Option(names = {"--stacktrace"}, description = "Print Stacktrace",
+            scope = CommandLine.ScopeType.INHERIT)
+    static boolean stacktrace;
+
     public static void main(String[] args) {
         int exitCode = execute(args);
         if (exitCode != 0) {
