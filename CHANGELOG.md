@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 4.0.2-SNAPSHOT
+## 4.0.2
 - Fix: `verify`: Do not include detached signature in list of certificates
 - Fix: `inline-verify`: Also include the first argument in list of certificates
 - Hide stacktraces by default and add `--stacktrace` option to print them
