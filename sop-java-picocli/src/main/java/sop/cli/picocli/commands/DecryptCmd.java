@@ -33,7 +33,7 @@ public class DecryptCmd extends AbstractSopCmd {
     private static final String OPT_NOT_BEFORE = "--not-before";
     private static final String OPT_NOT_AFTER = "--not-after";
     private static final String OPT_SESSION_KEY_OUT = "--session-key-out";
-    private static final String OPT_VERIFY_OUT = "--verify-out";
+    private static final String OPT_VERIFICATIONS_OUT = "--verifications-out";
     private static final String OPT_VERIFY_WITH = "--verify-with";
     private static final String OPT_WITH_KEY_PASSWORD = "--with-key-password";
 
@@ -53,7 +53,7 @@ public class DecryptCmd extends AbstractSopCmd {
             paramLabel = "PASSWORD")
     List<String> withPassword = new ArrayList<>();
 
-    @CommandLine.Option(names = {OPT_VERIFY_OUT},
+    @CommandLine.Option(names = {OPT_VERIFICATIONS_OUT, "--verify-out"}, // TODO: Remove --verify-out at some point
             paramLabel = "VERIFICATIONS")
     String verifyOut;
 
@@ -94,7 +94,7 @@ public class DecryptCmd extends AbstractSopCmd {
         setDecryptWith(keys, decrypt);
 
         if (verifyOut != null && certs.isEmpty()) {
-            String errorMsg = getMsg("sop.error.usage.option_requires_other_option", OPT_VERIFY_OUT, OPT_VERIFY_WITH);
+            String errorMsg = getMsg("sop.error.usage.option_requires_other_option", OPT_VERIFICATIONS_OUT, OPT_VERIFY_WITH);
             throw new SOPGPException.IncompleteVerification(errorMsg);
         }
 
