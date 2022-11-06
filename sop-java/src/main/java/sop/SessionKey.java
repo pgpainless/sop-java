@@ -12,7 +12,7 @@ import sop.util.HexUtil;
 
 public class SessionKey {
 
-    private static final Pattern PATTERN = Pattern.compile("^(\\d):([0-9a-fA-F]+)$");
+    private static final Pattern PATTERN = Pattern.compile("^(\\d):([0-9A-F]+)$");
 
     private final byte algorithm;
     private final byte[] sessionKey;
@@ -62,6 +62,7 @@ public class SessionKey {
     }
 
     public static SessionKey fromString(String string) {
+        string = string.trim().toUpperCase().replace("\n", "");
         Matcher matcher = PATTERN.matcher(string);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Provided session key does not match expected format.");

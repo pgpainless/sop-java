@@ -21,6 +21,14 @@ public class SessionKeyTest {
     }
 
     @Test
+    public void fromLowerStringTest() {
+        String string = "9:FCA4BEAF687F48059CACC14FB019125CD57392BAB7037C707835925CBF9F7BCD";
+        String lowercaseWithTrailingNewLine = "9:fca4beaf687f48059cacc14fb019125cd57392bab7037c707835925cbf9f7bcd\n";
+        SessionKey sessionKey = SessionKey.fromString(lowercaseWithTrailingNewLine);
+        assertEquals(string, sessionKey.toString());
+    }
+
+    @Test
     public void toStringTest() {
         SessionKey sessionKey = new SessionKey((byte) 9, HexUtil.hexToBytes("FCA4BEAF687F48059CACC14FB019125CD57392BAB7037C707835925CBF9F7BCD"));
         assertEquals("9:FCA4BEAF687F48059CACC14FB019125CD57392BAB7037C707835925CBF9F7BCD", sessionKey.toString());

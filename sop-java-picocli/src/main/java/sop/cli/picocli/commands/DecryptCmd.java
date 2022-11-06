@@ -175,24 +175,22 @@ public class DecryptCmd extends AbstractSopCmd {
     }
 
     private void setWithSessionKeys(List<String> withSessionKey, Decrypt decrypt) {
-        Pattern sessionKeyPattern = Pattern.compile("^\\d+:[0-9A-F]+$");
         for (String sessionKeyFile : withSessionKey) {
-            String sessionKey;
+            String sessionKeyString;
             try {
-                sessionKey = stringFromInputStream(getInput(sessionKeyFile));
+                sessionKeyString = stringFromInputStream(getInput(sessionKeyFile));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            if (!sessionKeyPattern.matcher(sessionKey).matches()) {
-                String errorMsg = getMsg("sop.error.input.malformed_session_key");
-                throw new IllegalArgumentException(errorMsg);
-            }
-            String[] split = sessionKey.split(":");
-            byte algorithm = (byte) Integer.parseInt(split[0]);
-            byte[] key = HexUtil.hexToBytes(split[1]);
-
+            SessionKey sessionKey;
             try {
-                decrypt.withSessionKey(new SessionKey(algorithm, key));
+                sessionKey = SessionKey.fromString(sessionKeyString);
+            } catch (IllegalArgumentException e) {
+                String errorMsg = getMsg("sop.error.input.malformed_session_key");
+                throw new IllegalArgumentException(errorMsg, e);
+            }
+            try {
+                decrypt.withSessionKey(sessionKey);
             } catch (SOPGPException.UnsupportedOption unsupportedOption) {
                 String errorMsg = getMsg("sop.error.feature_support.option_not_supported", OPT_WITH_SESSION_KEY);
                 throw new SOPGPException.UnsupportedOption(errorMsg, unsupportedOption);
