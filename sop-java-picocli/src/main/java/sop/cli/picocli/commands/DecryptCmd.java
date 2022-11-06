@@ -106,6 +106,9 @@ public class DecryptCmd extends AbstractSopCmd {
         } catch (SOPGPException.BadData badData) {
             String errorMsg = getMsg("sop.error.input.stdin_not_a_message");
             throw new SOPGPException.BadData(errorMsg, badData);
+        } catch (SOPGPException.CannotDecrypt e) {
+            String errorMsg = getMsg("sop.error.runtime.cannot_decrypt_message");
+            throw new SOPGPException.CannotDecrypt(errorMsg, e);
         } catch (IOException ioException) {
             throw new RuntimeException(ioException);
         }
