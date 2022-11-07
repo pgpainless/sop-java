@@ -6,6 +6,14 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 4.0.3-SNAPSHOT
+- `decrypt`: Rename option `--verify-out` to `--verifications-out`, but keep `--verify-out` as alias
+- Fix: `decrypt`: Flush output stream in order to prevent empty file as result of `--session-key-out`
+- Fix: Properly format session key for `--session-key-out`
+- Be less finicky about input session key formats
+  - Allow upper- and lowercase hexadecimal keys
+  - Allow trailing whitespace
+
 ## 4.0.2
 - Fix: `verify`: Do not include detached signature in list of certificates
 - Fix: `inline-verify`: Also include the first argument in list of certificates
