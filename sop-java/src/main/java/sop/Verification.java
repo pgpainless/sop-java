@@ -20,6 +20,15 @@ public class Verification {
         this.signingCertFingerprint = signingCertFingerprint;
     }
 
+    public static Verification fromString(String toString) {
+        String[] split = toString.trim().split(" ");
+        if (split.length != 3) {
+            throw new IllegalArgumentException("Verification must be of the format 'UTC-DATE OpenPGPFingerprint OpenPGPFingerprint'");
+        }
+
+        return new Verification(UTCUtil.parseUTCDate(split[0]), split[1], split[2]);
+    }
+
     /**
      * Return the signatures' creation time.
      *
@@ -54,5 +63,25 @@ public class Verification {
                 getSigningKeyFingerprint() +
                 ' ' +
                 getSigningCertFingerprint();
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Verification)) {
+            return false;
+        }
+        Verification other = (Verification) obj;
+        return toString().equals(other.toString());
     }
 }
