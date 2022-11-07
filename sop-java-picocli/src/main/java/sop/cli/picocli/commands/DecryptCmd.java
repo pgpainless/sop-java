@@ -12,17 +12,14 @@ import sop.Verification;
 import sop.cli.picocli.SopCLI;
 import sop.exception.SOPGPException;
 import sop.operation.Decrypt;
-import sop.util.HexUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @CommandLine.Command(name = "decrypt",
         resourceBundle = "msg_decrypt",
@@ -130,18 +127,20 @@ public class DecryptCmd extends AbstractSopCmd {
     }
 
     private void writeSessionKeyOut(DecryptionResult result) throws IOException {
-        if (sessionKeyOut != null) {
-            try (OutputStream outputStream = getOutput(sessionKeyOut)) {
-                if (!result.getSessionKey().isPresent()) {
-                    String errorMsg = getMsg("sop.error.runtime.no_session_key_extracted");
-                    throw new SOPGPException.UnsupportedOption(String.format(errorMsg, OPT_SESSION_KEY_OUT));
-                } else {
-                    SessionKey sessionKey = result.getSessionKey().get();
-                    outputStream.write(sessionKey.getAlgorithm());
-                    // noinspection CharsetObjectCanBeUsed
-                    outputStream.write(sessionKey.toString().getBytes(Charset.forName("UTF8")));
-                }
+        if (sessionKeyOut == null) {
+            return;
+        }
+        try (OutputStream outputStream = getOutput(sessionKeyOut)) {
+            if (!result.getSessionKey().isPresent()) {
+                String errorMsg = getMsg("sop.error.runtime.no_session_key_extracted");
+                throw new SOPGPException.UnsupportedOption(String.format(errorMsg, OPT_SESSION_KEY_OUT));
             }
+            SessionKey sessionKey = result.getSessionKey().get();
+            PrintWriter writer = new PrintWriter(outputStream);
+            // CHECKSTYLE:OFF
+            writer.println(sessionKey.toString());
+            // CHECKSTYLE:ON
+            writer.flush();
         }
     }
 
