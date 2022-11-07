@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 4.0.3-SNAPSHOT
+## 4.0.3
 - `decrypt`: Rename option `--verify-out` to `--verifications-out`, but keep `--verify-out` as alias
 - Fix: `decrypt`: Flush output stream in order to prevent empty file as result of `--session-key-out`
 - Fix: Properly format session key for `--session-key-out`
