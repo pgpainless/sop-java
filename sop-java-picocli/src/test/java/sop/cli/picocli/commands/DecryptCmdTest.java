@@ -4,28 +4,6 @@
 
 package sop.cli.picocli.commands;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Date;
-
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +20,26 @@ import sop.exception.SOPGPException;
 import sop.operation.Decrypt;
 import sop.util.HexUtil;
 import sop.util.UTCUtil;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DecryptCmdTest {
 
@@ -189,24 +187,32 @@ public class DecryptCmdTest {
     }
 
     @Test
-    public void assertSessionKeyIsProperlyWrittenToSessionKeyFile() throws SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData, IOException {
-        byte[] key = "C7CBDAF42537776F12509B5168793C26B93294E5ABDFA73224FB0177123E9137".getBytes(StandardCharsets.UTF_8);
+    public void assertSessionKeyAndVerificationsIsProperlyWrittenToSessionKeyFile() throws SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData, IOException {
+        Date signDate = UTCUtil.parseUTCDate("2022-11-07T15:01:24Z");
+        String keyFP = "F9E6F53F7201C60A87064EAB0B27F2B0760A1209";
+        String certFP = "4E2C78519512C2AE9A8BFE7EB3298EB2FBE5F51B";
+        Verification verification = new Verification(signDate, keyFP, certFP);
+        SessionKey sessionKey = SessionKey.fromString("9:C7CBDAF42537776F12509B5168793C26B93294E5ABDFA73224FB0177123E9137");
         when(decrypt.ciphertext((InputStream) any())).thenReturn(new ReadyWithResult<DecryptionResult>() {
             @Override
             public DecryptionResult writeTo(OutputStream outputStream) {
                 return new DecryptionResult(
-                        new SessionKey((byte) 9, key),
-                        Collections.emptyList()
+                        sessionKey,
+                        Collections.singletonList(verification)
                 );
             }
         });
         Path tempDir = Files.createTempDirectory("session-key-out-dir");
-        File tempFile = new File(tempDir.toFile(), "session-key");
-        tempFile.deleteOnExit();
-        SopCLI.main(new String[] {"decrypt", "--session-key-out", tempFile.getAbsolutePath()});
+        File sessionKeyFile = new File(tempDir.toFile(), "session-key");
+        sessionKeyFile.deleteOnExit();
+        File verificationsFile = new File(tempDir.toFile(), "verifications");
+        File keyFile = new File(tempDir.toFile(), "key.asc");
+        keyFile.createNewFile();
+        SopCLI.main(new String[] {"decrypt", "--session-key-out", sessionKeyFile.getAbsolutePath(),
+        "--verifications-out", verificationsFile.getAbsolutePath(), "--verify-with", keyFile.getAbsolutePath()});
 
         ByteArrayOutputStream bytesInFile = new ByteArrayOutputStream();
-        try (FileInputStream fileIn = new FileInputStream(tempFile)) {
+        try (FileInputStream fileIn = new FileInputStream(sessionKeyFile)) {
             byte[] buf = new byte[32];
             int read = fileIn.read(buf);
             while (read != -1) {
@@ -215,10 +221,21 @@ public class DecryptCmdTest {
             }
         }
 
-        byte[] algAndKey = new byte[key.length + 1];
-        algAndKey[0] = (byte) 9;
-        System.arraycopy(key, 0, algAndKey, 1, key.length);
-        assertArrayEquals(algAndKey, bytesInFile.toByteArray());
+        SessionKey parsedSessionKey = SessionKey.fromString(bytesInFile.toString());
+        assertEquals(sessionKey, parsedSessionKey);
+
+        bytesInFile = new ByteArrayOutputStream();
+        try (FileInputStream fileIn = new FileInputStream(verificationsFile)) {
+            byte[] buf = new byte[32];
+            int read = fileIn.read(buf);
+            while (read != -1) {
+                bytesInFile.write(buf, 0, read);
+                read = fileIn.read(buf);
+            }
+        }
+
+        Verification parsedVerification = Verification.fromString(bytesInFile.toString());
+        assertEquals(verification, parsedVerification);
     }
 
     @Test
