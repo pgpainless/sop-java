@@ -98,6 +98,8 @@ public class InlineVerifyCmd extends AbstractSopCmd {
                     pw.println(verification);
                     // CHECKSTYLE:ON
                 }
+                pw.flush();
+                pw.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
