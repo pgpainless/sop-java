@@ -75,6 +75,6 @@ public class SessionKey {
 
     @Override
     public String toString() {
-        return "" + (int) getAlgorithm() + ':' + HexUtil.bytesToHex(sessionKey);
+        return Integer.toString(getAlgorithm()) + ':' + HexUtil.bytesToHex(sessionKey);
     }
 }
