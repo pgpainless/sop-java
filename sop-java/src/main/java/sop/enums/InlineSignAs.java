@@ -9,16 +9,16 @@ public enum InlineSignAs {
     /**
      * Signature is made over the binary message.
      */
-    Binary,
+    binary,
 
     /**
      * Signature is made over the message in text mode.
      */
-    Text,
+    text,
 
     /**
      * Signature is made using the Cleartext Signature Framework.
      */
-    CleartextSigned,
+    clearsigned,
 }
 
