@@ -6,6 +6,13 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 4.0.5-SNAPSHOT
+- `inline-sign`: Make possible values of `--as` option lowercase
+- `inline-sign`: Rename value `cleartextsigned` of option `--as` to `clearsigned`
+
+## 4.0.4
+- Not found
+
 ## 4.0.3
 - `decrypt`: Rename option `--verify-out` to `--verifications-out`, but keep `--verify-out` as alias
 - Fix: `decrypt`: Flush output stream in order to prevent empty file as result of `--session-key-out`
