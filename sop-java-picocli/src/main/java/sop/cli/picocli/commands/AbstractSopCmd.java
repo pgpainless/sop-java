@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 public abstract class AbstractSopCmd implements Runnable {
 
@@ -39,6 +41,8 @@ public abstract class AbstractSopCmd implements Runnable {
     public static final String PRFX_FD = "@FD:";
     public static final Date BEGINNING_OF_TIME = new Date(0);
     public static final Date END_OF_TIME = new Date(8640000000000000L);
+
+    public static final Pattern PATTERN_FD = Pattern.compile("^\\d{1,3}$");
 
     protected final ResourceBundle messages;
     protected EnvironmentVariableResolver envResolver = System::getenv;
@@ -141,9 +145,14 @@ public abstract class AbstractSopCmd implements Runnable {
                 throw new SOPGPException.AmbiguousInput(errorMsg);
             }
 
-            String errorMsg = getMsg("sop.error.indirect_data_type.designator_fd_not_supported");
-            throw new SOPGPException.UnsupportedSpecialPrefix(errorMsg);
-
+            File fdFile = fileDescriptorFromString(trimmed);
+            try {
+                FileInputStream fileIn = new FileInputStream(fdFile);
+                return fileIn;
+            } catch (FileNotFoundException e) {
+                String errorMsg = getMsg("sop.error.indirect_data_type.file_descriptor_not_found", fdFile.getAbsolutePath());
+                throw new IOException(errorMsg, e);
+            }
         } else {
             File file = new File(trimmed);
             if (!file.exists()) {
@@ -176,9 +185,16 @@ public abstract class AbstractSopCmd implements Runnable {
             throw new SOPGPException.UnsupportedSpecialPrefix(errorMsg);
         }
 
+        // File Descriptor
         if (trimmed.startsWith(PRFX_FD)) {
-            String errorMsg = getMsg("sop.error.indirect_data_type.designator_fd_not_supported");
-            throw new SOPGPException.UnsupportedSpecialPrefix(errorMsg);
+            File fdFile = fileDescriptorFromString(trimmed);
+            try {
+                FileOutputStream fout = new FileOutputStream(fdFile);
+                return fout;
+            } catch (FileNotFoundException e) {
+                String errorMsg = getMsg("sop.error.indirect_data_type.file_descriptor_not_found", fdFile.getAbsolutePath());
+                throw new IOException(errorMsg, e);
+            }
         }
 
         File file = new File(trimmed);
@@ -194,6 +210,21 @@ public abstract class AbstractSopCmd implements Runnable {
 
         return new FileOutputStream(file);
     }
+
+    public File fileDescriptorFromString(String fdString) {
+        File fdDir = new File("/dev/fd/");
+        if (!fdDir.exists()) {
+            String errorMsg = getMsg("sop.error.indirect_data_type.designator_fd_not_supported");
+            throw new SOPGPException.UnsupportedSpecialPrefix(errorMsg);
+        }
+        String fdNumber = fdString.substring(PRFX_FD.length());
+        if (!PATTERN_FD.matcher(fdNumber).matches()) {
+            throw new IllegalArgumentException("File descriptor must be a 1-3 digit, positive number.");
+        }
+        File descriptor = new File(fdDir, fdNumber);
+        return descriptor;
+    }
+
     public static String stringFromInputStream(InputStream inputStream) throws IOException {
         try {
             ByteArrayOutputStream byteOut = new ByteArrayOutputStream();

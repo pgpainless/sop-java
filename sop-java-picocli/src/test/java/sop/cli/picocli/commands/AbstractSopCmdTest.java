@@ -145,8 +145,8 @@ public class AbstractSopCmdTest {
     }
 
     @Test
-    public void getOutput_fdUnsupportedSpecialPrefix() {
-        assertThrows(SOPGPException.UnsupportedSpecialPrefix.class, () -> abstractCmd.getOutput("@FD:IS_ILLEGAL"));
+    public void getOutput_malformedFileDescriptor() {
+        assertThrows(IllegalArgumentException.class, () -> abstractCmd.getOutput("@FD:IS_ILLEGAL"));
     }
 
     @Test
