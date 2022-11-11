@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 4.0.5-SNAPSHOT
+## 4.0.5
 - `inline-sign`: Make possible values of `--as` option lowercase
 - `inline-sign`: Rename value `cleartextsigned` of option `--as` to `clearsigned`
 
