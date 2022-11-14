@@ -42,7 +42,7 @@ public abstract class AbstractSopCmd implements Runnable {
     public static final Date BEGINNING_OF_TIME = new Date(0);
     public static final Date END_OF_TIME = new Date(8640000000000000L);
 
-    public static final Pattern PATTERN_FD = Pattern.compile("^\\d{1,3}$");
+    public static final Pattern PATTERN_FD = Pattern.compile("^\\d{1,20}$");
 
     protected final ResourceBundle messages;
     protected EnvironmentVariableResolver envResolver = System::getenv;
@@ -219,7 +219,7 @@ public abstract class AbstractSopCmd implements Runnable {
         }
         String fdNumber = fdString.substring(PRFX_FD.length());
         if (!PATTERN_FD.matcher(fdNumber).matches()) {
-            throw new IllegalArgumentException("File descriptor must be a 1-3 digit, positive number.");
+            throw new IllegalArgumentException("File descriptor must be a positive number.");
         }
         File descriptor = new File(fdDir, fdNumber);
         return descriptor;
