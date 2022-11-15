@@ -64,6 +64,7 @@ task generateManpageAsciiDoc(type: JavaExec) {
 
 apply plugin: 'org.asciidoctor.jvm.convert'
 asciidoctor {
+    attributes 'reproducible': ''
     dependsOn(generateManpageAsciiDoc)
     sourceDir = file("${project.buildDir}/generated-picocli-docs")
     outputDir = file("${project.buildDir}/docs")
