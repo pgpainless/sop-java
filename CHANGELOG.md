@@ -6,8 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 4.0.6-SNAPSHOT
-- Add support for file descriptors on systems where `/dev/fd/` exists
+## 4.0.6
+- Add support for file descriptors on unix / linux systems
 
 ## 4.0.5
 - `inline-sign`: Make possible values of `--as` option lowercase
