@@ -28,6 +28,19 @@ public class DearmorCmd extends AbstractSopCmd {
             String errorMsg = getMsg("sop.error.input.stdin_not_openpgp_data");
             throw new SOPGPException.BadData(errorMsg, e);
         } catch (IOException e) {
+            String msg = e.getMessage();
+            if (msg == null) {
+                throw new RuntimeException(e);
+            }
+
+            String errorMsg = getMsg("sop.error.input.stdin_not_openpgp_data");
+            if (msg.equals("invalid armor") ||
+                    msg.equals("invalid armor header") ||
+                    msg.equals("inconsistent line endings in headers") ||
+                    msg.startsWith("unable to decode base64 data")) {
+                throw new SOPGPException.BadData(errorMsg, e);
+            }
+
             throw new RuntimeException(e);
         }
     }
