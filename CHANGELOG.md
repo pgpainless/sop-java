@@ -6,6 +6,11 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 4.0.7-SNAPSHOT
+- Make i18n string for `--stacktrace` option translatable
+- Make manpages generation reproducible
+- `dearmor`: Transform `IOException` into `BadData`
+
 ## 4.0.6
 - Add support for file descriptors on unix / linux systems
 
