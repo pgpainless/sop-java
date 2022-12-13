@@ -26,7 +26,7 @@ public class InlineSignCmd extends AbstractSopCmd {
     boolean armor = true;
 
     @CommandLine.Option(names = "--as",
-            paramLabel = "{binary|text|cleartextsigned}")
+            paramLabel = "{binary|text|clearsigned}")
     InlineSignAs type;
 
     @CommandLine.Parameters(paramLabel = "KEYS")
