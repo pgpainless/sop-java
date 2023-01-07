@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.binary.operation;
+package sop.external.operation;
 
 import sop.operation.Version;
 
@@ -10,12 +10,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class BinaryVersion implements Version {
+public class VersionExternal implements Version {
 
     private final Runtime runtime = Runtime.getRuntime();
     private final String binary;
 
-    public BinaryVersion(String binaryName) {
+    public VersionExternal(String binaryName) {
         this.binary = binaryName;
     }
 

@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.binary;
+package sop.external;
 
 import sop.SOP;
-import sop.binary.operation.BinaryExtractCert;
-import sop.binary.operation.BinaryGenerateKey;
-import sop.binary.operation.BinaryVersion;
+import sop.external.operation.ExtractCertExternal;
+import sop.external.operation.GenerateKeyExternal;
+import sop.external.operation.VersionExternal;
 import sop.operation.Armor;
 import sop.operation.Dearmor;
 import sop.operation.Decrypt;
@@ -21,27 +21,27 @@ import sop.operation.InlineSign;
 import sop.operation.InlineVerify;
 import sop.operation.Version;
 
-public class BinarySop implements SOP {
+public class ExternalSOP implements SOP {
 
     private final String binaryName;
 
-    public BinarySop(String binaryName) {
+    public ExternalSOP(String binaryName) {
         this.binaryName = binaryName;
     }
 
     @Override
     public Version version() {
-        return new BinaryVersion(binaryName);
+        return new VersionExternal(binaryName);
     }
 
     @Override
     public GenerateKey generateKey() {
-        return new BinaryGenerateKey(binaryName);
+        return new GenerateKeyExternal(binaryName);
     }
 
     @Override
     public ExtractCert extractCert() {
-        return new BinaryExtractCert(binaryName);
+        return new ExtractCertExternal(binaryName);
     }
 
     @Override

@@ -6,5 +6,5 @@ rootProject.name = 'SOP-Java'
 
 include 'sop-java',
         'sop-java-picocli',
-        'binary-sop'
+        'external-sop'
 

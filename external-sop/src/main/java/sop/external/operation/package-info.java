@@ -5,4 +5,4 @@
 /**
  * Bindings for SOP subcommands to a SOP binary.
  */
-package sop.binary.operation;
+package sop.external.operation;

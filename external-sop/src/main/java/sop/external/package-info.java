@@ -5,4 +5,4 @@
 /**
  * Implementation of sop-java which delegates execution to a binary implementing the SOP command line interface.
  */
-package sop.binary;
+package sop.external;

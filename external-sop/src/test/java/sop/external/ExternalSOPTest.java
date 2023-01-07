@@ -2,30 +2,63 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.binary;
+package sop.external;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sop.SOP;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledIf("sop.binary.BinarySopTest#sopBinaryInstalled")
-public class BinarySopTest {
+@EnabledIf("sop.external.ExternalSOPTest#externalSopInstalled")
+public class ExternalSOPTest {
 
-    private static final String BINARY = "/usr/bin/sqop";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExternalSOPTest.class);
 
-    private final SOP sop = new BinarySop(BINARY);
+    private final SOP sop;
 
-    public static boolean sopBinaryInstalled() {
-        return new File(BINARY).exists();
+    public ExternalSOPTest() {
+        String backend = readSopBackendFromProperties();
+        sop = new ExternalSOP(backend);
+    }
+
+    private static String readSopBackendFromProperties() {
+        Properties properties = new Properties();
+        try {
+            InputStream resourceIn = ExternalSOPTest.class.getResourceAsStream("backend.local.properties");
+            if (resourceIn == null) {
+                LOGGER.info("Could not find backend.local.properties file. Try backend.properties instead.");
+                resourceIn = ExternalSOPTest.class.getResourceAsStream("backend.properties");
+            }
+            if (resourceIn == null) {
+                throw new FileNotFoundException("Could not find backend.properties file.");
+            }
+
+            properties.load(resourceIn);
+            String backend = properties.getProperty("sop.backend");
+            return backend;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    public static boolean externalSopInstalled() {
+        String binary = readSopBackendFromProperties();
+        if (binary == null) {
+            return false;
+        }
+        return new File(binary).exists();
     }
 
     @Test
