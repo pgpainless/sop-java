@@ -5,75 +5,66 @@
 package sop.external.operation;
 
 import sop.ReadyWithResult;
-import sop.SigningResult;
-import sop.enums.SignAs;
+import sop.Verification;
 import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
-import sop.operation.DetachedSign;
+import sop.operation.InlineVerify;
+import sop.util.UTCUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-public class DetachedSignExternal implements DetachedSign {
+public class InlineVerifyExternal implements InlineVerify {
 
     private final List<String> commandList = new ArrayList<>();
     private final List<String> envList;
 
-    private int withKeyPasswordCounter = 0;
-    private int keyCounter = 0;
+    private int certCounter = 0;
 
-    public DetachedSignExternal(String binary, Properties properties) {
+    public InlineVerifyExternal(String binary, Properties environment) {
         commandList.add(binary);
-        commandList.add("sign");
-        envList = ExternalSOP.propertiesToEnv(properties);
+        commandList.add("inline-verify");
+        envList = ExternalSOP.propertiesToEnv(environment);
     }
 
     @Override
-    public DetachedSign noArmor() {
-        commandList.add("--no-armor");
+    public InlineVerify notBefore(Date timestamp) throws SOPGPException.UnsupportedOption {
+        commandList.add("--not-before=" + UTCUtil.formatUTCDate(timestamp));
         return this;
     }
 
     @Override
-    public DetachedSign key(InputStream key) throws SOPGPException.KeyCannotSign, SOPGPException.BadData, SOPGPException.UnsupportedAsymmetricAlgo, IOException {
-        String envVar = "KEY_" + keyCounter++;
+    public InlineVerify notAfter(Date timestamp) throws SOPGPException.UnsupportedOption {
+        commandList.add("--not-after=" + UTCUtil.formatUTCDate(timestamp));
+        return this;
+    }
+
+    @Override
+    public InlineVerify cert(InputStream cert) throws SOPGPException.BadData, IOException {
+        String envVar = "CERT_" + certCounter++;
         commandList.add("@ENV:" + envVar);
-        envList.add(envVar + "=" + ExternalSOP.readFully(key));
+        envList.add(envVar + "=" + ExternalSOP.readFully(cert));
         return this;
     }
 
     @Override
-    public DetachedSign withKeyPassword(byte[] password) throws SOPGPException.UnsupportedOption, SOPGPException.PasswordNotHumanReadable {
-        String envVar = "WITH_KEY_PASSWORD_" + withKeyPasswordCounter++;
-        commandList.add("--with-key-password=@ENV:" + envVar);
-        envList.add(envVar + "=" + new String(password));
-        return this;
-    }
-
-    @Override
-    public DetachedSign mode(SignAs mode) throws SOPGPException.UnsupportedOption {
-        commandList.add("--as=" + mode);
-        return this;
-    }
-
-    @Override
-    public ReadyWithResult<SigningResult> data(InputStream data)
-            throws IOException, SOPGPException.KeyIsProtected, SOPGPException.ExpectedText {
-
+    public ReadyWithResult<List<Verification>> data(InputStream data) throws IOException, SOPGPException.NoSignature, SOPGPException.BadData {
         String[] command = commandList.toArray(new String[0]);
         String[] env = envList.toArray(new String[0]);
+
         try {
             Process process = Runtime.getRuntime().exec(command, env);
             OutputStream processOut = process.getOutputStream();
             InputStream processIn = process.getInputStream();
 
-            return new ReadyWithResult<SigningResult>() {
+            return new ReadyWithResult<List<Verification>>() {
                 @Override
-                public SigningResult writeTo(OutputStream outputStream) throws IOException {
+                public List<Verification> writeTo(OutputStream outputStream) throws IOException, SOPGPException.NoSignature {
                     byte[] buf = new byte[4096];
                     int r;
                     while ((r = data.read(buf)) > 0) {
@@ -82,6 +73,7 @@ public class DetachedSignExternal implements DetachedSign {
 
                     data.close();
                     processOut.close();
+
 
                     while ((r = processIn.read(buf)) > 0) {
                         outputStream.write(buf, 0 , r);
@@ -92,7 +84,7 @@ public class DetachedSignExternal implements DetachedSign {
 
                     ExternalSOP.finish(process);
 
-                    return SigningResult.builder().build();
+                    return null; // TODO
                 }
             };
         } catch (IOException e) {

@@ -4,10 +4,20 @@
 
 package sop.external;
 
+import sop.Ready;
 import sop.SOP;
 import sop.exception.SOPGPException;
+import sop.external.operation.ArmorExternal;
+import sop.external.operation.DearmorExternal;
+import sop.external.operation.DecryptExternal;
+import sop.external.operation.DetachedSignExternal;
+import sop.external.operation.DetachedVerifyExternal;
+import sop.external.operation.EncryptExternal;
 import sop.external.operation.ExtractCertExternal;
 import sop.external.operation.GenerateKeyExternal;
+import sop.external.operation.InlineDetachExternal;
+import sop.external.operation.InlineSignExternal;
+import sop.external.operation.InlineVerifyExternal;
 import sop.external.operation.VersionExternal;
 import sop.operation.Armor;
 import sop.operation.Dearmor;
@@ -25,9 +35,9 @@ import sop.operation.Version;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 
 public class ExternalSOP implements SOP {
@@ -61,47 +71,47 @@ public class ExternalSOP implements SOP {
 
     @Override
     public DetachedSign detachedSign() {
-        return null;
+        return new DetachedSignExternal(binaryName, properties);
     }
 
     @Override
     public InlineSign inlineSign() {
-        return null;
+        return new InlineSignExternal(binaryName, properties);
     }
 
     @Override
     public DetachedVerify detachedVerify() {
-        return null;
+        return new DetachedVerifyExternal(binaryName, properties);
     }
 
     @Override
     public InlineVerify inlineVerify() {
-        return null;
+        return new InlineVerifyExternal(binaryName, properties);
     }
 
     @Override
     public InlineDetach inlineDetach() {
-        return null;
+        return new InlineDetachExternal(binaryName, properties);
     }
 
     @Override
     public Encrypt encrypt() {
-        return null;
+        return new EncryptExternal(binaryName, properties);
     }
 
     @Override
     public Decrypt decrypt() {
-        return null;
+        return new DecryptExternal(binaryName, properties);
     }
 
     @Override
     public Armor armor() {
-        return null;
+        return new ArmorExternal(binaryName, properties);
     }
 
     @Override
     public Dearmor dearmor() {
-        return null;
+        return new DearmorExternal(binaryName, properties);
     }
 
     public static void finish(Process process) throws IOException {
@@ -112,7 +122,7 @@ public class ExternalSOP implements SOP {
             ByteArrayOutputStream errOut = new ByteArrayOutputStream();
             byte[] buf = new byte[512];
             int r;
-            while ((r = errIn.read(buf)) > 0 ) {
+            while ((r = errIn.read(buf)) > 0) {
                 errOut.write(buf, 0, r);
             }
 
@@ -135,7 +145,7 @@ public class ExternalSOP implements SOP {
         ByteArrayOutputStream errOut = new ByteArrayOutputStream();
         byte[] buf = new byte[512];
         int r;
-        while ((r = errIn.read(buf)) > 0 ) {
+        while ((r = errIn.read(buf)) > 0) {
             errOut.write(buf, 0, r);
         }
 
@@ -222,5 +232,75 @@ public class ExternalSOP implements SOP {
             env.add(key + "=" + properties.get(key));
         }
         return env;
+    }
+
+    public static String readFully(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+        byte[] buf = new byte[4096];
+        int r;
+        while ((r = inputStream.read(buf)) > 0) {
+            bOut.write(buf, 0, r);
+        }
+        return bOut.toString();
+    }
+
+    public static Ready ready(Runtime runtime, List<String> commandList, List<String> envList) {
+        String[] command = commandList.toArray(new String[0]);
+        String[] env = envList.toArray(new String[0]);
+
+        try {
+            Process process = runtime.exec(command, env);
+            InputStream stdIn = process.getInputStream();
+
+            return new Ready() {
+                @Override
+                public void writeTo(OutputStream outputStream) throws IOException {
+                    byte[] buf = new byte[4096];
+                    int r;
+                    while ((r = stdIn.read(buf)) >= 0) {
+                        outputStream.write(buf, 0, r);
+                    }
+
+                    outputStream.close();
+                    ExternalSOP.finish(process);
+                }
+            };
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static Ready ready(Runtime runtime, List<String> commandList, List<String> envList, InputStream standardIn) {
+        String[] command = commandList.toArray(new String[0]);
+        String[] env = envList.toArray(new String[0]);
+        try {
+            Process process = runtime.exec(command, env);
+            OutputStream processOut = process.getOutputStream();
+            InputStream processIn = process.getInputStream();
+
+            return new Ready() {
+                @Override
+                public void writeTo(OutputStream outputStream) throws IOException {
+                    byte[] buf = new byte[4096];
+                    int r;
+                    while ((r = standardIn.read(buf)) > 0) {
+                        processOut.write(buf, 0, r);
+                    }
+
+                    standardIn.close();
+                    processOut.close();
+
+                    while ((r = processIn.read(buf)) > 0) {
+                        outputStream.write(buf, 0 , r);
+                    }
+
+                    processIn.close();
+                    outputStream.close();
+
+                    finish(process);
+                }
+            };
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

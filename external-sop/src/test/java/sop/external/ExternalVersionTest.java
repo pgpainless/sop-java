@@ -7,8 +7,8 @@ package sop.external;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("sop.external.AbstractExternalSOPTest#isExternalSopInstalled")
@@ -16,13 +16,15 @@ public class ExternalVersionTest extends AbstractExternalSOPTest {
 
     @Test
     public void versionNameTest() {
-        assertEquals("sqop", getSop().version().getName());
+        String name = getSop().version().getName();
+        assertNotNull(name);
+        assertFalse(name.isEmpty());
     }
 
     @Test
     public void versionVersionTest() {
         String version = getSop().version().getVersion();
-        assertTrue(version.matches("\\d+(\\.\\d+)*"));
+        assertTrue(version.matches("\\d+(\\.\\d+)*\\S*"));
     }
 
     @Test

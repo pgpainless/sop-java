@@ -219,6 +219,10 @@ public abstract class SOPGPException extends RuntimeException {
 
         public static final int EXIT_CODE = 53;
 
+        public ExpectedText() {
+            super();
+        }
+
         public ExpectedText(String message) {
             super(message);
         }
