@@ -6,6 +6,7 @@ package sop.external.operation;
 
 import sop.Ready;
 import sop.exception.SOPGPException;
+import sop.external.ExternalSOP;
 import sop.operation.GenerateKey;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class GenerateKeyExternal implements GenerateKey {
 
@@ -22,9 +24,11 @@ public class GenerateKeyExternal implements GenerateKey {
     private String keyPassword;
 
     private final Runtime runtime = Runtime.getRuntime();
+    private final Properties properties;
 
-    public GenerateKeyExternal(String binary) {
+    public GenerateKeyExternal(String binary, Properties environment) {
         this.binary = binary;
+        this.properties = environment;
     }
 
     @Override
@@ -60,16 +64,22 @@ public class GenerateKeyExternal implements GenerateKey {
 
         if (keyPassword != null) {
             commandList.add("--with-key-password");
-            commandList.add(keyPassword);
+            commandList.add("@ENV:key_password");
         }
 
         for (String userId : userIds) {
             commandList.add(userId);
         }
 
+        List<String> envList = ExternalSOP.propertiesToEnv(properties);
+        if (keyPassword != null) {
+            envList.add("key_password=" + keyPassword);
+        }
+
         String[] command = commandList.toArray(new String[0]);
+        String[] env = envList.toArray(new String[0]);
         try {
-            Process process = runtime.exec(command);
+            Process process = runtime.exec(command, env);
             InputStream stdIn = process.getInputStream();
 
             return new Ready() {
@@ -80,6 +90,8 @@ public class GenerateKeyExternal implements GenerateKey {
                     while ((r = stdIn.read(buf)) >= 0) {
                         outputStream.write(buf, 0, r);
                     }
+
+                    ExternalSOP.finish(process);
                 }
             };
         } catch (IOException e) {

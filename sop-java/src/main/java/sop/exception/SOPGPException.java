@@ -32,7 +32,11 @@ public abstract class SOPGPException extends RuntimeException {
         public static final int EXIT_CODE = 3;
 
         public NoSignature() {
-            super("No verifiable signature found.");
+            this("No verifiable signature found.");
+        }
+
+        public NoSignature(String message) {
+            super(message);
         }
 
         public NoSignature(String errorMsg, NoSignature e) {
@@ -72,6 +76,10 @@ public abstract class SOPGPException extends RuntimeException {
             super(message, cause);
         }
 
+        public CertCannotEncrypt(String message) {
+            super(message);
+        }
+
         @Override
         public int getExitCode() {
             return EXIT_CODE;
@@ -85,8 +93,8 @@ public abstract class SOPGPException extends RuntimeException {
 
         public static final int EXIT_CODE = 19;
 
-        public MissingArg(String s) {
-            super(s);
+        public MissingArg(String message) {
+            super(message);
         }
 
         @Override
@@ -127,6 +135,10 @@ public abstract class SOPGPException extends RuntimeException {
             super(errorMsg, e);
         }
 
+        public CannotDecrypt(String message) {
+            super(message);
+        }
+
         @Override
         public int getExitCode() {
             return EXIT_CODE;
@@ -142,6 +154,10 @@ public abstract class SOPGPException extends RuntimeException {
 
         public PasswordNotHumanReadable() {
             super();
+        }
+
+        public PasswordNotHumanReadable(String message) {
+            super(message);
         }
 
         @Override
@@ -202,6 +218,10 @@ public abstract class SOPGPException extends RuntimeException {
     public static class ExpectedText extends SOPGPException {
 
         public static final int EXIT_CODE = 53;
+
+        public ExpectedText(String message) {
+            super(message);
+        }
 
         @Override
         public int getExitCode() {
