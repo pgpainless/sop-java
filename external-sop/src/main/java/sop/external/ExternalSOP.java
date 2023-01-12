@@ -98,12 +98,12 @@ public class ExternalSOP implements SOP {
 
     @Override
     public InlineVerify inlineVerify() {
-        return new InlineVerifyExternal(binaryName, properties);
+        return new InlineVerifyExternal(binaryName, properties, tempDirProvider);
     }
 
     @Override
     public InlineDetach inlineDetach() {
-        return new InlineDetachExternal(binaryName, properties);
+        return new InlineDetachExternal(binaryName, properties, tempDirProvider);
     }
 
     @Override

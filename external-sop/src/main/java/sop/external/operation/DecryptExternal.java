@@ -163,7 +163,7 @@ public class DecryptExternal implements Decrypt {
                         reader.close();
                     }
 
-                    return new DecryptionResult(sessionKey, verifications); // TODO
+                    return new DecryptionResult(sessionKey, verifications);
                 }
             };
         } catch (IOException e) {

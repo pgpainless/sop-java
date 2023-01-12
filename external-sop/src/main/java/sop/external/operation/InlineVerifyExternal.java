@@ -11,8 +11,12 @@ import sop.external.ExternalSOP;
 import sop.operation.InlineVerify;
 import sop.util.UTCUtil;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,12 +25,14 @@ import java.util.Properties;
 
 public class InlineVerifyExternal implements InlineVerify {
 
+    private final ExternalSOP.TempDirProvider tempDirProvider;
     private final List<String> commandList = new ArrayList<>();
     private final List<String> envList;
 
     private int certCounter = 0;
 
-    public InlineVerifyExternal(String binary, Properties environment) {
+    public InlineVerifyExternal(String binary, Properties environment, ExternalSOP.TempDirProvider tempDirProvider) {
+        this.tempDirProvider = tempDirProvider;
         commandList.add(binary);
         commandList.add("inline-verify");
         envList = ExternalSOP.propertiesToEnv(environment);
@@ -54,6 +60,12 @@ public class InlineVerifyExternal implements InlineVerify {
 
     @Override
     public ReadyWithResult<List<Verification>> data(InputStream data) throws IOException, SOPGPException.NoSignature, SOPGPException.BadData {
+        File tempDir = tempDirProvider.provideTempDirectory();
+
+        File verificationsOut = new File(tempDir, "verifications-out");
+        verificationsOut.delete();
+        commandList.add("--verifications-out=" + verificationsOut.getAbsolutePath());
+
         String[] command = commandList.toArray(new String[0]);
         String[] env = envList.toArray(new String[0]);
 
@@ -84,7 +96,15 @@ public class InlineVerifyExternal implements InlineVerify {
 
                     ExternalSOP.finish(process);
 
-                    return null; // TODO
+                    FileInputStream verificationsOutIn = new FileInputStream(verificationsOut);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(verificationsOutIn));
+                    List<Verification> verificationList = new ArrayList<>();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        verificationList.add(Verification.fromString(line.trim()));
+                    }
+
+                    return verificationList;
                 }
             };
         } catch (IOException e) {

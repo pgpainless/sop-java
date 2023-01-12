@@ -10,6 +10,9 @@ import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.InlineDetach;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,10 +22,12 @@ import java.util.Properties;
 
 public class InlineDetachExternal implements InlineDetach {
 
+    private final ExternalSOP.TempDirProvider tempDirProvider;
     private final List<String> commandList = new ArrayList<>();
     private final List<String> envList;
 
-    public InlineDetachExternal(String binary, Properties environment) {
+    public InlineDetachExternal(String binary, Properties environment, ExternalSOP.TempDirProvider tempDirProvider) {
+        this.tempDirProvider = tempDirProvider;
         commandList.add(binary);
         commandList.add("inline-detach");
         envList = ExternalSOP.propertiesToEnv(environment);
@@ -36,6 +41,12 @@ public class InlineDetachExternal implements InlineDetach {
 
     @Override
     public ReadyWithResult<Signatures> message(InputStream messageInputStream) throws IOException, SOPGPException.BadData {
+        File tempDir = tempDirProvider.provideTempDirectory();
+
+        File signaturesOut = new File(tempDir, "signatures");
+        signaturesOut.delete();
+        commandList.add("--signatures-out=" + signaturesOut.getAbsolutePath());
+
         String[] command = commandList.toArray(new String[0]);
         String[] env = envList.toArray(new String[0]);
 
@@ -65,7 +76,21 @@ public class InlineDetachExternal implements InlineDetach {
 
                     ExternalSOP.finish(process);
 
-                    return null; // TODO
+                    FileInputStream signaturesOutIn = new FileInputStream(signaturesOut);
+                    ByteArrayOutputStream signaturesBuffer = new ByteArrayOutputStream();
+                    while ((r = signaturesOutIn.read(buf)) > 0) {
+                        signaturesBuffer.write(buf, 0, r);
+                    }
+                    signaturesOutIn.close();
+                    signaturesOut.delete();
+
+                    final byte[] sigBytes = signaturesBuffer.toByteArray();
+                    return new Signatures() {
+                        @Override
+                        public void writeTo(OutputStream signatureOutputStream) throws IOException {
+                            signatureOutputStream.write(sigBytes);
+                        }
+                    };
                 }
             };
         } catch (IOException e) {
