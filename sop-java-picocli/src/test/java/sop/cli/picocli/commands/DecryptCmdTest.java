@@ -123,7 +123,7 @@ public class DecryptCmdTest {
 
     @Test
     public void assertVerifyNotAfterAndBeforeDashResultsInMaxTimeRange() throws SOPGPException.UnsupportedOption {
-        SopCLI.main(new String[] {"decrypt", "--not-before", "-", "--not-after", "-"});
+        SopCLI.main(new String[] {"decrypt", "--verify-not-before", "-", "--verify-not-after", "-"});
         verify(decrypt, times(1)).verifyNotBefore(AbstractSopCmd.BEGINNING_OF_TIME);
         verify(decrypt, times(1)).verifyNotAfter(AbstractSopCmd.END_OF_TIME);
     }
@@ -136,7 +136,7 @@ public class DecryptCmdTest {
             return Math.abs(now.getTime() - argument.getTime()) <= 1000;
         };
 
-        SopCLI.main(new String[] {"decrypt", "--not-before", "now", "--not-after", "now"});
+        SopCLI.main(new String[] {"decrypt", "--verify-not-before", "now", "--verify-not-after", "now"});
         verify(decrypt, times(1)).verifyNotAfter(ArgumentMatchers.argThat(isMaxOneSecOff));
         verify(decrypt, times(1)).verifyNotBefore(ArgumentMatchers.argThat(isMaxOneSecOff));
     }
@@ -145,28 +145,28 @@ public class DecryptCmdTest {
     @ExpectSystemExitWithStatus(1)
     public void assertMalformedDateInNotBeforeCausesExit1() {
         // ParserException causes exit(1)
-        SopCLI.main(new String[] {"decrypt", "--not-before", "invalid"});
+        SopCLI.main(new String[] {"decrypt", "--verify-not-before", "invalid"});
     }
 
     @Test
     @ExpectSystemExitWithStatus(1)
     public void assertMalformedDateInNotAfterCausesExit1() {
         // ParserException causes exit(1)
-        SopCLI.main(new String[] {"decrypt", "--not-after", "invalid"});
+        SopCLI.main(new String[] {"decrypt", "--verify-not-after", "invalid"});
     }
 
     @Test
     @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void assertUnsupportedNotAfterCausesExit37() throws SOPGPException.UnsupportedOption {
         when(decrypt.verifyNotAfter(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting upper signature date boundary not supported."));
-        SopCLI.main(new String[] {"decrypt", "--not-after", "now"});
+        SopCLI.main(new String[] {"decrypt", "--verify-not-after", "now"});
     }
 
     @Test
     @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void assertUnsupportedNotBeforeCausesExit37() throws SOPGPException.UnsupportedOption {
         when(decrypt.verifyNotBefore(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting lower signature date boundary not supported."));
-        SopCLI.main(new String[] {"decrypt", "--not-before", "now"});
+        SopCLI.main(new String[] {"decrypt", "--verify-not-before", "now"});
     }
 
     @Test

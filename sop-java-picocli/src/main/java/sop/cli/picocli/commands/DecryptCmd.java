@@ -26,14 +26,14 @@ import java.util.List;
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class DecryptCmd extends AbstractSopCmd {
 
+    private static final String OPT_SESSION_KEY_OUT = "--session-key-out";
     private static final String OPT_WITH_SESSION_KEY = "--with-session-key";
     private static final String OPT_WITH_PASSWORD = "--with-password";
-    private static final String OPT_NOT_BEFORE = "--not-before";
-    private static final String OPT_NOT_AFTER = "--not-after";
-    private static final String OPT_SESSION_KEY_OUT = "--session-key-out";
-    private static final String OPT_VERIFICATIONS_OUT = "--verifications-out";
-    private static final String OPT_VERIFY_WITH = "--verify-with";
     private static final String OPT_WITH_KEY_PASSWORD = "--with-key-password";
+    private static final String OPT_VERIFICATIONS_OUT = "--verifications-out"; // see SOP-05
+    private static final String OPT_VERIFY_WITH = "--verify-with";
+    private static final String OPT_NOT_BEFORE = "--verify-not-before";
+    private static final String OPT_NOT_AFTER = "--verify-not-after";
 
 
     @CommandLine.Option(
