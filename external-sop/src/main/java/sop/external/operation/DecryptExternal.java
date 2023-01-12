@@ -7,17 +7,20 @@ package sop.external.operation;
 import sop.DecryptionResult;
 import sop.ReadyWithResult;
 import sop.SessionKey;
+import sop.Verification;
 import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.Decrypt;
 import sop.util.UTCUtil;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -104,13 +107,17 @@ public class DecryptExternal implements Decrypt {
     public ReadyWithResult<DecryptionResult> ciphertext(InputStream ciphertext)
             throws SOPGPException.BadData, SOPGPException.MissingArg, SOPGPException.CannotDecrypt,
             SOPGPException.KeyIsProtected, IOException {
-
         File tempDir = tempDirProvider.provideTempDirectory();
+
         File sessionKeyOut = new File(tempDir, "session-key-out");
+        sessionKeyOut.delete();
         commandList.add("--session-key-out=" + sessionKeyOut.getAbsolutePath());
 
-        File verifyOut = new File(tempDir, "verify-out");
-        commandList.add("--verify-out=" + verifyOut.getAbsolutePath());
+        File verifyOut = new File(tempDir, "verifications-out");
+        verifyOut.delete();
+        if (verifyWithCounter != 0) {
+            commandList.add("--verify-out=" + verifyOut.getAbsolutePath());
+        }
 
         String[] command = commandList.toArray(new String[0]);
         String[] env = envList.toArray(new String[0]);
@@ -140,7 +147,23 @@ public class DecryptExternal implements Decrypt {
 
                     ExternalSOP.finish(process);
 
-                    return new DecryptionResult(null, Collections.emptyList()); // TODO
+                    FileInputStream sessionKeyOutIn = new FileInputStream(sessionKeyOut);
+                    String line = ExternalSOP.readFully(sessionKeyOutIn);
+                    SessionKey sessionKey = SessionKey.fromString(line.trim());
+                    sessionKeyOutIn.close();
+                    sessionKeyOut.delete();
+
+                    List<Verification> verifications = new ArrayList<>();
+                    if (verifyWithCounter != 0) {
+                        FileInputStream verifyOutIn = new FileInputStream(verifyOut);
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(verifyOutIn));
+                        while ((line = reader.readLine()) != null) {
+                            verifications.add(Verification.fromString(line.trim()));
+                        }
+                        reader.close();
+                    }
+
+                    return new DecryptionResult(sessionKey, verifications); // TODO
                 }
             };
         } catch (IOException e) {

@@ -6,14 +6,38 @@ package sop.external;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
+import sop.ByteArrayAndResult;
+import sop.DecryptionResult;
+import sop.Verification;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("sop.external.AbstractExternalSOPTest#isExternalSopInstalled")
 public class EncryptDecryptRoundTripTest extends AbstractExternalSOPTest {
+
+    @Test
+    public void encryptDecryptRoundTripPasswordTest() throws IOException {
+        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] ciphertext = getSop().encrypt()
+                .withPassword("sw0rdf1sh")
+                .plaintext(message)
+                .getBytes();
+
+        byte[] plaintext = getSop().decrypt()
+                .withPassword("sw0rdf1sh")
+                .ciphertext(ciphertext)
+                .toByteArrayAndResult()
+                .getBytes();
+
+        assertArrayEquals(message, plaintext);
+    }
 
     @Test
     public void encryptDecryptRoundTripAliceTest() throws IOException {
@@ -23,13 +47,16 @@ public class EncryptDecryptRoundTripTest extends AbstractExternalSOPTest {
                 .plaintext(message)
                 .getBytes();
 
-        byte[] plaintext = getSop().decrypt()
+        ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
                 .withKey(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
-                .toByteArrayAndResult()
-                .getBytes();
+                .toByteArrayAndResult();
 
+        byte[] plaintext = bytesAndResult.getBytes();
         assertArrayEquals(message, plaintext);
+
+        DecryptionResult result = bytesAndResult.getResult();
+        assertNotNull(result.getSessionKey().get());
     }
 
     @Test
@@ -66,5 +93,30 @@ public class EncryptDecryptRoundTripTest extends AbstractExternalSOPTest {
                 .getBytes();
 
         assertArrayEquals(message, plaintext);
+    }
+
+    @Test
+    public void encryptSignDecryptVerifyRoundTripAliceTest() throws IOException {
+        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] ciphertext = getSop().encrypt()
+                .withCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .signWith(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .plaintext(message)
+                .getBytes();
+
+        ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
+                .withKey(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .verifyWithCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .ciphertext(ciphertext)
+                .toByteArrayAndResult();
+
+        byte[] plaintext = bytesAndResult.getBytes();
+        assertArrayEquals(message, plaintext);
+
+        DecryptionResult result = bytesAndResult.getResult();
+        assertNotNull(result.getSessionKey().get());
+        List<Verification> verificationList = result.getVerifications();
+        assertEquals(1, verificationList.size());
+        assertTrue(verificationList.get(0).toString().contains("EB85BB5FA33A75E15E944E63F231550C4F47E38E EB85BB5FA33A75E15E944E63F231550C4F47E38E"));
     }
 }

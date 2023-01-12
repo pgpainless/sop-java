@@ -4,6 +4,7 @@
 
 package sop.external.operation;
 
+import sop.MicAlg;
 import sop.ReadyWithResult;
 import sop.SigningResult;
 import sop.enums.SignAs;
@@ -11,8 +12,12 @@ import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.DetachedSign;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +25,15 @@ import java.util.Properties;
 
 public class DetachedSignExternal implements DetachedSign {
 
+    private final ExternalSOP.TempDirProvider tempDirProvider;
     private final List<String> commandList = new ArrayList<>();
     private final List<String> envList;
 
     private int withKeyPasswordCounter = 0;
     private int keyCounter = 0;
 
-    public DetachedSignExternal(String binary, Properties properties) {
+    public DetachedSignExternal(String binary, Properties properties, ExternalSOP.TempDirProvider tempDirProvider) {
+        this.tempDirProvider = tempDirProvider;
         commandList.add(binary);
         commandList.add("sign");
         envList = ExternalSOP.propertiesToEnv(properties);
@@ -64,6 +71,11 @@ public class DetachedSignExternal implements DetachedSign {
     public ReadyWithResult<SigningResult> data(InputStream data)
             throws IOException, SOPGPException.KeyIsProtected, SOPGPException.ExpectedText {
 
+        File tempDir = tempDirProvider.provideTempDirectory();
+        File micAlgOut = new File(tempDir, "micAlgOut");
+        micAlgOut.delete();
+        commandList.add("--micalg-out=" + micAlgOut.getAbsolutePath());
+
         String[] command = commandList.toArray(new String[0]);
         String[] env = envList.toArray(new String[0]);
         try {
@@ -92,7 +104,18 @@ public class DetachedSignExternal implements DetachedSign {
 
                     ExternalSOP.finish(process);
 
-                    return SigningResult.builder().build();
+                    SigningResult.Builder builder = SigningResult.builder();
+                    if (micAlgOut.exists()) {
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(micAlgOut)));
+                        String line = reader.readLine();
+                        if (line != null && !line.trim().isEmpty()) {
+                            builder.setMicAlg(MicAlg.fromHashAlgorithmId(Integer.parseInt(line)));
+                        }
+                        reader.close();
+                        micAlgOut.delete();
+                    }
+
+                    return builder.build();
                 }
             };
         } catch (IOException e) {

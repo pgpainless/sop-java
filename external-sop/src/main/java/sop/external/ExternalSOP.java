@@ -83,7 +83,7 @@ public class ExternalSOP implements SOP {
 
     @Override
     public DetachedSign detachedSign() {
-        return new DetachedSignExternal(binaryName, properties);
+        return new DetachedSignExternal(binaryName, properties, tempDirProvider);
     }
 
     @Override
