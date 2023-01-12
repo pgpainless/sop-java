@@ -55,16 +55,13 @@ List<Verification> signatureVerifications = messageInfo.getVerifications();
 
 Furthermore, the API is capable of signing messages and verifying unencrypted signed data, as well as adding and removing ASCII armor.
 
-### Limitations
-As per the spec, sop-java does not (yet) deal with encrypted OpenPGP keys.
-
 ## Why should I use this?
 
 If you need to use OpenPGP functionality like encrypting/decrypting messages, or creating/verifying
 signatures inside your application, you probably don't want to start from scratch and instead reuse some library.
 
 Instead of locking yourselves in by depending hard on that one library, you can simply depend on the interfaces from
-`sop-java` and plug in a library (such as `pgpainless-sop`) that implements said interfaces.
+`sop-java` and plug in a library (such as `pgpainless-sop`, `external-sop`) that implements said interfaces.
 
 That way you don't make yourself dependent from a single OpenPGP library and stay flexible.
 Should another library emerge, that better suits your needs (and implements `sop-java`), you can easily switch
