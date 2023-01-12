@@ -109,7 +109,8 @@ public class DetachedSignExternal implements DetachedSign {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(micAlgOut)));
                         String line = reader.readLine();
                         if (line != null && !line.trim().isEmpty()) {
-                            builder.setMicAlg(MicAlg.fromHashAlgorithmId(Integer.parseInt(line)));
+                            MicAlg micAlg = new MicAlg(line.trim());
+                            builder.setMicAlg(micAlg);
                         }
                         reader.close();
                         micAlgOut.delete();

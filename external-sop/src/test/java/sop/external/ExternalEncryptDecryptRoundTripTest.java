@@ -16,11 +16,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("sop.external.AbstractExternalSOPTest#isExternalSopInstalled")
-public class EncryptDecryptRoundTripTest extends AbstractExternalSOPTest {
+public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest {
 
     @Test
     public void encryptDecryptRoundTripPasswordTest() throws IOException {
@@ -118,5 +119,36 @@ public class EncryptDecryptRoundTripTest extends AbstractExternalSOPTest {
         List<Verification> verificationList = result.getVerifications();
         assertEquals(1, verificationList.size());
         assertTrue(verificationList.get(0).toString().contains("EB85BB5FA33A75E15E944E63F231550C4F47E38E EB85BB5FA33A75E15E944E63F231550C4F47E38E"));
+    }
+
+    @Test
+    public void encryptSignDecryptVerifyRoundTripWithFreshEncryptedKeyTest() throws IOException {
+        byte[] keyPassword = "sw0rdf1sh".getBytes(StandardCharsets.UTF_8);
+        byte[] key = getSop().generateKey()
+                .withKeyPassword(keyPassword)
+                .userId("Alice <alice@openpgp.org>")
+                .generate()
+                .getBytes();
+        byte[] cert = getSop().extractCert()
+                .key(key)
+                .getBytes();
+
+        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] ciphertext = getSop().encrypt()
+                .withCert(cert)
+                .signWith(key)
+                .withKeyPassword(keyPassword)
+                .plaintext(message)
+                .getBytes();
+
+        ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
+                .withKey(key)
+                .withKeyPassword(keyPassword)
+                .verifyWithCert(cert)
+                .ciphertext(ciphertext)
+                .toByteArrayAndResult();
+
+        assertFalse(bytesAndResult.getResult().getVerifications().isEmpty());
+        assertArrayEquals(message, bytesAndResult.getBytes());
     }
 }
