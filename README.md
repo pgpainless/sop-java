@@ -29,9 +29,10 @@ compatible with the SOP-CLI specification.
 ## Known Implementations
 (Please expand!)
 
-| Project                                                                               | Description                                   |
-|---------------------------------------------------------------------------------------|-----------------------------------------------|
-| [pgpainless-sop](https://github.com/pgpainless/pgpainless/tree/master/pgpainless-sop) | Implementation of `sop-java` using PGPainless |
+| Project                                                                             | Description                                                                              |
+|-------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| [pgpainless-sop](https://github.com/pgpainless/pgpainless/tree/main/pgpainless-sop) | Implementation of `sop-java` using PGPainless                                            |
+| [external-sop](https://github.com/pgpainless/sop-java/tree/main/external-sop)       | Implementation of `sop-java` that allows binding to external SOP binaries such as `sqop` |
 
 ### Implementations in other languages
 | Project                                         | Language |
