@@ -31,10 +31,10 @@ public class VersionExternal implements Version {
             Process process = runtime.exec(command, env);
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line = stdInput.readLine().trim();
+            ExternalSOP.finish(process);
             if (line.contains(" ")) {
                 return line.substring(0, line.lastIndexOf(" "));
             }
-            ExternalSOP.finish(process);
             return line;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -49,10 +49,10 @@ public class VersionExternal implements Version {
             Process process = runtime.exec(command, env);
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line = stdInput.readLine().trim();
+            ExternalSOP.finish(process);
             if (line.contains(" ")) {
                 return line.substring(line.lastIndexOf(" ") + 1);
             }
-            ExternalSOP.finish(process);
             return line;
         } catch (IOException e) {
             throw new RuntimeException(e);
