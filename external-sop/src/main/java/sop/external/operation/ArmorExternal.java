@@ -35,6 +35,6 @@ public class ArmorExternal implements Armor {
 
     @Override
     public Ready data(InputStream data) throws SOPGPException.BadData, IOException {
-        return ExternalSOP.ready(Runtime.getRuntime(), commandList, envList);
+        return ExternalSOP.ready(Runtime.getRuntime(), commandList, envList, data);
     }
 }
