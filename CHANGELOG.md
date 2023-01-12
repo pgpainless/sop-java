@@ -6,6 +6,10 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 4.0.8-SNAPSHOT
+- `decrypt`: Rename `--not-before`, `--not-after` to `--verify-not-before`, `--verify-not-after`
+- `inline-sign`: Fix parameter label of `--as=clearsigned`
+
 ## 4.0.7
 - Make i18n string for `--stacktrace` option translatable
 - Make manpages generation reproducible
