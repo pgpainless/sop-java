@@ -33,9 +33,11 @@ import sop.operation.InlineVerify;
 import sop.operation.Version;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -44,14 +46,24 @@ public class ExternalSOP implements SOP {
 
     private final String binaryName;
     private final Properties properties;
+    private final TempDirProvider tempDirProvider;
 
     public ExternalSOP(String binaryName) {
         this(binaryName, new Properties());
     }
 
     public ExternalSOP(String binaryName, Properties properties) {
+        this(binaryName, properties, defaultTempDirProvider());
+    }
+
+    public ExternalSOP(String binaryName, TempDirProvider tempDirProvider) {
+        this(binaryName, new Properties(), tempDirProvider);
+    }
+
+    public ExternalSOP(String binaryName, Properties properties, TempDirProvider tempDirProvider) {
         this.binaryName = binaryName;
         this.properties = properties;
+        this.tempDirProvider = tempDirProvider;
     }
 
     @Override
@@ -101,7 +113,7 @@ public class ExternalSOP implements SOP {
 
     @Override
     public Decrypt decrypt() {
-        return new DecryptExternal(binaryName, properties);
+        return new DecryptExternal(binaryName, properties, tempDirProvider);
     }
 
     @Override
@@ -302,5 +314,18 @@ public class ExternalSOP implements SOP {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public interface TempDirProvider {
+        File provideTempDirectory() throws IOException;
+    }
+
+    public static TempDirProvider defaultTempDirProvider() {
+        return new TempDirProvider() {
+            @Override
+            public File provideTempDirectory() throws IOException {
+                return Files.createTempDirectory("ext-sop").toFile();
+            }
+        };
     }
 }

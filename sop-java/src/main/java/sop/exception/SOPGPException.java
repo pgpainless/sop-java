@@ -94,7 +94,7 @@ public abstract class SOPGPException extends RuntimeException {
         public static final int EXIT_CODE = 19;
 
         public MissingArg() {
-            
+
         }
 
         public MissingArg(String message) {

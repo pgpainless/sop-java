@@ -12,6 +12,7 @@ import sop.external.ExternalSOP;
 import sop.operation.Decrypt;
 import sop.util.UTCUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,6 +24,7 @@ import java.util.Properties;
 
 public class DecryptExternal implements Decrypt {
 
+    private final ExternalSOP.TempDirProvider tempDirProvider;
     private final List<String> commandList = new ArrayList<>();
     private final List<String> envList;
 
@@ -32,7 +34,8 @@ public class DecryptExternal implements Decrypt {
     private int keyCounter = 0;
     private int withKeyPasswordCounter = 0;
 
-    public DecryptExternal(String binary, Properties environment) {
+    public DecryptExternal(String binary, Properties environment, ExternalSOP.TempDirProvider tempDirProvider) {
+        this.tempDirProvider = tempDirProvider;
         this.commandList.add(binary);
         this.commandList.add("decrypt");
         this.envList = ExternalSOP.propertiesToEnv(environment);
@@ -41,14 +44,14 @@ public class DecryptExternal implements Decrypt {
     @Override
     public Decrypt verifyNotBefore(Date timestamp)
             throws SOPGPException.UnsupportedOption {
-        this.commandList.add("--not-before=" + UTCUtil.formatUTCDate(timestamp));
+        this.commandList.add("--verify-not-before=" + UTCUtil.formatUTCDate(timestamp));
         return this;
     }
 
     @Override
     public Decrypt verifyNotAfter(Date timestamp)
             throws SOPGPException.UnsupportedOption {
-        this.commandList.add("--not-after=" + UTCUtil.formatUTCDate(timestamp));
+        this.commandList.add("--verify-not-after=" + UTCUtil.formatUTCDate(timestamp));
         return this;
     }
 
@@ -101,6 +104,14 @@ public class DecryptExternal implements Decrypt {
     public ReadyWithResult<DecryptionResult> ciphertext(InputStream ciphertext)
             throws SOPGPException.BadData, SOPGPException.MissingArg, SOPGPException.CannotDecrypt,
             SOPGPException.KeyIsProtected, IOException {
+
+        File tempDir = tempDirProvider.provideTempDirectory();
+        File sessionKeyOut = new File(tempDir, "session-key-out");
+        commandList.add("--session-key-out=" + sessionKeyOut.getAbsolutePath());
+
+        File verifyOut = new File(tempDir, "verify-out");
+        commandList.add("--verify-out=" + verifyOut.getAbsolutePath());
+
         String[] command = commandList.toArray(new String[0]);
         String[] env = envList.toArray(new String[0]);
         try {

@@ -23,6 +23,9 @@ dependencies {
 
     // Compare version strings
     implementation 'org.apache.maven:maven-artifact:3.6.3'
+    
+    // @Nonnull, @Nullable...
+    implementation "com.google.code.findbugs:jsr305:$jsrVersion"
 }
 
 test {
