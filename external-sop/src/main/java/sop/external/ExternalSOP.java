@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -281,6 +282,7 @@ public class ExternalSOP implements SOP {
             throw new RuntimeException(e);
         }
     }
+
     public static Ready ready(Runtime runtime, List<String> commandList, List<String> envList, InputStream standardIn) {
         String[] command = commandList.toArray(new String[0]);
         String[] env = envList.toArray(new String[0]);
@@ -316,10 +318,27 @@ public class ExternalSOP implements SOP {
         }
     }
 
+    /**
+     * This interface can be used to provide a directory in which external SOP binaries can temporarily store
+     * additional results of OpenPGP operations such that the binding classes can parse them out from there.
+     * Unfortunately, on Java you cannot open {@link java.io.FileDescriptor FileDescriptors} arbitrarily, so we
+     * have to rely on temporary files to pass results.
+     * An example:
+     * <pre>sop decrypt</pre> can emit signature verifications via <pre>--verify-out=/path/to/tempfile</pre>.
+     * {@link DecryptExternal} will then parse the temp file to make the result available to consumers.
+     * Temporary files are deleted after being read, yet creating temp files for sensitive information on disk
+     * might pose a security risk. Use with care!
+     */
     public interface TempDirProvider {
         File provideTempDirectory() throws IOException;
     }
 
+    /**
+     * Default implementation of the {@link TempDirProvider} which stores temporary files in the systems temp dir
+     * ({@link Files#createTempDirectory(String, FileAttribute[])}).
+     *
+     * @return default implementation
+     */
     public static TempDirProvider defaultTempDirProvider() {
         return new TempDirProvider() {
             @Override
