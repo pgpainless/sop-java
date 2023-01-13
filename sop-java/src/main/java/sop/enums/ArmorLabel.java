@@ -9,5 +9,11 @@ public enum ArmorLabel {
     Sig,
     Key,
     Cert,
-    Message
+    Message,
+    ;
+
+    @Override
+    public String toString() {
+        return super.toString().toLowerCase();
+    }
 }

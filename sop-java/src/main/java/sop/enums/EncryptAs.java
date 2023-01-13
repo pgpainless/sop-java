@@ -6,5 +6,11 @@ package sop.enums;
 
 public enum EncryptAs {
     Binary,
-    Text
+    Text,
+    ;
+
+    @Override
+    public String toString() {
+        return super.toString().toLowerCase();
+    }
 }

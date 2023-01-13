@@ -13,5 +13,11 @@ public enum SignAs {
     /**
      * Signature is made over the message in text mode.
      */
-    Text
+    Text,
+    ;
+
+    @Override
+    public String toString() {
+        return super.toString().toLowerCase();
+    }
 }
