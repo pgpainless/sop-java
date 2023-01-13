@@ -101,6 +101,7 @@ public class DecryptCmd extends AbstractSopCmd {
             DecryptionResult result = ready.writeTo(System.out);
             writeSessionKeyOut(result);
             writeVerifyOut(result);
+
         } catch (SOPGPException.BadData badData) {
             String errorMsg = getMsg("sop.error.input.stdin_not_a_message");
             throw new SOPGPException.BadData(errorMsg, badData);
@@ -114,6 +115,11 @@ public class DecryptCmd extends AbstractSopCmd {
 
     private void writeVerifyOut(DecryptionResult result) throws IOException {
         if (verifyOut != null) {
+            if (result.getVerifications().isEmpty()) {
+                String errorMsg = getMsg("sop.error.runtime.no_verifiable_signature_found");
+                throw new SOPGPException.NoSignature(errorMsg);
+            }
+
             try (OutputStream fileOut = getOutput(verifyOut)) {
                 PrintWriter writer = new PrintWriter(fileOut);
                 for (Verification verification : result.getVerifications()) {
