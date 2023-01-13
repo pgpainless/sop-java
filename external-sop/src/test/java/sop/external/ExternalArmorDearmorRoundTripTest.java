@@ -19,6 +19,8 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
 
     private static final String BEGIN_PGP_PRIVATE_KEY_BLOCK = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n";
     private static final byte[] BEGIN_PGP_PRIVATE_KEY_BLOCK_BYTES = BEGIN_PGP_PRIVATE_KEY_BLOCK.getBytes(StandardCharsets.UTF_8);
+    private static final String BEGIN_PGP_PUBLIC_KEY_BLOCK = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n";
+    private static final byte[] BEGIN_PGP_PUBLIC_KEY_BLOCK_BYTES = BEGIN_PGP_PUBLIC_KEY_BLOCK.getBytes(StandardCharsets.UTF_8);
 
     @Test
     public void dearmorArmorAliceKey() throws IOException {
@@ -35,5 +37,23 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
                 .getBytes();
 
         assertArrayStartsWith(armored, BEGIN_PGP_PRIVATE_KEY_BLOCK_BYTES);
+    }
+
+
+    @Test
+    public void dearmorArmorAliceCert() throws IOException {
+        byte[] aliceCert = TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8);
+
+        byte[] dearmored = getSop().dearmor()
+                .data(aliceCert)
+                .getBytes();
+
+        assertFalse(arrayStartsWith(dearmored, BEGIN_PGP_PUBLIC_KEY_BLOCK_BYTES));
+
+        byte[] armored = getSop().armor()
+                .data(dearmored)
+                .getBytes();
+
+        assertArrayStartsWith(armored, BEGIN_PGP_PUBLIC_KEY_BLOCK_BYTES);
     }
 }
