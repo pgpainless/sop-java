@@ -9,6 +9,7 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import sop.ByteArrayAndResult;
 import sop.DecryptionResult;
 import sop.Verification;
+import sop.enums.EncryptAs;
 import sop.exception.SOPGPException;
 import sop.util.UTCUtil;
 
@@ -101,6 +102,30 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     }
 
     @Test
+    public void encryptNoArmorThenArmorThenDecryptRoundTrip() throws IOException {
+        ignoreIf("sqop", Is.leq, "0.26.1"); // Invalid data type
+
+        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] ciphertext = getSop().encrypt()
+                .withCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .noArmor()
+                .plaintext(message)
+                .getBytes();
+
+        byte[] armored = getSop().armor()
+                .data(ciphertext)
+                .getBytes();
+
+        ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
+                .withKey(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .ciphertext(armored)
+                .toByteArrayAndResult();
+
+        byte[] plaintext = bytesAndResult.getBytes();
+        assertArrayEquals(message, plaintext);
+    }
+
+    @Test
     public void encryptSignDecryptVerifyRoundTripAliceTest() throws IOException {
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
@@ -126,7 +151,35 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     }
 
     @Test
+    public void encryptSignAsTextDecryptVerifyRoundTripAliceTest() throws IOException {
+        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] ciphertext = getSop().encrypt()
+                .withCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .signWith(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .mode(EncryptAs.Text)
+                .plaintext(message)
+                .getBytes();
+
+        ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
+                .withKey(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .verifyWithCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .ciphertext(ciphertext)
+                .toByteArrayAndResult();
+
+        byte[] plaintext = bytesAndResult.getBytes();
+        assertArrayEquals(message, plaintext);
+
+        DecryptionResult result = bytesAndResult.getResult();
+        assertNotNull(result.getSessionKey().get());
+        List<Verification> verificationList = result.getVerifications();
+        assertEquals(1, verificationList.size());
+        assertTrue(verificationList.get(0).toString().contains("EB85BB5FA33A75E15E944E63F231550C4F47E38E EB85BB5FA33A75E15E944E63F231550C4F47E38E"));
+    }
+
+    @Test
     public void encryptSignDecryptVerifyRoundTripWithFreshEncryptedKeyTest() throws IOException {
+        ignoreIf("sqop", Is.leq, "0.26.1");
+
         byte[] keyPassword = "sw0rdf1sh".getBytes(StandardCharsets.UTF_8);
         byte[] key = getSop().generateKey()
                 .withKeyPassword(keyPassword)
