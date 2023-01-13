@@ -10,6 +10,7 @@ SPDX-License-Identifier: Apache-2.0
 - `decrypt`: Rename `--not-before`, `--not-after` to `--verify-not-before`, `--verify-not-after`
 - `decrypt`: Throw `NoSignature` error if no verifiable signature found, but signature verification is requested using `--verify-with`.
 - `inline-sign`: Fix parameter label of `--as=clearsigned`
+- `ArmorLabel`, `EncryptAs`, `SignAs`: make `toString()` return lowercase
 
 ## 4.0.7
 - Make i18n string for `--stacktrace` option translatable
