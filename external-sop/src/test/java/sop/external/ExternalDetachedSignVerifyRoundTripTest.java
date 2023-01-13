@@ -71,4 +71,28 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
 
         assertFalse(verificationList.isEmpty());
     }
+
+    @Test
+    public void signArmorVerifyWithBobKey() throws IOException {
+        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+
+        byte[] signature = getSop().detachedSign()
+                .key(TestKeys.BOB_KEY.getBytes(StandardCharsets.UTF_8))
+                .noArmor()
+                .data(message)
+                .toByteArrayAndResult()
+                .getBytes();
+
+        byte[] armored = getSop().armor()
+                .data(signature)
+                .getBytes();
+
+        List<Verification> verificationList = getSop().detachedVerify()
+                .cert(TestKeys.BOB_CERT.getBytes(StandardCharsets.UTF_8))
+                .signatures(armored)
+                .data(message);
+
+        assertFalse(verificationList.isEmpty());
+        assertTrue(verificationList.get(0).toString().contains("D1A66E1A23B182C9980F788CFBFCC82A015E7330 D1A66E1A23B182C9980F788CFBFCC82A015E7330"));
+    }
 }

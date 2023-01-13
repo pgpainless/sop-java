@@ -81,7 +81,9 @@ public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
     @Test
     public void generateKeyWithMultipleUserIdsAndPassword() throws IOException {
         ignoreIf("sqop", Is.le, "0.27.0");
-        ignoreIf("pgpainless-cli", Is.le, "1.3.15");
+        ignoreIf("PGPainless-SOP", Is.le, "1.3.15");
+        ignoreIf("PGPainless-SOP", Is.eq, "1.4.0");
+        ignoreIf("PGPainless-SOP", Is.eq, "1.4.1");
 
         byte[] key = getSop().generateKey()
                 .userId("Alice <alice@openpgp.org>")
