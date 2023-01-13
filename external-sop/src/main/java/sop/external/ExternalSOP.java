@@ -301,7 +301,11 @@ public class ExternalSOP implements SOP {
                     }
 
                     standardIn.close();
-                    processOut.close();
+                    try {
+                        processOut.close();
+                    } catch (IOException e) {
+                        // ignore
+                    }
 
                     while ((r = processIn.read(buf)) > 0) {
                         outputStream.write(buf, 0 , r);
