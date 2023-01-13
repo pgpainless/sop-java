@@ -7,6 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 # Changelog
 
 ## 4.0.8-SNAPSHOT
+- Add module `external-sop`
+  - This module implements the `sop-java` interfaces and allows the use of an external SOP binary
 - `decrypt`: Rename `--not-before`, `--not-after` to `--verify-not-before`, `--verify-not-after`
 - `decrypt`: Throw `NoSignature` error if no verifiable signature found, but signature verification is requested using `--verify-with`.
 - `inline-sign`: Fix parameter label of `--as=clearsigned`
