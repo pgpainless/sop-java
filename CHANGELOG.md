@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 4.0.8-SNAPSHOT
+## 4.1.0
 - Add module `external-sop`
   - This module implements the `sop-java` interfaces and allows the use of an external SOP binary
 - `decrypt`: Rename `--not-before`, `--not-after` to `--verify-not-before`, `--verify-not-after`
