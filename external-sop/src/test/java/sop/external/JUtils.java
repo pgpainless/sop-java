@@ -4,8 +4,10 @@
 
 package sop.external;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class JUtils {
@@ -49,5 +51,22 @@ public class JUtils {
                     "Expected: <" + Arrays.toString(start) + ">\n" +
                     "Actual: <" + Arrays.toString(actual) + ">");
         }
+    }
+
+    public static void assertAsciiArmorEquals(byte[] first, byte[] second) {
+        byte[] firstCleaned = removeArmorHeaders(first);
+        byte[] secondCleaned = removeArmorHeaders(second);
+
+        assertArrayEquals(firstCleaned, secondCleaned);
+    }
+
+    public static byte[] removeArmorHeaders(byte[] armor) {
+        String string = new String(armor, StandardCharsets.UTF_8);
+        string = string.replaceAll("Comment: .+\\R", "")
+                .replaceAll("Version: .+\\R", "")
+                .replaceAll("MessageID: .+\\R", "")
+                .replaceAll("Hash: .+\\R", "")
+                .replaceAll("Charset: .+\\R", "");
+        return string.getBytes(StandardCharsets.UTF_8);
     }
 }

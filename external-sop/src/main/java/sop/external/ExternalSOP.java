@@ -274,6 +274,7 @@ public class ExternalSOP implements SOP {
                         outputStream.write(buf, 0, r);
                     }
 
+                    outputStream.flush();
                     outputStream.close();
                     ExternalSOP.finish(process);
                 }
@@ -299,19 +300,17 @@ public class ExternalSOP implements SOP {
                     while ((r = standardIn.read(buf)) > 0) {
                         processOut.write(buf, 0, r);
                     }
-
                     standardIn.close();
-                    try {
-                        processOut.close();
-                    } catch (IOException e) {
-                        // ignore
-                    }
+
+                    processOut.flush();
+                    processOut.close();
 
                     while ((r = processIn.read(buf)) > 0) {
                         outputStream.write(buf, 0 , r);
                     }
-
                     processIn.close();
+
+                    outputStream.flush();
                     outputStream.close();
 
                     finish(process);
