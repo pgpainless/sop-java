@@ -32,6 +32,7 @@ import sop.operation.InlineSign;
 import sop.operation.InlineVerify;
 import sop.operation.Version;
 
+import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -52,19 +53,47 @@ public class ExternalSOP implements SOP {
     private final Properties properties;
     private final TempDirProvider tempDirProvider;
 
-    public ExternalSOP(String binaryName) {
+    /**
+     * Instantiate an {@link ExternalSOP} object for the given binary and pass it empty environment variables,
+     * as well as a default {@link TempDirProvider}.
+     *
+     * @param binaryName name / path of the SOP binary
+     */
+    public ExternalSOP(@Nonnull String binaryName) {
         this(binaryName, new Properties());
     }
 
-    public ExternalSOP(String binaryName, Properties properties) {
+    /**
+     * Instantiate an {@link ExternalSOP} object for the given binary, and pass it the given properties as
+     * environment variables, as well as a default {@link TempDirProvider}.
+     *
+     * @param binaryName name / path of the SOP binary
+     * @param properties environment variables
+     */
+    public ExternalSOP(@Nonnull String binaryName, @Nonnull Properties properties) {
         this(binaryName, properties, defaultTempDirProvider());
     }
 
-    public ExternalSOP(String binaryName, TempDirProvider tempDirProvider) {
+    /**
+     * Instantiate an {@link ExternalSOP} object for the given binary and the given {@link TempDirProvider}
+     * using empty environment variables.
+     *
+     * @param binaryName name / path of the SOP binary
+     * @param tempDirProvider custom tempDirProvider
+     */
+    public ExternalSOP(@Nonnull String binaryName, @Nonnull TempDirProvider tempDirProvider) {
         this(binaryName, new Properties(), tempDirProvider);
     }
 
-    public ExternalSOP(String binaryName, Properties properties, TempDirProvider tempDirProvider) {
+    /**
+     * Instantiate an {@link ExternalSOP} object for the given binary using the given properties and
+     * custom {@link TempDirProvider}.
+     *
+     * @param binaryName name / path of the SOP binary
+     * @param properties environment variables
+     * @param tempDirProvider tempDirProvider
+     */
+    public ExternalSOP(@Nonnull String binaryName, @Nonnull Properties properties, @Nonnull TempDirProvider tempDirProvider) {
         this.binaryName = binaryName;
         this.properties = properties;
         this.tempDirProvider = tempDirProvider;
@@ -130,27 +159,26 @@ public class ExternalSOP implements SOP {
         return new DearmorExternal(binaryName, properties);
     }
 
-    public static void finish(Process process) throws IOException {
+    public static void finish(@Nonnull Process process) throws IOException {
         try {
             mapExitCodeOrException(process);
-        } catch (SOPGPException e) {
-            InputStream errIn = process.getErrorStream();
-            ByteArrayOutputStream errOut = new ByteArrayOutputStream();
-            byte[] buf = new byte[512];
-            int r;
-            while ((r = errIn.read(buf)) > 0) {
-                errOut.write(buf, 0, r);
-            }
-
-            e.initCause(new IOException(errOut.toString()));
-            throw e;
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void mapExitCodeOrException(Process process) throws InterruptedException, IOException {
+    /**
+     * Wait for the {@link Process} to finish and read out its exit code.
+     * If the exit code is {@value "0"}, this method just returns.
+     * Otherwise, the exit code gets mapped to a {@link SOPGPException} which then gets thrown.
+     * If the exit code does not match any of the known exit codes defined in the SOP specification,
+     * this method throws a {@link RuntimeException} instead.
+     *
+     * @param process process
+     * @throws InterruptedException if the thread is interrupted before the process could exit
+     * @throws IOException in case of an IO error
+     */
+    private static void mapExitCodeOrException(@Nonnull Process process) throws InterruptedException, IOException {
         int exitCode = process.waitFor();
 
         if (exitCode == 0) {
@@ -158,14 +186,7 @@ public class ExternalSOP implements SOP {
         }
 
         InputStream errIn = process.getErrorStream();
-        ByteArrayOutputStream errOut = new ByteArrayOutputStream();
-        byte[] buf = new byte[512];
-        int r;
-        while ((r = errIn.read(buf)) > 0) {
-            errOut.write(buf, 0, r);
-        }
-
-        String errorMessage = errOut.toString();
+        String errorMessage = readFully(errIn);
 
         switch (exitCode) {
             case SOPGPException.NoSignature.EXIT_CODE:
@@ -242,7 +263,14 @@ public class ExternalSOP implements SOP {
         }
     }
 
-    public static List<String> propertiesToEnv(Properties properties) {
+    /**
+     * Return all key-value pairs from the given {@link Properties} object as a list with items of the form
+     * <pre>key=value</pre>.
+     *
+     * @param properties properties
+     * @return list of key=value strings
+     */
+    public static List<String> propertiesToEnv(@Nonnull Properties properties) {
         List<String> env = new ArrayList<>();
         for (Object key : properties.keySet()) {
             env.add(key + "=" + properties.get(key));
@@ -250,7 +278,14 @@ public class ExternalSOP implements SOP {
         return env;
     }
 
-    public static String readFully(InputStream inputStream) throws IOException {
+    /**
+     * Read the contents of the {@link InputStream} and return them as a {@link String}.
+     *
+     * @param inputStream input stream
+     * @return string
+     * @throws IOException in case of an IO error
+     */
+    public static String readFully(@Nonnull InputStream inputStream) throws IOException {
         ByteArrayOutputStream bOut = new ByteArrayOutputStream();
         byte[] buf = new byte[4096];
         int r;
@@ -260,7 +295,15 @@ public class ExternalSOP implements SOP {
         return bOut.toString();
     }
 
-    public static Ready ready(Runtime runtime, List<String> commandList, List<String> envList) {
+    /**
+     * Execute the given command on the given {@link Runtime} with the given list of environment variables.
+     *
+     * @param runtime runtime
+     * @param commandList command
+     * @param envList environment variables
+     * @return ready to read the result from
+     */
+    public static Ready ready(@Nonnull Runtime runtime, @Nonnull List<String> commandList, @Nonnull List<String> envList) {
         String[] command = commandList.toArray(new String[0]);
         String[] env = envList.toArray(new String[0]);
 
@@ -287,7 +330,17 @@ public class ExternalSOP implements SOP {
         }
     }
 
-    public static Ready ready(Runtime runtime, List<String> commandList, List<String> envList, InputStream standardIn) {
+    /**
+     * Execute the given command on the given runtime using the given environment variables.
+     * The given input stream provides input for the process.
+     *
+     * @param runtime runtime
+     * @param commandList command
+     * @param envList environment variables
+     * @param standardIn stream of input data for the process
+     * @return ready to read the result from
+     */
+    public static Ready ready(@Nonnull Runtime runtime, @Nonnull List<String> commandList, @Nonnull List<String> envList, @Nonnull InputStream standardIn) {
         String[] command = commandList.toArray(new String[0]);
         String[] env = envList.toArray(new String[0]);
         try {
