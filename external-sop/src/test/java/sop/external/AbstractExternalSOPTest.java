@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public abstract class AbstractExternalSOPTest {
 
@@ -25,6 +26,7 @@ public abstract class AbstractExternalSOPTest {
 
     public AbstractExternalSOPTest() {
         String backend = readSopBackendFromProperties();
+        assumeTrue(backend != null);
         Properties environment = readBackendEnvironment();
         sop = new ExternalSOP(backend, environment);
     }
@@ -51,11 +53,33 @@ public abstract class AbstractExternalSOPTest {
         return new File(binary).exists();
     }
 
+    /**
+     * Relational enum.
+     */
     public enum Is {
+        /**
+         * Less than.
+         */
         le("<"),
+        /**
+         * Less or equal than.
+         */
         leq("<="),
+        /**
+         * Equal.
+         */
         eq("=="),
+        /**
+         * Not equal.
+         */
+        neq("!="),
+        /**
+         * Greater or equal than.
+         */
         geq(">="),
+        /**
+         * Greater than.
+         */
         ge(">"),
         ;
 
@@ -105,6 +129,9 @@ public abstract class AbstractExternalSOPTest {
             case eq:
                 assumeFalse(res == 0, msg);
                 break;
+            case neq:
+                assumeFalse(res != 0, msg);
+                break;
             case geq:
                 assumeFalse(res >= 0, msg);
                 break;
@@ -127,8 +154,7 @@ public abstract class AbstractExternalSOPTest {
             }
 
             properties.load(resourceIn);
-            String backend = properties.getProperty("sop.backend");
-            return backend;
+            return properties.getProperty("sop.backend");
         } catch (IOException e) {
             return null;
         }
