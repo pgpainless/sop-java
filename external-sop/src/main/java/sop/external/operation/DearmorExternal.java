@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Implementation of the {@link Dearmor} operation using an external SOP binary.
+ */
 public class DearmorExternal implements Dearmor {
 
     private final List<String> commandList = new ArrayList<>();

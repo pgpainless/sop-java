@@ -23,6 +23,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Implementation of the {@link InlineVerify} operation using an external SOP binary.
+ */
 public class InlineVerifyExternal implements InlineVerify {
 
     private final ExternalSOP.TempDirProvider tempDirProvider;

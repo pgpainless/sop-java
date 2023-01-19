@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
+/**
+ * Implementation of the {@link Version} operation using an external SOP binary.
+ */
 public class VersionExternal implements Version {
 
     private final Runtime runtime = Runtime.getRuntime();

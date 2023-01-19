@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Implementation of the {@link GenerateKey} operation using an external SOP binary.
+ */
 public class GenerateKeyExternal implements GenerateKey {
 
     private final List<String> commandList = new ArrayList<>();

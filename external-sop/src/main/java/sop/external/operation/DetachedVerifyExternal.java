@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+/**
+ * Implementation of the {@link DetachedVerify} operation using an external SOP binary.
+ */
 public class DetachedVerifyExternal implements DetachedVerify {
 
     private final List<String> commandList = new ArrayList<>();

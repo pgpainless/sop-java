@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Implementation of the {@link DetachedSign} operation using an external SOP binary.
+ */
 public class DetachedSignExternal implements DetachedSign {
 
     private final ExternalSOP.TempDirProvider tempDirProvider;

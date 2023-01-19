@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.List;
 
+/**
+ * Implementation of the {@link Armor} operation using an external SOP binary.
+ */
 public class ArmorExternal implements Armor {
 
     private final List<String> commandList = new ArrayList<>();

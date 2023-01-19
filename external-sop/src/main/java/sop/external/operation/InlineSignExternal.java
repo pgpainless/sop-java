@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Implementation of the {@link InlineSign} operation using an external SOP binary.
+ */
 public class InlineSignExternal implements InlineSign {
 
     private final List<String> commandList = new ArrayList<>();

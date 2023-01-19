@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Implementation of the {@link InlineDetach} operation using an external SOP binary.
+ */
 public class InlineDetachExternal implements InlineDetach {
 
     private final ExternalSOP.TempDirProvider tempDirProvider;

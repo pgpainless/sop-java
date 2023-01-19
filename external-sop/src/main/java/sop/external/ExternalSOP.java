@@ -43,6 +43,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Implementation of the {@link SOP} API using an external SOP binary.
+ */
 public class ExternalSOP implements SOP {
 
     private final String binaryName;

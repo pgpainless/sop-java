@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Implementation of the {@link ExtractCert} operation using an external SOP binary.
+ */
 public class ExtractCertExternal implements ExtractCert {
 
     private final List<String> commandList = new ArrayList<>();

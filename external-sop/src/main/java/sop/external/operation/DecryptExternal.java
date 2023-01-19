@@ -25,6 +25,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Implementation of the {@link Decrypt} operation using an external SOP binary.
+ */
 public class DecryptExternal implements Decrypt {
 
     private final ExternalSOP.TempDirProvider tempDirProvider;
