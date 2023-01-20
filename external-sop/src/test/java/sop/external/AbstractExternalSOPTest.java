@@ -141,7 +141,7 @@ public abstract class AbstractExternalSOPTest {
         }
     }
 
-    private static String readSopBackendFromProperties() {
+    static String readSopBackendFromProperties() {
         Properties properties = new Properties();
         try {
             InputStream resourceIn = AbstractExternalSOPTest.class.getResourceAsStream("backend.local.properties");
