@@ -166,4 +166,27 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
                 .signatures(signature)
                 .data(message));
     }
+
+
+    @Test
+    public void signVerifyWithFreshEncryptedKeyWithoutPassphraseFails() throws IOException {
+        ignoreIf("sqop", Is.leq, "0.27.2"); // does not return exit code 67 for encrypted keys without passphrase
+
+        byte[] keyPassword = "sw0rdf1sh".getBytes(StandardCharsets.UTF_8);
+        byte[] key = getSop().generateKey()
+                .userId("Alice <alice@openpgp.org>")
+                .withKeyPassword(keyPassword)
+                .generate()
+                .getBytes();
+
+        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+
+        assertThrows(SOPGPException.KeyIsProtected.class, () ->
+                getSop().detachedSign()
+                        .key(key)
+                        .data(message)
+                        .toByteArrayAndResult()
+                        .getBytes());
+    }
+
 }
