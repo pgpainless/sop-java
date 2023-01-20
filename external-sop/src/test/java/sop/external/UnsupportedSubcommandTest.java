@@ -39,7 +39,7 @@ public class UnsupportedSubcommandTest extends AbstractExternalSOPTest {
         private final String binary;
         private final Properties environment;
 
-        public UnsupportedSubcommandExternal(String binaryName, Properties environment) {
+        UnsupportedSubcommandExternal(String binaryName, Properties environment) {
             this.binary = binaryName;
             this.environment = environment;
         }

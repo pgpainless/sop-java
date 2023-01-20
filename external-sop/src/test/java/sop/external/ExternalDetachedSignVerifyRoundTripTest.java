@@ -67,24 +67,12 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
     }
 
     @Test
-    public void signVerifyWithFreshEncryptedKey() throws IOException {
-        ignoreIf("sqop", Is.leq, "0.26.1"); // --with-key-password not supported
-
+    public void signVerifyWithEncryptedKey() throws IOException {
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
-        byte[] keyPassword = "sw0rdf1sh".getBytes(StandardCharsets.UTF_8);
-        byte[] key = getSop().generateKey()
-                .userId("Alice <alice@openpgp.org>")
-                .withKeyPassword(keyPassword)
-                .generate()
-                .getBytes();
-
-        byte[] cert = getSop().extractCert()
-                .key(key)
-                .getBytes();
 
         byte[] signature = getSop().detachedSign()
-                .key(key)
-                .withKeyPassword(keyPassword)
+                .key(TestKeys.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKeyPassword(TestKeys.PASSWORD)
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();
@@ -92,7 +80,7 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
         assertArrayStartsWith(signature, BEGIN_PGP_SIGNATURE_BYTES);
 
         List<Verification> verificationList = getSop().detachedVerify()
-                .cert(cert)
+                .cert(TestKeys.PASSWORD_PROTECTED_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
                 .data(message);
 
@@ -169,24 +157,36 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
 
 
     @Test
-    public void signVerifyWithFreshEncryptedKeyWithoutPassphraseFails() throws IOException {
+    public void signVerifyWithEncryptedKeyWithoutPassphraseFails() {
         ignoreIf("sqop", Is.leq, "0.27.2"); // does not return exit code 67 for encrypted keys without passphrase
-
-        byte[] keyPassword = "sw0rdf1sh".getBytes(StandardCharsets.UTF_8);
-        byte[] key = getSop().generateKey()
-                .userId("Alice <alice@openpgp.org>")
-                .withKeyPassword(keyPassword)
-                .generate()
-                .getBytes();
-
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
 
         assertThrows(SOPGPException.KeyIsProtected.class, () ->
                 getSop().detachedSign()
-                        .key(key)
-                        .data(message)
+                        .key(TestKeys.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
+                        .data("Hello, World!\n".getBytes(StandardCharsets.UTF_8))
                         .toByteArrayAndResult()
                         .getBytes());
+    }
+
+    @Test
+    public void signWithProtectedKeyAndMultiplePassphrasesTest()
+            throws IOException {
+        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+
+        byte[] signature = getSop().sign()
+                .key(TestKeys.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKeyPassword("wrong")
+                .withKeyPassword(TestKeys.PASSWORD) // correct
+                .withKeyPassword("wrong2")
+                .data(message)
+                .toByteArrayAndResult()
+                .getBytes();
+
+        assertFalse(getSop().verify()
+                .cert(TestKeys.PASSWORD_PROTECTED_CERT.getBytes(StandardCharsets.UTF_8))
+                .signatures(signature)
+                .data(message)
+                .isEmpty());
     }
 
 }

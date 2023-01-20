@@ -304,4 +304,75 @@ public class TestKeys {
             "1FkOSekLi8WNMdUx3XMyvP8nJ65P2Q==\n" +
             "=Xj8h\n" +
             "-----END PGP PRIVATE KEY BLOCK-----\n";
+
+    public static final String PASSWORD_PROTECTED_KEY = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n" +
+            "Comment: FC63 688A 5E69 8C29 40AF  7029 7C62 2B00 D459 2657\n" +
+            "Comment: Password Protected <protected@openpgp.org>\n" +
+            "\n" +
+            "xYYEY8qfmxYJKwYBBAHaRw8BAQdAv5atAPgP3WOvjoeEGAXIpX+k9LbX1+roEQQE\n" +
+            "WaQfbMv+CQMI7d4yuArkBqz/J/UllaSoHN2kYdJE4Biiqgto2d39B8JRCrb0LSeX\n" +
+            "25TolXynV3bdiTsVKtnNOOcCzP09kDMu8uCMpregFrMdI511iR+dysLAEQQfFgoA\n" +
+            "gwWCY8qfmwWJBZ+mAAMLCQcJEHxiKwDUWSZXRxQAAAAAAB4AIHNhbHRAbm90YXRp\n" +
+            "b25zLnNlcXVvaWEtcGdwLm9yZ5Rt+kxLFFiFbTaZO2Rbf52K6FEcetqiht8jk9Vt\n" +
+            "DObSAxUKCAKbAQIeARYhBPxjaIpeaYwpQK9wKXxiKwDUWSZXAABTzQEA9Vy2e5eU\n" +
+            "dFj+gfwPULtwEJqMpj29eN37J0VfwF1RdW0BAMeXutE1dzL5PdIIX8VJAIv9RXVR\n" +
+            "lw5TujtjLhr8uzEKzSpQYXNzd29yZCBQcm90ZWN0ZWQgPHByb3RlY3RlZEBvcGVu\n" +
+            "cGdwLm9yZz7CwBQEExYKAIYFgmPKn5sFiQWfpgADCwkHCRB8YisA1FkmV0cUAAAA\n" +
+            "AAAeACBzYWx0QG5vdGF0aW9ucy5zZXF1b2lhLXBncC5vcmdTOuFjGL7cyOIVEfem\n" +
+            "5b/gCJLP6LFKTy3P/gFGRB7VEAMVCggCmQECmwECHgEWIQT8Y2iKXmmMKUCvcCl8\n" +
+            "YisA1FkmVwAARXsBAP4jwRWnAqEe59BV+0WviYzC8NhKpIjXwRQIM5yD6E90AQCQ\n" +
+            "wfhqsexB2rVQGw0siW2c/3DUhmnK8osNK5f8iLv5BceGBGPKn5sWCSsGAQQB2kcP\n" +
+            "AQEHQM/fv1zxwMjruKiq9W7PcMUbcMKQ3lbFdqPtwEJ16LxY/gkDCA3yM1VPvA6b\n" +
+            "/1vqf8sxU96j7CAMZaQRutdRd1xwFxx9ZIvhrPjm23nCcURzmnPflnKdx/p8/QVj\n" +
+            "jTQufQbnZkrmo/fg+eZURLX6O3Op2svCwMUEGBYKATcFgmPKn5sFiQWfpgAJEHxi\n" +
+            "KwDUWSZXRxQAAAAAAB4AIHNhbHRAbm90YXRpb25zLnNlcXVvaWEtcGdwLm9yZ0X3\n" +
+            "iVnya1OCsmkt7OijGLXSTv9FRbFVf+fcQGSMzViBApsCvqAEGRYKAG8FgmPKn5sJ\n" +
+            "EGiGL7kPBxZbRxQAAAAAAB4AIHNhbHRAbm90YXRpb25zLnNlcXVvaWEtcGdwLm9y\n" +
+            "Z62UKDMX/Uh2ywrGJjKi3Ex6jpghyED+kPlNuxS8uMs6FiEE2PHLwmEzUNGnZtNf\n" +
+            "aIYvuQ8HFlsAAPgiAPwIlVOxTF7J80KAiHrApEgfLHsEeGivjEtnkKO6eUa2awEA\n" +
+            "5qlATwB3bQVkMFYa893MxrjVmmasil81uwMiU8gtRQoWIQT8Y2iKXmmMKUCvcCl8\n" +
+            "YisA1FkmVwAAktwBAOEXjAXOZaFM8PoSNtrKVLakPXCadY8zduAqqgmp5PBwAP0R\n" +
+            "EpO9g0mQuCCmg6eeXm2GxChWORWArh9of7l/epycAceLBGPKn5sSCisGAQQBl1UB\n" +
+            "BQEBB0DDEzY37G8GNXIJqbVsawutIqNTZcizObXrau9F0H5wHQMBCAf+CQMI9ppA\n" +
+            "+RYt5Sv/gIPNmVm7UraBpK75qOC/tN9h/uNaaadcgrWEXMr6+YWjvBmH+iCV61/y\n" +
+            "b9Gkfxn2V/lw8asgch86Y6tN0Rhy+uXTFKMHecLABgQYFgoAeAWCY8qfmwWJBZ+m\n" +
+            "AAkQfGIrANRZJldHFAAAAAAAHgAgc2FsdEBub3RhdGlvbnMuc2VxdW9pYS1wZ3Au\n" +
+            "b3JnYeL3YzJjnG3vwSjzVnzgbFCe5QyC0/mFnqML7+hQi0kCmwwWIQT8Y2iKXmmM\n" +
+            "KUCvcCl8YisA1FkmVwAAbRcA/3haEwnnHhitQNbvDs2DqzVvz0QtjEW59ZKFgzX2\n" +
+            "PUMXAQDJzcz9GoPTqU8hioiSBoQUjN883qv6sJHiEveRyDbMDQ==\n" +
+            "=xHUd\n" +
+            "-----END PGP PRIVATE KEY BLOCK-----\n";
+    public static final String PASSWORD_PROTECTED_CERT = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
+            "Comment: FC63 688A 5E69 8C29 40AF  7029 7C62 2B00 D459 2657\n" +
+            "Comment: Password Protected <protected@openpgp.org>\n" +
+            "\n" +
+            "xjMEY8qfmxYJKwYBBAHaRw8BAQdAv5atAPgP3WOvjoeEGAXIpX+k9LbX1+roEQQE\n" +
+            "WaQfbMvCwBEEHxYKAIMFgmPKn5sFiQWfpgADCwkHCRB8YisA1FkmV0cUAAAAAAAe\n" +
+            "ACBzYWx0QG5vdGF0aW9ucy5zZXF1b2lhLXBncC5vcmeUbfpMSxRYhW02mTtkW3+d\n" +
+            "iuhRHHraoobfI5PVbQzm0gMVCggCmwECHgEWIQT8Y2iKXmmMKUCvcCl8YisA1Fkm\n" +
+            "VwAAU80BAPVctnuXlHRY/oH8D1C7cBCajKY9vXjd+ydFX8BdUXVtAQDHl7rRNXcy\n" +
+            "+T3SCF/FSQCL/UV1UZcOU7o7Yy4a/LsxCs0qUGFzc3dvcmQgUHJvdGVjdGVkIDxw\n" +
+            "cm90ZWN0ZWRAb3BlbnBncC5vcmc+wsAUBBMWCgCGBYJjyp+bBYkFn6YAAwsJBwkQ\n" +
+            "fGIrANRZJldHFAAAAAAAHgAgc2FsdEBub3RhdGlvbnMuc2VxdW9pYS1wZ3Aub3Jn\n" +
+            "UzrhYxi+3MjiFRH3puW/4AiSz+ixSk8tz/4BRkQe1RADFQoIApkBApsBAh4BFiEE\n" +
+            "/GNoil5pjClAr3ApfGIrANRZJlcAAEV7AQD+I8EVpwKhHufQVftFr4mMwvDYSqSI\n" +
+            "18EUCDOcg+hPdAEAkMH4arHsQdq1UBsNLIltnP9w1IZpyvKLDSuX/Ii7+QXOMwRj\n" +
+            "yp+bFgkrBgEEAdpHDwEBB0DP379c8cDI67ioqvVuz3DFG3DCkN5WxXaj7cBCdei8\n" +
+            "WMLAxQQYFgoBNwWCY8qfmwWJBZ+mAAkQfGIrANRZJldHFAAAAAAAHgAgc2FsdEBu\n" +
+            "b3RhdGlvbnMuc2VxdW9pYS1wZ3Aub3JnRfeJWfJrU4KyaS3s6KMYtdJO/0VFsVV/\n" +
+            "59xAZIzNWIECmwK+oAQZFgoAbwWCY8qfmwkQaIYvuQ8HFltHFAAAAAAAHgAgc2Fs\n" +
+            "dEBub3RhdGlvbnMuc2VxdW9pYS1wZ3Aub3JnrZQoMxf9SHbLCsYmMqLcTHqOmCHI\n" +
+            "QP6Q+U27FLy4yzoWIQTY8cvCYTNQ0adm019ohi+5DwcWWwAA+CIA/AiVU7FMXsnz\n" +
+            "QoCIesCkSB8sewR4aK+MS2eQo7p5RrZrAQDmqUBPAHdtBWQwVhrz3czGuNWaZqyK\n" +
+            "XzW7AyJTyC1FChYhBPxjaIpeaYwpQK9wKXxiKwDUWSZXAACS3AEA4ReMBc5loUzw\n" +
+            "+hI22spUtqQ9cJp1jzN24CqqCank8HAA/RESk72DSZC4IKaDp55ebYbEKFY5FYCu\n" +
+            "H2h/uX96nJwBzjgEY8qfmxIKKwYBBAGXVQEFAQEHQMMTNjfsbwY1cgmptWxrC60i\n" +
+            "o1NlyLM5tetq70XQfnAdAwEIB8LABgQYFgoAeAWCY8qfmwWJBZ+mAAkQfGIrANRZ\n" +
+            "JldHFAAAAAAAHgAgc2FsdEBub3RhdGlvbnMuc2VxdW9pYS1wZ3Aub3JnYeL3YzJj\n" +
+            "nG3vwSjzVnzgbFCe5QyC0/mFnqML7+hQi0kCmwwWIQT8Y2iKXmmMKUCvcCl8YisA\n" +
+            "1FkmVwAAbRcA/3haEwnnHhitQNbvDs2DqzVvz0QtjEW59ZKFgzX2PUMXAQDJzcz9\n" +
+            "GoPTqU8hioiSBoQUjN883qv6sJHiEveRyDbMDQ==\n" +
+            "=xlgc\n" +
+            "-----END PGP PUBLIC KEY BLOCK-----\n";
+    public static final String PASSWORD = "sw0rdf1sh";
 }
