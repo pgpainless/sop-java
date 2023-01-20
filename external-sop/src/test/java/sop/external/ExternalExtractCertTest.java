@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static sop.external.JUtils.arrayStartsWith;
 import static sop.external.JUtils.assertArrayStartsWith;
+import static sop.external.JUtils.assertAsciiArmorEquals;
 
 @EnabledIf("sop.external.AbstractExternalSOPTest#isExternalSopInstalled")
 public class ExternalExtractCertTest extends AbstractExternalSOPTest {
@@ -30,6 +31,30 @@ public class ExternalExtractCertTest extends AbstractExternalSOPTest {
 
         byte[] cert = getSop().extractCert().key(keyIn).getBytes();
         assertArrayStartsWith(cert, BEGIN_PGP_PUBLIC_KEY_BLOCK_BYTES);
+    }
+
+    @Test
+    public void extractAliceCertFromAliceKeyTest() throws IOException {
+        byte[] armoredCert = getSop().extractCert()
+                .key(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .getBytes();
+        assertAsciiArmorEquals(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8), armoredCert);
+    }
+
+    @Test
+    public void extractBobsCertFromBobsKeyTest() throws IOException {
+        byte[] armoredCert = getSop().extractCert()
+                .key(TestKeys.BOB_KEY.getBytes(StandardCharsets.UTF_8))
+                .getBytes();
+        assertAsciiArmorEquals(TestKeys.BOB_CERT.getBytes(StandardCharsets.UTF_8), armoredCert);
+    }
+
+    @Test
+    public void extractCarolsCertFromCarolsKeyTest() throws IOException {
+        byte[] armoredCert = getSop().extractCert()
+                .key(TestKeys.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
+                .getBytes();
+        assertAsciiArmorEquals(TestKeys.CAROL_CERT.getBytes(StandardCharsets.UTF_8), armoredCert);
     }
 
     @Test
