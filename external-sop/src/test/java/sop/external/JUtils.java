@@ -4,8 +4,13 @@
 
 package sop.external;
 
+import sop.Verification;
+import sop.util.UTCUtil;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -109,5 +114,68 @@ public class JUtils {
                 .replaceAll("Hash: .+\\R", "")
                 .replaceAll("Charset: .+\\R", "");
         return string.getBytes(StandardCharsets.UTF_8);
+    }
+
+    public static void assertSignedBy(List<Verification> verifications, String primaryFingerprint) {
+        for (Verification verification : verifications) {
+            if (verification.getSigningCertFingerprint().equals(primaryFingerprint)) {
+                return;
+            }
+        }
+
+        if (verifications.isEmpty()) {
+            fail("Verification list is empty.");
+        }
+
+        fail("Verification list does not contain verification by cert " + primaryFingerprint + ":\n" +
+                Arrays.toString(verifications.toArray(new Verification[0])));
+    }
+
+    public static void assertSignedBy(List<Verification> verifications, String signingFingerprint, String primaryFingerprint) {
+        for (Verification verification : verifications) {
+            if (verification.getSigningCertFingerprint().equals(primaryFingerprint) && verification.getSigningKeyFingerprint().equals(signingFingerprint)) {
+                return;
+            }
+        }
+
+        if (verifications.isEmpty()) {
+            fail("Verification list is empty.");
+        }
+
+        fail("Verification list does not contain verification by key " + signingFingerprint + " on cert " + primaryFingerprint + ":\n" +
+                Arrays.toString(verifications.toArray(new Verification[0])));
+    }
+
+    public static void assertSignedBy(List<Verification> verifications, String primaryFingerprint, Date signatureDate) {
+        for (Verification verification : verifications) {
+            if (verification.getSigningCertFingerprint().equals(primaryFingerprint) &&
+                    verification.getCreationTime().equals(signatureDate)) {
+                return;
+            }
+        }
+
+        if (verifications.isEmpty()) {
+            fail("Verification list is empty.");
+        }
+
+        fail("Verification list does not contain verification by cert " + primaryFingerprint + " made at " + UTCUtil.formatUTCDate(signatureDate) + ":\n" +
+                Arrays.toString(verifications.toArray(new Verification[0])));
+    }
+
+    public static void assertSignedBy(List<Verification> verifications, String signingFingerprint, String primaryFingerprint, Date signatureDate) {
+        for (Verification verification : verifications) {
+            if (verification.getSigningCertFingerprint().equals(primaryFingerprint) &&
+                    verification.getSigningKeyFingerprint().equals(signingFingerprint) &&
+                    verification.getCreationTime().equals(signatureDate)) {
+                return;
+            }
+        }
+
+        if (verifications.isEmpty()) {
+            fail("Verification list is empty.");
+        }
+
+        fail("Verification list does not contain verification by key" + signingFingerprint + " on cert " + primaryFingerprint + " made at " + UTCUtil.formatUTCDate(signatureDate) + ":\n" +
+                Arrays.toString(verifications.toArray(new Verification[0])));
     }
 }

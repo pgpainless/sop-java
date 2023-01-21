@@ -32,7 +32,7 @@ public class ExternalDecryptWithSessionKeyTest extends AbstractExternalSOPTest {
     @Test
     public void testDecryptAndExtractSessionKey() throws IOException {
         ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
-                .withKey(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(CIPHERTEXT.getBytes(StandardCharsets.UTF_8))
                 .toByteArrayAndResult();
 

@@ -36,25 +36,25 @@ public class ExternalExtractCertTest extends AbstractExternalSOPTest {
     @Test
     public void extractAliceCertFromAliceKeyTest() throws IOException {
         byte[] armoredCert = getSop().extractCert()
-                .key(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .getBytes();
-        assertAsciiArmorEquals(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8), armoredCert);
+        assertAsciiArmorEquals(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8), armoredCert);
     }
 
     @Test
     public void extractBobsCertFromBobsKeyTest() throws IOException {
         byte[] armoredCert = getSop().extractCert()
-                .key(TestKeys.BOB_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .getBytes();
-        assertAsciiArmorEquals(TestKeys.BOB_CERT.getBytes(StandardCharsets.UTF_8), armoredCert);
+        assertAsciiArmorEquals(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8), armoredCert);
     }
 
     @Test
     public void extractCarolsCertFromCarolsKeyTest() throws IOException {
         byte[] armoredCert = getSop().extractCert()
-                .key(TestKeys.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
                 .getBytes();
-        assertAsciiArmorEquals(TestKeys.CAROL_CERT.getBytes(StandardCharsets.UTF_8), armoredCert);
+        assertAsciiArmorEquals(TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8), armoredCert);
     }
 
     @Test

@@ -49,12 +49,12 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     public void encryptDecryptRoundTripAliceTest() throws IOException {
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
-                .withCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
                 .getBytes();
 
         ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
-                .withKey(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult();
 
@@ -69,12 +69,12 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     public void encryptDecryptRoundTripBobTest() throws IOException {
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
-                .withCert(TestKeys.BOB_CERT.getBytes(StandardCharsets.UTF_8))
+                .withCert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
                 .getBytes();
 
         byte[] plaintext = getSop().decrypt()
-                .withKey(TestKeys.BOB_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKey(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult()
                 .getBytes();
@@ -88,12 +88,12 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
 
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
-                .withCert(TestKeys.CAROL_CERT.getBytes(StandardCharsets.UTF_8))
+                .withCert(TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
                 .getBytes();
 
         byte[] plaintext = getSop().decrypt()
-                .withKey(TestKeys.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKey(TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult()
                 .getBytes();
@@ -107,7 +107,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
 
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
-                .withCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .noArmor()
                 .plaintext(message)
                 .getBytes();
@@ -117,7 +117,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
                 .getBytes();
 
         ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
-                .withKey(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(armored)
                 .toByteArrayAndResult();
 
@@ -129,14 +129,14 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     public void encryptSignDecryptVerifyRoundTripAliceTest() throws IOException {
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
-                .withCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
-                .signWith(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
                 .getBytes();
 
         ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
-                .withKey(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
-                .verifyWithCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .verifyWithCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult();
 
@@ -154,15 +154,15 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     public void encryptSignAsTextDecryptVerifyRoundTripAliceTest() throws IOException {
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
-                .withCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
-                .signWith(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(EncryptAs.Text)
                 .plaintext(message)
                 .getBytes();
 
         ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
-                .withKey(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
-                .verifyWithCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .verifyWithCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult();
 
@@ -232,8 +232,8 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
 
         assertThrows(SOPGPException.NoSignature.class, () -> {
             ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
-                    .withKey(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
-                    .verifyWithCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                    .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                    .verifyWithCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                     .verifyNotAfter(beforeSignature)
                     .ciphertext(message)
                     .toByteArrayAndResult();
@@ -267,8 +267,8 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
 
         assertThrows(SOPGPException.NoSignature.class, () -> {
             ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
-                    .withKey(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
-                    .verifyWithCert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                    .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                    .verifyWithCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                     .verifyNotBefore(afterSignature)
                     .ciphertext(message)
                     .toByteArrayAndResult();

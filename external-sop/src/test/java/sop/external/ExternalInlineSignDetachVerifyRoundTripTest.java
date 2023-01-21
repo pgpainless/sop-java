@@ -31,7 +31,7 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
 
         byte[] inlineSigned = getSop().inlineSign()
-                .key(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
@@ -46,7 +46,7 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
                 .getBytes();
 
         List<Verification> verifications = getSop().detachedVerify()
-                .cert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signatures)
                 .data(plaintext);
 
@@ -60,7 +60,7 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
 
         byte[] inlineSigned = getSop().inlineSign()
-                .key(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
@@ -82,7 +82,7 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
         assertArrayStartsWith(armored, BEGIN_PGP_SIGNATURE);
 
         List<Verification> verifications = getSop().detachedVerify()
-                .cert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(armored)
                 .data(plaintext);
 

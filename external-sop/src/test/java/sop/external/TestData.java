@@ -4,7 +4,14 @@
 
 package sop.external;
 
-public class TestKeys {
+import sop.util.UTCUtil;
+
+import java.util.Date;
+
+public class TestData {
+
+
+    public static final String PLAINTEXT = "Hello, World!\n";
 
     // 'Alice' key from draft-bre-openpgp-samples-00
     public static final String ALICE_CERT = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
@@ -40,6 +47,27 @@ public class TestKeys {
             "Pnn+We1aTBhaGa86AQ==\n" +
             "=3GfK\n" +
             "-----END PGP PRIVATE KEY BLOCK-----\n";
+    public static final String ALICE_PRIMARY_FINGERPRINT = "EB85BB5FA33A75E15E944E63F231550C4F47E38E";
+    public static final String ALICE_SIGNING_FINGERPRINT = "EB85BB5FA33A75E15E944E63F231550C4F47E38E";
+
+    public static final String ALICE_INLINE_SIGNED_MESSAGE = "-----BEGIN PGP MESSAGE-----\n" +
+            "\n" +
+            "owGbwMvMwCX2yTCUx9/9cR/jaZEkBhDwSM3JyddRCM8vyklR5OooZWEQ42JQZ2VK\n" +
+            "PjjpPacATLmYIsvr1t3xi61KH8ZN8UuGCTMwpPcw/E9jS+vcvPu2gmp4jcRbcSNP\n" +
+            "FYmW8hmLJdUVrdt1V8w6GM/IMEvN0tP339sNGX4swq8T5p62q3jUfLjpstmcI6Ie\n" +
+            "sfcfswMA\n" +
+            "=RDAo\n" +
+            "-----END PGP MESSAGE-----";
+    public static final Date ALICE_INLINE_SIGNED_MESSAGE_DATE = UTCUtil.parseUTCDate("2023-01-13T17:20:47Z");
+    // signature over PLAINTEXT
+    public static final String ALICE_DETACHED_SIGNED_MESSAGE = "-----BEGIN PGP SIGNATURE-----\n" +
+            "\n" +
+            "iHUEABYKACcFAmPBjZUJEPIxVQxPR+OOFiEE64W7X6M6deFelE5j8jFVDE9H444A\n" +
+            "ADI/AQC6Bux6WpGYf7HO+QPV/D5iIrqZt9xPLgfUVoNJBmMZZwD+Ib+tn5pSyWUw\n" +
+            "0K1UgT5roym9Fln8U5W8R03TSbfNiwE=\n" +
+            "=bxPN\n" +
+            "-----END PGP SIGNATURE-----";
+    public static final Date ALICE_DETACHED_SIGNED_MESSAGE_DATE = UTCUtil.parseUTCDate("2023-01-13T16:57:57Z");
 
     // 'Bob' key from draft-bre-openpgp-samples-00
     public static final String BOB_CERT = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
@@ -169,6 +197,8 @@ public class TestKeys {
             "xqAY9Bwizt4FWgXuLm1a4+So4V9j1TRCXd12Uc2l2RNmgDE=\n" +
             "=FAzO\n" +
             "-----END PGP PRIVATE KEY BLOCK-----\n";
+    public static final String BOB_PRIMARY_FINGERPRINT = "D1A66E1A23B182C9980F788CFBFCC82A015E7330";
+    public static final String BOB_SIGNING_FINGERPRINT = "D1A66E1A23B182C9980F788CFBFCC82A015E7330";
 
     // 'Carol' key from draft-bre-openpgp-samples-00
     public static final String CAROL_CERT = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
@@ -304,6 +334,8 @@ public class TestKeys {
             "1FkOSekLi8WNMdUx3XMyvP8nJ65P2Q==\n" +
             "=Xj8h\n" +
             "-----END PGP PRIVATE KEY BLOCK-----\n";
+    public static final String CAROL_PRIMARY_FINGERPRINT = "71FFDA004409E5DDB0C3E8F19BA789DC76D6849A";
+    public static final String CAROL_SIGNING_FINGERPRINT = "71FFDA004409E5DDB0C3E8F19BA789DC76D6849A";
 
     public static final String PASSWORD_PROTECTED_KEY = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n" +
             "Comment: FC63 688A 5E69 8C29 40AF  7029 7C62 2B00 D459 2657\n" +
@@ -375,4 +407,6 @@ public class TestKeys {
             "=xlgc\n" +
             "-----END PGP PUBLIC KEY BLOCK-----\n";
     public static final String PASSWORD = "sw0rdf1sh";
+    public static final String PASSWORD_PROTECTED_PRIMARY_FINGERPRINT = "FC63688A5E698C2940AF70297C622B00D4592657";
+    public static final String PASSWORD_PROTECTED_SIGNING_FINGERPRINT = "D8F1CBC2613350D1A766D35F68862FB90F07165B";
 }

@@ -30,7 +30,7 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
 
     @Test
     public void dearmorArmorAliceKey() throws IOException {
-        byte[] aliceKey = TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8);
+        byte[] aliceKey = TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8);
 
         byte[] dearmored = getSop().dearmor()
                 .data(aliceKey)
@@ -48,7 +48,7 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
 
     @Test
     public void dearmorArmorAliceCert() throws IOException {
-        byte[] aliceCert = TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8);
+        byte[] aliceCert = TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8);
 
         byte[] dearmored = getSop().dearmor()
                 .data(aliceCert)
@@ -66,7 +66,7 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
 
     @Test
     public void dearmorArmorBobKey() throws IOException {
-        byte[] bobKey = TestKeys.BOB_KEY.getBytes(StandardCharsets.UTF_8);
+        byte[] bobKey = TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8);
 
         byte[] dearmored = getSop().dearmor()
                 .data(bobKey)
@@ -84,7 +84,7 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
 
     @Test
     public void dearmorArmorBobCert() throws IOException {
-        byte[] bobCert = TestKeys.BOB_CERT.getBytes(StandardCharsets.UTF_8);
+        byte[] bobCert = TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8);
 
         byte[] dearmored = getSop().dearmor()
                 .data(bobCert)
@@ -102,7 +102,7 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
 
     @Test
     public void dearmorArmorCarolKey() throws IOException {
-        byte[] carolKey = TestKeys.CAROL_KEY.getBytes(StandardCharsets.UTF_8);
+        byte[] carolKey = TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8);
 
         byte[] dearmored = getSop().dearmor()
                 .data(carolKey)
@@ -120,7 +120,7 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
 
     @Test
     public void dearmorArmorCarolCert() throws IOException {
-        byte[] carolCert = TestKeys.CAROL_CERT.getBytes(StandardCharsets.UTF_8);
+        byte[] carolCert = TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8);
 
         byte[] dearmored = getSop().dearmor()
                 .data(carolCert)
@@ -191,7 +191,7 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
         ignoreIf("sqop", Is.eq, "0.27.2"); // IO error because: EOF
 
         byte[] dearmored = getSop().dearmor()
-                .data(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .data(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .getBytes();
 
         byte[] dearmoredAgain = getSop().dearmor()

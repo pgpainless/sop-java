@@ -9,7 +9,6 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import sop.Verification;
 import sop.enums.SignAs;
 import sop.exception.SOPGPException;
-import sop.util.UTCUtil;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -18,8 +17,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static sop.external.JUtils.assertArrayStartsWith;
+import static sop.external.JUtils.assertSignedBy;
 
 @EnabledIf("sop.external.AbstractExternalSOPTest#isExternalSopInstalled")
 public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOPTest {
@@ -29,50 +28,102 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
 
     @Test
     public void signVerifyWithAliceKey() throws IOException {
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] signature = getSop().detachedSign()
-                .key(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
         List<Verification> verificationList = getSop().detachedVerify()
-                .cert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
                 .data(message);
 
         assertFalse(verificationList.isEmpty());
-        assertTrue(verificationList.get(0).toString().contains("EB85BB5FA33A75E15E944E63F231550C4F47E38E EB85BB5FA33A75E15E944E63F231550C4F47E38E"));
+        assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
     }
 
     @Test
     public void signVerifyTextModeWithAliceKey() throws IOException {
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] signature = getSop().detachedSign()
-                .key(TestKeys.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(SignAs.Text)
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
         List<Verification> verificationList = getSop().detachedVerify()
-                .cert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
                 .data(message);
 
         assertFalse(verificationList.isEmpty());
-        assertTrue(verificationList.get(0).toString().contains("EB85BB5FA33A75E15E944E63F231550C4F47E38E EB85BB5FA33A75E15E944E63F231550C4F47E38E"));
+        assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
+    }
+
+    @Test
+    public void verifyKnownMessageWithAliceCert() throws IOException {
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] signature = TestData.ALICE_DETACHED_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8);
+
+        List<Verification> verificationList = getSop().detachedVerify()
+                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .signatures(signature)
+                .data(message);
+
+        assertFalse(verificationList.isEmpty());
+        assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT, TestData.ALICE_DETACHED_SIGNED_MESSAGE_DATE);
+    }
+
+    @Test
+    public void signVerifyWithBobKey() throws IOException {
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+
+        byte[] signature = getSop().detachedSign()
+                .key(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
+                .data(message)
+                .toByteArrayAndResult()
+                .getBytes();
+
+        List<Verification> verificationList = getSop().detachedVerify()
+                .cert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
+                .signatures(signature)
+                .data(message);
+
+        assertFalse(verificationList.isEmpty());
+        assertSignedBy(verificationList, TestData.BOB_SIGNING_FINGERPRINT, TestData.BOB_PRIMARY_FINGERPRINT);
+    }
+
+    @Test
+    public void signVerifyWithCarolKey() throws IOException {
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+
+        byte[] signature = getSop().detachedSign()
+                .key(TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
+                .data(message)
+                .toByteArrayAndResult()
+                .getBytes();
+
+        List<Verification> verificationList = getSop().detachedVerify()
+                .cert(TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8))
+                .signatures(signature)
+                .data(message);
+
+        assertFalse(verificationList.isEmpty());
+        assertSignedBy(verificationList, TestData.CAROL_SIGNING_FINGERPRINT, TestData.CAROL_PRIMARY_FINGERPRINT);
     }
 
     @Test
     public void signVerifyWithEncryptedKey() throws IOException {
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] signature = getSop().detachedSign()
-                .key(TestKeys.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
-                .withKeyPassword(TestKeys.PASSWORD)
+                .key(TestData.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKeyPassword(TestData.PASSWORD)
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();
@@ -80,7 +131,7 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
         assertArrayStartsWith(signature, BEGIN_PGP_SIGNATURE_BYTES);
 
         List<Verification> verificationList = getSop().detachedVerify()
-                .cert(TestKeys.PASSWORD_PROTECTED_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(TestData.PASSWORD_PROTECTED_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
                 .data(message);
 
@@ -89,10 +140,10 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
 
     @Test
     public void signArmorVerifyWithBobKey() throws IOException {
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] signature = getSop().detachedSign()
-                .key(TestKeys.BOB_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .noArmor()
                 .data(message)
                 .toByteArrayAndResult()
@@ -103,31 +154,25 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
                 .getBytes();
 
         List<Verification> verificationList = getSop().detachedVerify()
-                .cert(TestKeys.BOB_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(armored)
                 .data(message);
 
         assertFalse(verificationList.isEmpty());
-        assertTrue(verificationList.get(0).toString().contains("D1A66E1A23B182C9980F788CFBFCC82A015E7330 D1A66E1A23B182C9980F788CFBFCC82A015E7330"));
+        assertSignedBy(verificationList, TestData.BOB_SIGNING_FINGERPRINT, TestData.BOB_PRIMARY_FINGERPRINT);
     }
 
     @Test
     public void verifyNotAfterThrowsNoSignature() {
         ignoreIf("sqop", Is.leq, "0.27.2"); // returns 1 instead of 3 (NO_SIGNATURE)
 
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
-        byte[] signature = ("-----BEGIN PGP SIGNATURE-----\n" +
-                "\n" +
-                "iHUEABYKACcFAmPBjZUJEPIxVQxPR+OOFiEE64W7X6M6deFelE5j8jFVDE9H444A\n" +
-                "ADI/AQC6Bux6WpGYf7HO+QPV/D5iIrqZt9xPLgfUVoNJBmMZZwD+Ib+tn5pSyWUw\n" +
-                "0K1UgT5roym9Fln8U5W8R03TSbfNiwE=\n" +
-                "=bxPN\n" +
-                "-----END PGP SIGNATURE-----").getBytes(StandardCharsets.UTF_8);
-        Date signatureDate = UTCUtil.parseUTCDate("2023-01-13T16:57:57Z");
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] signature = TestData.ALICE_DETACHED_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8);
+        Date signatureDate = TestData.ALICE_DETACHED_SIGNED_MESSAGE_DATE;
         Date beforeSignature = new Date(signatureDate.getTime() - 1000); // 1 sec before sig
 
         assertThrows(SOPGPException.NoSignature.class, () -> getSop().detachedVerify()
-                .cert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .notAfter(beforeSignature)
                 .signatures(signature)
                 .data(message));
@@ -137,19 +182,13 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
     public void verifyNotBeforeThrowsNoSignature() {
         ignoreIf("sqop", Is.leq, "0.27.2"); // returns 1 instead of 3 (NO_SIGNATURE)
 
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
-        byte[] signature = ("-----BEGIN PGP SIGNATURE-----\n" +
-                "\n" +
-                "iHUEABYKACcFAmPBjZUJEPIxVQxPR+OOFiEE64W7X6M6deFelE5j8jFVDE9H444A\n" +
-                "ADI/AQC6Bux6WpGYf7HO+QPV/D5iIrqZt9xPLgfUVoNJBmMZZwD+Ib+tn5pSyWUw\n" +
-                "0K1UgT5roym9Fln8U5W8R03TSbfNiwE=\n" +
-                "=bxPN\n" +
-                "-----END PGP SIGNATURE-----").getBytes(StandardCharsets.UTF_8);
-        Date signatureDate = UTCUtil.parseUTCDate("2023-01-13T16:57:57Z");
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] signature = TestData.ALICE_DETACHED_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8);
+        Date signatureDate = TestData.ALICE_DETACHED_SIGNED_MESSAGE_DATE;
         Date afterSignature = new Date(signatureDate.getTime() + 1000); // 1 sec after sig
 
         assertThrows(SOPGPException.NoSignature.class, () -> getSop().detachedVerify()
-                .cert(TestKeys.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .notBefore(afterSignature)
                 .signatures(signature)
                 .data(message));
@@ -162,8 +201,8 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
 
         assertThrows(SOPGPException.KeyIsProtected.class, () ->
                 getSop().detachedSign()
-                        .key(TestKeys.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
-                        .data("Hello, World!\n".getBytes(StandardCharsets.UTF_8))
+                        .key(TestData.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
+                        .data(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8))
                         .toByteArrayAndResult()
                         .getBytes());
     }
@@ -171,19 +210,19 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
     @Test
     public void signWithProtectedKeyAndMultiplePassphrasesTest()
             throws IOException {
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] signature = getSop().sign()
-                .key(TestKeys.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(TestData.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
                 .withKeyPassword("wrong")
-                .withKeyPassword(TestKeys.PASSWORD) // correct
+                .withKeyPassword(TestData.PASSWORD) // correct
                 .withKeyPassword("wrong2")
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
         assertFalse(getSop().verify()
-                .cert(TestKeys.PASSWORD_PROTECTED_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(TestData.PASSWORD_PROTECTED_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
                 .data(message)
                 .isEmpty());
