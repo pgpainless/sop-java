@@ -35,6 +35,7 @@ public class ExternalExtractCertTest extends AbstractExternalSOPTest {
 
     @Test
     public void extractAliceCertFromAliceKeyTest() throws IOException {
+        ignoreIf("PGPainless-SOP", Is.geq, "0.0.0"); // PGPainless uses old CTB
         byte[] armoredCert = getSop().extractCert()
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .getBytes();
@@ -43,6 +44,7 @@ public class ExternalExtractCertTest extends AbstractExternalSOPTest {
 
     @Test
     public void extractBobsCertFromBobsKeyTest() throws IOException {
+        ignoreIf("PGPainless-SOP", Is.geq, "0.0.0"); // PGPainless uses old CTB
         byte[] armoredCert = getSop().extractCert()
                 .key(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .getBytes();
@@ -51,6 +53,7 @@ public class ExternalExtractCertTest extends AbstractExternalSOPTest {
 
     @Test
     public void extractCarolsCertFromCarolsKeyTest() throws IOException {
+        ignoreIf("PGPainless-SOP", Is.geq, "0.0.0"); // PGPainless uses old CTB
         byte[] armoredCert = getSop().extractCert()
                 .key(TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
                 .getBytes();

@@ -30,7 +30,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
 
     @Test
     public void encryptDecryptRoundTripPasswordTest() throws IOException {
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
                 .withPassword("sw0rdf1sh")
                 .plaintext(message)
@@ -47,7 +47,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
 
     @Test
     public void encryptDecryptRoundTripAliceTest() throws IOException {
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
@@ -67,7 +67,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
 
     @Test
     public void encryptDecryptRoundTripBobTest() throws IOException {
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
                 .withCert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
@@ -86,7 +86,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     public void encryptDecryptRoundTripCarolTest() throws IOException {
         ignoreIf("sqop", Is.geq, "0.0.0"); // sqop reports cert not encryption capable
 
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
                 .withCert(TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
@@ -105,7 +105,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     public void encryptNoArmorThenArmorThenDecryptRoundTrip() throws IOException {
         ignoreIf("sqop", Is.leq, "0.26.1"); // Invalid data type
 
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .noArmor()
@@ -127,7 +127,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
 
     @Test
     public void encryptSignDecryptVerifyRoundTripAliceTest() throws IOException {
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
@@ -152,7 +152,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
 
     @Test
     public void encryptSignAsTextDecryptVerifyRoundTripAliceTest() throws IOException {
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = getSop().encrypt()
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
@@ -277,5 +277,14 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
                 throw new SOPGPException.NoSignature("No verifiable signature found.");
             }
         });
+    }
+
+    @Test
+    public void missingArgsTest() throws IOException {
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+
+        assertThrows(SOPGPException.MissingArg.class, () -> getSop().encrypt()
+                .plaintext(message)
+                .getBytes());
     }
 }

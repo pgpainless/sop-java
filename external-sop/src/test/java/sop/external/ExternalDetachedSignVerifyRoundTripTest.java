@@ -228,4 +228,16 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
                 .isEmpty());
     }
 
+    @Test
+    public void verifyMissingCertCausesMissingArg() {
+        ignoreIf("PGPainless-SOP", Is.geq, "0.0.0"); // PGPainless uses picocli which throws
+        // UNSUPPORTED_OPTION for missing arg
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+
+        assertThrows(SOPGPException.MissingArg.class, () ->
+                getSop().verify()
+                        .signatures(TestData.ALICE_DETACHED_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8))
+                        .data(message));
+    }
+
 }
