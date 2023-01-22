@@ -1,0 +1,8 @@
+{
+    "backends": [
+        {
+            "name": "Sequoia-SOP",
+            "sop": "/usr/bin/sqop"
+        }
+    ]
+}

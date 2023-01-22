@@ -1,8 +1,13 @@
 pipeline:
   run:
-    image: gradle:7.5-jdk8
+    image: gradle:7.5-jdk8-jammy
     commands:
+      # Install Sequoia-SOP
+      - apt update && apt install --yes sqop
+      # Checkout code
       - git checkout $CI_COMMIT_BRANCH
+      # Prepare CI
+      - cp external-sop/src/main/resources/sop/external/config.json.ci external-sop/src/main/resources/sop/external/config.json
       # Code works
       - gradle test
       # Code is clean
