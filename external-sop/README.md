@@ -23,6 +23,8 @@ SOP sop = new ExternalSOP("/usr/bin/example-sop");
 
 This SOP object can now be used as usual (see [here](../sop-java/README.md)).
 
+Keep in mind the license of the external SOP binary when integrating one with your project!
+
 Some SOP binaries might require additional configuration, e.g. a Java based SOP might need to know which JAVA_HOME to use.
 For this purpose, additional environment variables can be passed in using a `Properties` object:
 
@@ -50,3 +52,8 @@ ExternalSOP.TempDirProvider provider = new ExternalSOP.TempDirProvider() {
 };
 SOP sop = new ExternalSOP("/usr/bin/example-sop", provider);
 ```
+
+## Testing
+The `external-sop` module comes with a growing test suite, which tests SOP binaries against the expectations of the SOP specification.  
+To configure one or multiple backends for use with the test suite, just provide a custom `config.json` file in `src/main/resources/sop/external`.
+An example configuration file with the required file format is available as `config.json.example`.
