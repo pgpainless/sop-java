@@ -100,6 +100,9 @@ public class DetachedSignExternal implements DetachedSign {
                         processOut.close();
                     } catch (IOException e) {
                         // Ignore Stream closed
+                        if (!"Stream closed".equals(e.getMessage())) {
+                            throw e;
+                        }
                     }
 
                     while ((r = processIn.read(buf)) > 0) {
