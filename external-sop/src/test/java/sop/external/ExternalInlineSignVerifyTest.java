@@ -4,6 +4,7 @@
 
 package sop.external;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.ByteArrayAndResult;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static sop.external.JUtils.assertSignedBy;
 
+@EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
 public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
 
     private static final String BEGIN_PGP_MESSAGE = "-----BEGIN PGP MESSAGE-----\n";

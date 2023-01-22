@@ -4,6 +4,7 @@
 
 package sop.external;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.ByteArrayAndResult;
@@ -17,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
 public class ExternalDecryptWithSessionKeyTest extends AbstractExternalSOPTest {
 
     private static final String CIPHERTEXT = "-----BEGIN PGP MESSAGE-----\n" +

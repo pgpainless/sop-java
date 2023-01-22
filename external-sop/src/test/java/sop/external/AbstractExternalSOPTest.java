@@ -17,32 +17,28 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
 public abstract class AbstractExternalSOPTest {
 
     private static final List<Arguments> backends = new ArrayList<>();
 
     static {
         TestSuite suite = readConfiguration();
-        assumeTrue(suite != null);
-        assumeFalse(suite.backends.isEmpty());
-
-        for (TestSubject subject : suite.backends) {
-            if (!new File(subject.sop).exists()) {
-                continue;
-            }
-
-            Properties env = new Properties();
-            if (subject.env != null) {
-                for (Var var : subject.env) {
-                    env.put(var.key, var.value);
+        if (suite != null && !suite.backends.isEmpty()) {
+            for (TestSubject subject : suite.backends) {
+                if (!new File(subject.sop).exists()) {
+                    continue;
                 }
-            }
 
-            SOP sop = new ExternalSOP(subject.sop, env);
-            backends.add(Arguments.of(Named.of(subject.name, sop)));
+                Properties env = new Properties();
+                if (subject.env != null) {
+                    for (Var var : subject.env) {
+                        env.put(var.key, var.value);
+                    }
+                }
+
+                SOP sop = new ExternalSOP(subject.sop, env);
+                backends.add(Arguments.of(Named.of(subject.name, sop)));
+            }
         }
     }
 
@@ -60,6 +56,10 @@ public abstract class AbstractExternalSOPTest {
         InputStreamReader reader = new InputStreamReader(inputStream);
         TestSuite suite = gson.fromJson(reader, TestSuite.class);
         return suite;
+    }
+
+    public static boolean hasBackends() {
+        return !backends.isEmpty();
     }
 
     // JSON DTOs

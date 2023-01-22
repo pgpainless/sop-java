@@ -4,6 +4,7 @@
 
 package sop.external;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static sop.external.JUtils.assertArrayStartsWith;
 import static sop.external.JUtils.assertSignedBy;
 
+@EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
 public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOPTest {
 
     private static final String BEGIN_PGP_SIGNATURE = "-----BEGIN PGP SIGNATURE-----\n";

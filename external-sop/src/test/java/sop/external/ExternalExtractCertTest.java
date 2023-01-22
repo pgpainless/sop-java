@@ -4,6 +4,7 @@
 
 package sop.external;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
@@ -17,6 +18,7 @@ import static sop.external.JUtils.arrayStartsWith;
 import static sop.external.JUtils.assertArrayStartsWith;
 import static sop.external.JUtils.assertAsciiArmorEquals;
 
+@EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
 public class ExternalExtractCertTest extends AbstractExternalSOPTest {
 
     private static final String BEGIN_PGP_PUBLIC_KEY_BLOCK = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n";

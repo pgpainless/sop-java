@@ -4,6 +4,7 @@
 
 package sop.external;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
 public class ExternalVersionTest extends AbstractExternalSOPTest {
 
     @ParameterizedTest

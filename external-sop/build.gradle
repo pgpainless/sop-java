@@ -16,6 +16,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    // Read json config file
     testImplementation "com.google.code.gson:gson:2.10.1"
 
     api project(":sop-java")
@@ -23,9 +24,6 @@ dependencies {
     api "org.slf4j:slf4j-api:$slf4jVersion"
     testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
 
-    // Compare version strings
-    implementation 'org.apache.maven:maven-artifact:3.6.3'
-    
     // @Nonnull, @Nullable...
     implementation "com.google.code.findbugs:jsr305:$jsrVersion"
 }
