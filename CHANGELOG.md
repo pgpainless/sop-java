@@ -6,6 +6,10 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 4.1.1-SNAPSHOT
+- Restructure test suite to allow simultaneous testing of multiple backends
+- Fix IOException in `sop sign` due to premature stream closing
+
 ## 4.1.0
 - Add module `external-sop`
   - This module implements the `sop-java` interfaces and allows the use of an external SOP binary
