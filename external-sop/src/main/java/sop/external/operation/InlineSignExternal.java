@@ -43,7 +43,7 @@ public class InlineSignExternal implements InlineSign {
     public InlineSign key(InputStream key) throws SOPGPException.KeyCannotSign, SOPGPException.BadData, SOPGPException.UnsupportedAsymmetricAlgo, IOException {
         String envVar = "KEY_" + keyCounter++;
         commandList.add("@ENV:" + envVar);
-        envList.add(envVar + "=" + ExternalSOP.readFully(key));
+        envList.add(envVar + "=" + ExternalSOP.readString(key));
         return this;
     }
 
@@ -63,6 +63,6 @@ public class InlineSignExternal implements InlineSign {
 
     @Override
     public Ready data(InputStream data) throws IOException, SOPGPException.KeyIsProtected, SOPGPException.ExpectedText {
-        return ExternalSOP.ready(Runtime.getRuntime(), commandList, envList, data);
+        return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, data);
     }
 }

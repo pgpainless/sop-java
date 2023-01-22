@@ -66,7 +66,7 @@ public class DecryptExternal implements Decrypt {
             throws SOPGPException.BadData, SOPGPException.UnsupportedAsymmetricAlgo, IOException {
         String envVar = "VERIFY_WITH_" + verifyWithCounter++;
         commandList.add("--verify-with=@ENV:" + envVar);
-        envList.add(envVar + "=" + ExternalSOP.readFully(cert));
+        envList.add(envVar + "=" + ExternalSOP.readString(cert));
         return this;
     }
 
@@ -93,7 +93,7 @@ public class DecryptExternal implements Decrypt {
             throws SOPGPException.BadData, SOPGPException.UnsupportedAsymmetricAlgo, IOException {
         String envVar = "KEY_" + keyCounter++;
         commandList.add("@ENV:" + envVar);
-        envList.add(envVar + "=" + ExternalSOP.readFully(key));
+        envList.add(envVar + "=" + ExternalSOP.readString(key));
         return this;
     }
 
@@ -151,7 +151,7 @@ public class DecryptExternal implements Decrypt {
                     ExternalSOP.finish(process);
 
                     FileInputStream sessionKeyOutIn = new FileInputStream(sessionKeyOut);
-                    String line = ExternalSOP.readFully(sessionKeyOutIn);
+                    String line = ExternalSOP.readString(sessionKeyOutIn);
                     SessionKey sessionKey = SessionKey.fromString(line.trim());
                     sessionKeyOutIn.close();
                     sessionKeyOut.delete();

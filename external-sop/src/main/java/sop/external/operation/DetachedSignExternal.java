@@ -52,7 +52,7 @@ public class DetachedSignExternal implements DetachedSign {
     public DetachedSign key(InputStream key) throws SOPGPException.KeyCannotSign, SOPGPException.BadData, SOPGPException.UnsupportedAsymmetricAlgo, IOException {
         String envVar = "KEY_" + keyCounter++;
         commandList.add("@ENV:" + envVar);
-        envList.add(envVar + "=" + ExternalSOP.readFully(key));
+        envList.add(envVar + "=" + ExternalSOP.readString(key));
         return this;
     }
 

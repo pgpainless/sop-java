@@ -68,12 +68,12 @@ public class DetachedVerifyExternal implements DetachedVerify {
     @Override
     public List<Verification> data(InputStream data) throws IOException, SOPGPException.NoSignature, SOPGPException.BadData {
         commandList.add("@ENV:SIGNATURE");
-        envList.add("SIGNATURE=" + ExternalSOP.readFully(signatures));
+        envList.add("SIGNATURE=" + ExternalSOP.readString(signatures));
 
         for (InputStream cert : certs) {
             String envVar = "CERT_" + certCounter++;
             commandList.add("@ENV:" + envVar);
-            envList.add(envVar + "=" + ExternalSOP.readFully(cert));
+            envList.add(envVar + "=" + ExternalSOP.readString(cert));
         }
 
         String[] command = commandList.toArray(new String[0]);

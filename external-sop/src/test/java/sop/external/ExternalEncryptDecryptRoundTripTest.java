@@ -281,6 +281,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
 
     @Test
     public void missingArgsTest() throws IOException {
+        ignoreIf("sqop", Is.leq, "0.27.3");
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         assertThrows(SOPGPException.MissingArg.class, () -> getSop().encrypt()

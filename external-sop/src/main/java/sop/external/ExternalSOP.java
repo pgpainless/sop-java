@@ -179,14 +179,17 @@ public class ExternalSOP implements SOP {
      * @throws IOException in case of an IO error
      */
     private static void mapExitCodeOrException(@Nonnull Process process) throws InterruptedException, IOException {
+        // wait for process termination
         int exitCode = process.waitFor();
 
         if (exitCode == 0) {
+            // we're good, bye
             return;
         }
 
+        // Read error message
         InputStream errIn = process.getErrorStream();
-        String errorMessage = readFully(errIn);
+        String errorMessage = readString(errIn);
 
         switch (exitCode) {
             case SOPGPException.NoSignature.EXIT_CODE:
@@ -285,7 +288,7 @@ public class ExternalSOP implements SOP {
      * @return string
      * @throws IOException in case of an IO error
      */
-    public static String readFully(@Nonnull InputStream inputStream) throws IOException {
+    public static String readString(@Nonnull InputStream inputStream) throws IOException {
         ByteArrayOutputStream bOut = new ByteArrayOutputStream();
         byte[] buf = new byte[4096];
         int r;
@@ -297,13 +300,16 @@ public class ExternalSOP implements SOP {
 
     /**
      * Execute the given command on the given {@link Runtime} with the given list of environment variables.
+     * This command does not transform any input data, and instead is purely a producer.
      *
      * @param runtime runtime
      * @param commandList command
      * @param envList environment variables
      * @return ready to read the result from
      */
-    public static Ready ready(@Nonnull Runtime runtime, @Nonnull List<String> commandList, @Nonnull List<String> envList) {
+    public static Ready executeProducingOperation(@Nonnull Runtime runtime,
+                                                  @Nonnull List<String> commandList,
+                                                  @Nonnull List<String> envList) {
         String[] command = commandList.toArray(new String[0]);
         String[] env = envList.toArray(new String[0]);
 
@@ -322,6 +328,7 @@ public class ExternalSOP implements SOP {
 
                     outputStream.flush();
                     outputStream.close();
+
                     ExternalSOP.finish(process);
                 }
             };
@@ -333,6 +340,7 @@ public class ExternalSOP implements SOP {
     /**
      * Execute the given command on the given runtime using the given environment variables.
      * The given input stream provides input for the process.
+     * This command is a transformation, meaning it is given input data and transforms it into output data.
      *
      * @param runtime runtime
      * @param commandList command
@@ -340,7 +348,7 @@ public class ExternalSOP implements SOP {
      * @param standardIn stream of input data for the process
      * @return ready to read the result from
      */
-    public static Ready ready(@Nonnull Runtime runtime, @Nonnull List<String> commandList, @Nonnull List<String> envList, @Nonnull InputStream standardIn) {
+    public static Ready executeTransformingOperation(@Nonnull Runtime runtime, @Nonnull List<String> commandList, @Nonnull List<String> envList, @Nonnull InputStream standardIn) {
         String[] command = commandList.toArray(new String[0]);
         String[] env = envList.toArray(new String[0]);
         try {
@@ -362,7 +370,10 @@ public class ExternalSOP implements SOP {
                         processOut.flush();
                         processOut.close();
                     } catch (IOException e) {
-                        // ignore
+                        // Perhaps the stream is already closed, in which case we ignore the exception.
+                        if (!"Stream closed".equals(e.getMessage())) {
+                            throw e;
+                        }
                     }
 
                     while ((r = processIn.read(buf)) > 0) {

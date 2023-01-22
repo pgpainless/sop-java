@@ -31,6 +31,6 @@ public class DearmorExternal implements Dearmor {
 
     @Override
     public Ready data(InputStream data) throws SOPGPException.BadData, IOException {
-        return ExternalSOP.ready(Runtime.getRuntime(), commandList, envList, data);
+        return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, data);
     }
 }

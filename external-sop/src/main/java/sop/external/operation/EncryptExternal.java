@@ -53,7 +53,7 @@ public class EncryptExternal implements Encrypt {
             IOException {
         String envVar = "SIGN_WITH_" + SIGN_WITH_COUNTER++;
         commandList.add("--sign-with=@ENV:" + envVar);
-        envList.add(envVar + "=" + ExternalSOP.readFully(key));
+        envList.add(envVar + "=" + ExternalSOP.readString(key));
         return this;
     }
 
@@ -81,13 +81,13 @@ public class EncryptExternal implements Encrypt {
             IOException {
         String envVar = "CERT_" + CERT_COUNTER++;
         commandList.add("@ENV:" + envVar);
-        envList.add(envVar + "=" + ExternalSOP.readFully(cert));
+        envList.add(envVar + "=" + ExternalSOP.readString(cert));
         return this;
     }
 
     @Override
     public Ready plaintext(InputStream plaintext)
             throws IOException, SOPGPException.KeyIsProtected {
-        return ExternalSOP.ready(Runtime.getRuntime(), commandList, envList, plaintext);
+        return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, plaintext);
     }
 }

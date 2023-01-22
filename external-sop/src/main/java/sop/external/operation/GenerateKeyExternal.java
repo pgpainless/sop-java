@@ -54,6 +54,6 @@ public class GenerateKeyExternal implements GenerateKey {
     @Override
     public Ready generate()
             throws SOPGPException.MissingArg, SOPGPException.UnsupportedAsymmetricAlgo {
-        return ExternalSOP.ready(Runtime.getRuntime(), commandList, envList);
+        return ExternalSOP.executeProducingOperation(Runtime.getRuntime(), commandList, envList);
     }
 }

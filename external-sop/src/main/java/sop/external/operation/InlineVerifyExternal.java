@@ -57,7 +57,7 @@ public class InlineVerifyExternal implements InlineVerify {
     public InlineVerify cert(InputStream cert) throws SOPGPException.BadData, IOException {
         String envVar = "CERT_" + certCounter++;
         commandList.add("@ENV:" + envVar);
-        envList.add(envVar + "=" + ExternalSOP.readFully(cert));
+        envList.add(envVar + "=" + ExternalSOP.readString(cert));
         return this;
     }
 

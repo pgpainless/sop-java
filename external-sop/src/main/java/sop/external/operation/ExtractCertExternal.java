@@ -36,6 +36,6 @@ public class ExtractCertExternal implements ExtractCert {
 
     @Override
     public Ready key(InputStream keyInputStream) throws SOPGPException.BadData {
-        return ExternalSOP.ready(Runtime.getRuntime(), commandList, envList, keyInputStream);
+        return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, keyInputStream);
     }
 }

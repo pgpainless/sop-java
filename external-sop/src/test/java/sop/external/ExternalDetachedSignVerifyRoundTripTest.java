@@ -230,6 +230,7 @@ public class ExternalDetachedSignVerifyRoundTripTest extends AbstractExternalSOP
 
     @Test
     public void verifyMissingCertCausesMissingArg() {
+        ignoreIf("sqop", Is.leq, "0.27.3");
         ignoreIf("PGPainless-SOP", Is.geq, "0.0.0"); // PGPainless uses picocli which throws
         // UNSUPPORTED_OPTION for missing arg
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
