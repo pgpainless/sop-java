@@ -14,7 +14,9 @@ repositories {
 
 dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    testImplementation "com.google.code.gson:gson:2.10.1"
 
     api project(":sop-java")
 
@@ -30,4 +32,6 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    // since we test external backends, we ignore test failures in this module
+    ignoreFailures = true
 }

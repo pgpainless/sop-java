@@ -4,10 +4,11 @@
 
 package sop.external;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import sop.ByteArrayAndResult;
 import sop.DecryptionResult;
+import sop.SOP;
 import sop.SessionKey;
 
 import java.io.IOException;
@@ -16,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@EnabledIf("sop.external.AbstractExternalSOPTest#isExternalSopInstalled")
 public class ExternalDecryptWithSessionKeyTest extends AbstractExternalSOPTest {
 
     private static final String CIPHERTEXT = "-----BEGIN PGP MESSAGE-----\n" +
@@ -29,9 +29,10 @@ public class ExternalDecryptWithSessionKeyTest extends AbstractExternalSOPTest {
             "-----END PGP MESSAGE-----\n";
     private static final String SESSION_KEY = "9:ED682800F5FEA829A82E8B7DDF8CE9CF4BF9BB45024B017764462EE53101C36A";
 
-    @Test
-    public void testDecryptAndExtractSessionKey() throws IOException {
-        ByteArrayAndResult<DecryptionResult> bytesAndResult = getSop().decrypt()
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void testDecryptAndExtractSessionKey(SOP sop) throws IOException {
+        ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
                 .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(CIPHERTEXT.getBytes(StandardCharsets.UTF_8))
                 .toByteArrayAndResult();
@@ -41,9 +42,10 @@ public class ExternalDecryptWithSessionKeyTest extends AbstractExternalSOPTest {
         assertArrayEquals("Hello, World!\n".getBytes(StandardCharsets.UTF_8), bytesAndResult.getBytes());
     }
 
-    @Test
-    public void testDecryptWithSessionKey() throws IOException {
-        byte[] decrypted = getSop().decrypt()
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void testDecryptWithSessionKey(SOP sop) throws IOException {
+        byte[] decrypted = sop.decrypt()
                 .withSessionKey(SessionKey.fromString(SESSION_KEY))
                 .ciphertext(CIPHERTEXT.getBytes(StandardCharsets.UTF_8))
                 .toByteArrayAndResult()

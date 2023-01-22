@@ -4,9 +4,10 @@
 
 package sop.external;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import sop.ByteArrayAndResult;
+import sop.SOP;
 import sop.Verification;
 import sop.enums.InlineSignAs;
 import sop.exception.SOPGPException;
@@ -21,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static sop.external.JUtils.assertSignedBy;
 
-@EnabledIf("sop.external.AbstractExternalSOPTest#isExternalSopInstalled")
 public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
 
     private static final String BEGIN_PGP_MESSAGE = "-----BEGIN PGP MESSAGE-----\n";
@@ -29,20 +29,19 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
     private static final String BEGIN_PGP_SIGNED_MESSAGE = "-----BEGIN PGP SIGNED MESSAGE-----\n";
     private static final byte[] BEGIN_PGP_SIGNED_MESSAGE_BYTES = BEGIN_PGP_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8);
 
-    @Test
-    public void inlineSignVerifyAlice() throws IOException {
-        ignoreIf("sqop", Is.leq, "0.26.1"); // inline-sign not supported
-
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void inlineSignVerifyAlice(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = getSop().inlineSign()
+        byte[] inlineSigned = sop.inlineSign()
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
         JUtils.assertArrayStartsWith(inlineSigned, BEGIN_PGP_MESSAGE_BYTES);
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = getSop().inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(inlineSigned)
                 .toByteArrayAndResult();
@@ -52,13 +51,12 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
         assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
     }
 
-    @Test
-    public void inlineSignVerifyAliceNoArmor() throws IOException {
-        ignoreIf("sqop", Is.leq, "0.26.1"); // inline-sign not supported
-
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void inlineSignVerifyAliceNoArmor(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = getSop().inlineSign()
+        byte[] inlineSigned = sop.inlineSign()
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .noArmor()
                 .data(message)
@@ -66,7 +64,7 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
 
         assertFalse(JUtils.arrayStartsWith(inlineSigned, BEGIN_PGP_MESSAGE_BYTES));
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = getSop().inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(inlineSigned)
                 .toByteArrayAndResult();
@@ -76,13 +74,12 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
         assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
     }
 
-    @Test
-    public void clearsignVerifyAlice() throws IOException {
-        ignoreIf("sqop", Is.leq, "0.26.1"); // inline-sign not supported
-
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void clearsignVerifyAlice(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] clearsigned = getSop().inlineSign()
+        byte[] clearsigned = sop.inlineSign()
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(InlineSignAs.clearsigned)
                 .data(message)
@@ -90,7 +87,7 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
 
         JUtils.assertArrayStartsWith(clearsigned, BEGIN_PGP_SIGNED_MESSAGE_BYTES);
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = getSop().inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(clearsigned)
                 .toByteArrayAndResult();
@@ -100,15 +97,13 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
         assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
     }
 
-    @Test
-    public void inlineVerifyCompareSignatureDate() throws IOException {
-        ignoreIf("sqop", Is.leq, "0.26.1"); // inline-sign not supported
-        ignoreIf("sqop", Is.leq, "0.27.2"); // returns 1 instead of 3 (NO_SIGNATURE)
-
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void inlineVerifyCompareSignatureDate(SOP sop) throws IOException {
         byte[] message = TestData.ALICE_INLINE_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8);
         Date signatureDate = TestData.ALICE_INLINE_SIGNED_MESSAGE_DATE;
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = getSop().inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult();
@@ -116,52 +111,47 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
         assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT, signatureDate);
     }
 
-    @Test
-    public void assertNotBeforeThrowsNoSignature() {
-        ignoreIf("sqop", Is.leq, "0.26.1"); // inline-sign not supported
-        ignoreIf("sqop", Is.leq, "0.27.2"); // returns 1 instead of 3 (NO_SIGNATURE)
-
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void assertNotBeforeThrowsNoSignature(SOP sop) {
         byte[] message = TestData.ALICE_INLINE_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8);
         Date signatureDate = TestData.ALICE_INLINE_SIGNED_MESSAGE_DATE;
         Date afterSignature = new Date(signatureDate.getTime() + 1000); // 1 sec before sig
 
-        assertThrows(SOPGPException.NoSignature.class, () -> getSop().inlineVerify()
+        assertThrows(SOPGPException.NoSignature.class, () -> sop.inlineVerify()
                 .notBefore(afterSignature)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult());
     }
 
-    @Test
-    public void assertNotAfterThrowsNoSignature() {
-        ignoreIf("sqop", Is.leq, "0.26.1"); // inline-sign not supported
-        ignoreIf("sqop", Is.leq, "0.27.2"); // returns 1 instead of 3 (NO_SIGNATURE)
-
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void assertNotAfterThrowsNoSignature(SOP sop) {
         byte[] message = TestData.ALICE_INLINE_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8);
         Date signatureDate = TestData.ALICE_INLINE_SIGNED_MESSAGE_DATE;
         Date beforeSignature = new Date(signatureDate.getTime() - 1000); // 1 sec before sig
 
-        assertThrows(SOPGPException.NoSignature.class, () -> getSop().inlineVerify()
+        assertThrows(SOPGPException.NoSignature.class, () -> sop.inlineVerify()
                 .notAfter(beforeSignature)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult());
     }
 
-    @Test
-    public void inlineSignVerifyBob() throws IOException {
-        ignoreIf("sqop", Is.leq, "0.26.1"); // inline-sign not supported
-
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void inlineSignVerifyBob(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = getSop().inlineSign()
+        byte[] inlineSigned = sop.inlineSign()
                 .key(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
         JUtils.assertArrayStartsWith(inlineSigned, BEGIN_PGP_MESSAGE_BYTES);
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = getSop().inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
                 .cert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(inlineSigned)
                 .toByteArrayAndResult();
@@ -171,20 +161,19 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
         assertSignedBy(verificationList, TestData.BOB_SIGNING_FINGERPRINT, TestData.BOB_PRIMARY_FINGERPRINT);
     }
 
-    @Test
-    public void inlineSignVerifyCarol() throws IOException {
-        ignoreIf("sqop", Is.leq, "0.26.1"); // inline-sign not supported
-
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void inlineSignVerifyCarol(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = getSop().inlineSign()
+        byte[] inlineSigned = sop.inlineSign()
                 .key(TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
         JUtils.assertArrayStartsWith(inlineSigned, BEGIN_PGP_MESSAGE_BYTES);
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = getSop().inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
                 .cert(TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(inlineSigned)
                 .toByteArrayAndResult();
@@ -194,20 +183,19 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
         assertSignedBy(verificationList, TestData.CAROL_SIGNING_FINGERPRINT, TestData.CAROL_PRIMARY_FINGERPRINT);
     }
 
-    @Test
-    public void inlineSignVerifyProtectedKey() throws IOException {
-        ignoreIf("sqop", Is.leq, "0.26.1"); // inline-sign not supported
-
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void inlineSignVerifyProtectedKey(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = getSop().inlineSign()
+        byte[] inlineSigned = sop.inlineSign()
                 .withKeyPassword(TestData.PASSWORD)
                 .key(TestData.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(InlineSignAs.binary)
                 .data(message)
                 .getBytes();
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = getSop().inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
                 .cert(TestData.PASSWORD_PROTECTED_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(inlineSigned)
                 .toByteArrayAndResult();

@@ -4,9 +4,10 @@
 
 package sop.external;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import sop.ByteArrayAndResult;
+import sop.SOP;
 import sop.Signatures;
 import sop.Verification;
 
@@ -19,23 +20,21 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static sop.external.JUtils.arrayStartsWith;
 import static sop.external.JUtils.assertArrayStartsWith;
 
-@EnabledIf("sop.external.AbstractExternalSOPTest#isExternalSopInstalled")
 public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExternalSOPTest {
 
     private static final byte[] BEGIN_PGP_SIGNATURE = "-----BEGIN PGP SIGNATURE-----\n".getBytes(StandardCharsets.UTF_8);
 
-    @Test
-    public void inlineSignThenDetachThenDetachedVerifyTest() throws IOException {
-        ignoreIf("sqop", Is.leq, "0.26.1"); // inline-sign not supported
-
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void inlineSignThenDetachThenDetachedVerifyTest(SOP sop) throws IOException {
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = getSop().inlineSign()
+        byte[] inlineSigned = sop.inlineSign()
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
-        ByteArrayAndResult<Signatures> bytesAndResult = getSop().inlineDetach()
+        ByteArrayAndResult<Signatures> bytesAndResult = sop.inlineDetach()
                 .message(inlineSigned)
                 .toByteArrayAndResult();
 
@@ -45,7 +44,7 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
         byte[] signatures = bytesAndResult.getResult()
                 .getBytes();
 
-        List<Verification> verifications = getSop().detachedVerify()
+        List<Verification> verifications = sop.detachedVerify()
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signatures)
                 .data(plaintext);
@@ -53,18 +52,17 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
         assertFalse(verifications.isEmpty());
     }
 
-    @Test
-    public void inlineSignThenDetachNoArmorThenArmorThenDetachedVerifyTest() throws IOException {
-        ignoreIf("sqop", Is.leq, "0.26.1"); // inline-sign not supported
-
+    @ParameterizedTest
+    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    public void inlineSignThenDetachNoArmorThenArmorThenDetachedVerifyTest(SOP sop) throws IOException {
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = getSop().inlineSign()
+        byte[] inlineSigned = sop.inlineSign()
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
-        ByteArrayAndResult<Signatures> bytesAndResult = getSop().inlineDetach()
+        ByteArrayAndResult<Signatures> bytesAndResult = sop.inlineDetach()
                 .noArmor()
                 .message(inlineSigned)
                 .toByteArrayAndResult();
@@ -76,12 +74,12 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
                 .getBytes();
         assertFalse(arrayStartsWith(signatures, BEGIN_PGP_SIGNATURE));
 
-        byte[] armored = getSop().armor()
+        byte[] armored = sop.armor()
                 .data(signatures)
                 .getBytes();
         assertArrayStartsWith(armored, BEGIN_PGP_SIGNATURE);
 
-        List<Verification> verifications = getSop().detachedVerify()
+        List<Verification> verifications = sop.detachedVerify()
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(armored)
                 .data(plaintext);

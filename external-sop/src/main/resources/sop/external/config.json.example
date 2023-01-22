@@ -1,0 +1,17 @@
+{
+    "backends": [
+        {
+            "name": "Example-SOP",
+            "sop": "/usr/bin/example-sop"
+        },
+        {
+            "name": "Awesome-SOP",
+            "sop": "/usr/local/bin/awesome-sop",
+            "env": [
+                {
+                    "key": "myEnvironmentVariable", "value": "FooBar"
+                }
+            ]
+        }
+    ]
+}
