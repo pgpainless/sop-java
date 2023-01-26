@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.external;
+package sop.testing;
 
 import sop.Verification;
 import sop.util.UTCUtil;
@@ -84,6 +84,47 @@ public class JUtils {
                     "Expected: <" + Arrays.toString(start) + ">\n" +
                     "Actual: <" + Arrays.toString(actual) + ">");
         }
+    }
+
+    public static boolean arrayEndsWith(byte[] array, byte[] end) {
+        return arrayEndsWith(array, end, 0);
+    }
+
+    public static boolean arrayEndsWith(byte[] array, byte[] end, int offset) {
+        if (end.length + offset > array.length) {
+            return false;
+        }
+
+        for (int i = 0; i < end.length; i++) {
+            int arrOff = array.length - end.length - offset;
+            if (end[i] != array[arrOff + i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void assertArrayEndsWith(byte[] array, byte[] end) {
+        assertArrayEndsWith(array, end, 0);
+    }
+
+    public static void assertArrayEndsWith(byte[] array, byte[] end, int offset) {
+        if (!arrayEndsWith(array, end, offset)) {
+            byte[] actual = new byte[Math.min(end.length, array.length - offset)];
+            System.arraycopy(array, array.length - actual.length, actual, 0, actual.length);
+            fail("Array does not end with the expected bytes.\n" +
+                    "Expected: <" + Arrays.toString(end) + ">\n" +
+                    "Actual: <" + Arrays.toString(actual) + ">");
+        }
+    }
+
+    public static void assertArrayEndsWithIgnoreNewlines(byte[] array, byte[] end) {
+        int offset = 0;
+        while (offset < array.length && array[array.length - 1 - offset] == (byte) 10) {
+            offset++;
+        }
+
+        assertArrayEndsWith(array, end, offset);
     }
 
     /**

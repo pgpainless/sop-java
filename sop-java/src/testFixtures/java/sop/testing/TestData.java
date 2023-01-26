@@ -2,10 +2,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.external;
+package sop.testing;
 
 import sop.util.UTCUtil;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 public class TestData {
@@ -409,4 +410,15 @@ public class TestData {
     public static final String PASSWORD = "sw0rdf1sh";
     public static final String PASSWORD_PROTECTED_PRIMARY_FINGERPRINT = "FC63688A5E698C2940AF70297C622B00D4592657";
     public static final String PASSWORD_PROTECTED_SIGNING_FINGERPRINT = "D8F1CBC2613350D1A766D35F68862FB90F07165B";
+
+
+    public static final byte[] BEGIN_PGP_PRIVATE_KEY_BLOCK = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] END_PGP_PRIVATE_KEY_BLOCK = "-----END PGP PRIVATE KEY BLOCK-----".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] BEGIN_PGP_PUBLIC_KEY_BLOCK = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] END_PGP_PUBLIC_KEY_BLOCK = "-----END PGP PUBLIC KEY BLOCK-----".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] BEGIN_PGP_MESSAGE = "-----BEGIN PGP MESSAGE-----\n".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] END_PGP_MESSAGE = "-----END PGP MESSAGE-----".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] BEGIN_PGP_SIGNATURE = "-----BEGIN PGP SIGNATURE-----\n".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] END_PGP_SIGNATURE = "-----END PGP SIGNATURE-----".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] BEGIN_PGP_SIGNED_MESSAGE = "-----BEGIN PGP SIGNED MESSAGE-----\n".getBytes(StandardCharsets.UTF_8);
 }

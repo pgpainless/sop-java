@@ -8,21 +8,22 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
+import sop.testing.TestData;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static sop.external.JUtils.arrayStartsWith;
-import static sop.external.JUtils.assertArrayStartsWith;
-import static sop.external.JUtils.assertAsciiArmorEquals;
+import static sop.testing.JUtils.arrayStartsWith;
+import static sop.testing.JUtils.assertArrayEndsWithIgnoreNewlines;
+import static sop.testing.JUtils.assertArrayStartsWith;
+import static sop.testing.JUtils.assertAsciiArmorEquals;
+import static sop.testing.TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK;
+import static sop.testing.TestData.END_PGP_PUBLIC_KEY_BLOCK;
 
 @EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
 public class ExternalExtractCertTest extends AbstractExternalSOPTest {
-
-    private static final String BEGIN_PGP_PUBLIC_KEY_BLOCK = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n";
-    private static final byte[] BEGIN_PGP_PUBLIC_KEY_BLOCK_BYTES = BEGIN_PGP_PUBLIC_KEY_BLOCK.getBytes(StandardCharsets.UTF_8);
 
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
@@ -33,7 +34,8 @@ public class ExternalExtractCertTest extends AbstractExternalSOPTest {
                 .getInputStream();
 
         byte[] cert = sop.extractCert().key(keyIn).getBytes();
-        assertArrayStartsWith(cert, BEGIN_PGP_PUBLIC_KEY_BLOCK_BYTES);
+        assertArrayStartsWith(cert, BEGIN_PGP_PUBLIC_KEY_BLOCK);
+        assertArrayEndsWithIgnoreNewlines(cert, END_PGP_PUBLIC_KEY_BLOCK);
     }
 
     @ParameterizedTest
@@ -76,7 +78,7 @@ public class ExternalExtractCertTest extends AbstractExternalSOPTest {
                 .key(keyIn)
                 .getBytes();
 
-        assertFalse(arrayStartsWith(cert, BEGIN_PGP_PUBLIC_KEY_BLOCK_BYTES));
+        assertFalse(arrayStartsWith(cert, BEGIN_PGP_PUBLIC_KEY_BLOCK));
     }
 
     @ParameterizedTest
@@ -92,7 +94,8 @@ public class ExternalExtractCertTest extends AbstractExternalSOPTest {
                 .key(keyIn)
                 .getBytes();
 
-        assertArrayStartsWith(cert, BEGIN_PGP_PUBLIC_KEY_BLOCK_BYTES);
+        assertArrayStartsWith(cert, BEGIN_PGP_PUBLIC_KEY_BLOCK);
+        assertArrayEndsWithIgnoreNewlines(cert, END_PGP_PUBLIC_KEY_BLOCK);
     }
 
     @ParameterizedTest
@@ -109,6 +112,6 @@ public class ExternalExtractCertTest extends AbstractExternalSOPTest {
                 .key(keyIn)
                 .getBytes();
 
-        assertFalse(arrayStartsWith(cert, BEGIN_PGP_PUBLIC_KEY_BLOCK_BYTES));
+        assertFalse(arrayStartsWith(cert, BEGIN_PGP_PUBLIC_KEY_BLOCK));
     }
 }

@@ -12,6 +12,8 @@ import sop.SOP;
 import sop.Verification;
 import sop.enums.InlineSignAs;
 import sop.exception.SOPGPException;
+import sop.testing.JUtils;
+import sop.testing.TestData;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -21,82 +23,84 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static sop.external.JUtils.assertSignedBy;
+import static sop.testing.JUtils.assertSignedBy;
+import static sop.testing.TestData.ALICE_CERT;
+import static sop.testing.TestData.ALICE_KEY;
+import static sop.testing.TestData.ALICE_PRIMARY_FINGERPRINT;
+import static sop.testing.TestData.ALICE_SIGNING_FINGERPRINT;
+import static sop.testing.TestData.BEGIN_PGP_MESSAGE;
+import static sop.testing.TestData.BEGIN_PGP_SIGNED_MESSAGE;
+import static sop.testing.TestData.PLAINTEXT;
 
 @EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
 public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
 
-    private static final String BEGIN_PGP_MESSAGE = "-----BEGIN PGP MESSAGE-----\n";
-    private static final byte[] BEGIN_PGP_MESSAGE_BYTES = BEGIN_PGP_MESSAGE.getBytes(StandardCharsets.UTF_8);
-    private static final String BEGIN_PGP_SIGNED_MESSAGE = "-----BEGIN PGP SIGNED MESSAGE-----\n";
-    private static final byte[] BEGIN_PGP_SIGNED_MESSAGE_BYTES = BEGIN_PGP_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8);
-
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void inlineSignVerifyAlice(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] inlineSigned = sop.inlineSign()
-                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
-        JUtils.assertArrayStartsWith(inlineSigned, BEGIN_PGP_MESSAGE_BYTES);
+        JUtils.assertArrayStartsWith(inlineSigned, BEGIN_PGP_MESSAGE);
 
         ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
-                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(inlineSigned)
                 .toByteArrayAndResult();
 
         assertArrayEquals(message, bytesAndResult.getBytes());
         List<Verification> verificationList = bytesAndResult.getResult();
-        assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
+        assertSignedBy(verificationList, ALICE_SIGNING_FINGERPRINT, ALICE_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void inlineSignVerifyAliceNoArmor(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] inlineSigned = sop.inlineSign()
-                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .noArmor()
                 .data(message)
                 .getBytes();
 
-        assertFalse(JUtils.arrayStartsWith(inlineSigned, BEGIN_PGP_MESSAGE_BYTES));
+        assertFalse(JUtils.arrayStartsWith(inlineSigned, BEGIN_PGP_MESSAGE));
 
         ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
-                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(inlineSigned)
                 .toByteArrayAndResult();
 
         assertArrayEquals(message, bytesAndResult.getBytes());
         List<Verification> verificationList = bytesAndResult.getResult();
-        assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
+        assertSignedBy(verificationList, ALICE_SIGNING_FINGERPRINT, ALICE_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void clearsignVerifyAlice(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] clearsigned = sop.inlineSign()
-                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(InlineSignAs.clearsigned)
                 .data(message)
                 .getBytes();
 
-        JUtils.assertArrayStartsWith(clearsigned, BEGIN_PGP_SIGNED_MESSAGE_BYTES);
+        JUtils.assertArrayStartsWith(clearsigned, BEGIN_PGP_SIGNED_MESSAGE);
 
         ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
-                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(clearsigned)
                 .toByteArrayAndResult();
 
         assertArrayEquals(message, bytesAndResult.getBytes());
         List<Verification> verificationList = bytesAndResult.getResult();
-        assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
+        assertSignedBy(verificationList, ALICE_SIGNING_FINGERPRINT, ALICE_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -106,11 +110,11 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
         Date signatureDate = TestData.ALICE_INLINE_SIGNED_MESSAGE_DATE;
 
         ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
-                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult();
         List<Verification> verificationList = bytesAndResult.getResult();
-        assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT, signatureDate);
+        assertSignedBy(verificationList, ALICE_SIGNING_FINGERPRINT, ALICE_PRIMARY_FINGERPRINT, signatureDate);
     }
 
     @ParameterizedTest
@@ -122,7 +126,7 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
 
         assertThrows(SOPGPException.NoSignature.class, () -> sop.inlineVerify()
                 .notBefore(afterSignature)
-                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult());
     }
@@ -136,7 +140,7 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
 
         assertThrows(SOPGPException.NoSignature.class, () -> sop.inlineVerify()
                 .notAfter(beforeSignature)
-                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult());
     }
@@ -144,14 +148,14 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void inlineSignVerifyBob(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] inlineSigned = sop.inlineSign()
                 .key(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
-        JUtils.assertArrayStartsWith(inlineSigned, BEGIN_PGP_MESSAGE_BYTES);
+        JUtils.assertArrayStartsWith(inlineSigned, BEGIN_PGP_MESSAGE);
 
         ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
                 .cert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
@@ -166,14 +170,14 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void inlineSignVerifyCarol(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] inlineSigned = sop.inlineSign()
                 .key(TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
-        JUtils.assertArrayStartsWith(inlineSigned, BEGIN_PGP_MESSAGE_BYTES);
+        JUtils.assertArrayStartsWith(inlineSigned, BEGIN_PGP_MESSAGE);
 
         ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
                 .cert(TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8))
@@ -188,7 +192,7 @@ public class ExternalInlineSignVerifyTest extends AbstractExternalSOPTest {
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void inlineSignVerifyProtectedKey(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] inlineSigned = sop.inlineSign()
                 .withKeyPassword(TestData.PASSWORD)

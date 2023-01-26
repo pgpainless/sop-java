@@ -20,6 +20,7 @@ dependencies {
     testImplementation "com.google.code.gson:gson:2.10.1"
 
     api project(":sop-java")
+    testImplementation(testFixtures(project(":sop-java")))
 
     api "org.slf4j:slf4j-api:$slf4jVersion"
     testImplementation "ch.qos.logback:logback-classic:$logbackVersion"

@@ -17,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static sop.testing.TestData.ALICE_KEY;
+import static sop.testing.TestData.PLAINTEXT;
 
 @EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
 public class ExternalDecryptWithSessionKeyTest extends AbstractExternalSOPTest {
@@ -35,13 +37,13 @@ public class ExternalDecryptWithSessionKeyTest extends AbstractExternalSOPTest {
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void testDecryptAndExtractSessionKey(SOP sop) throws IOException {
         ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
-                .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKey(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(CIPHERTEXT.getBytes(StandardCharsets.UTF_8))
                 .toByteArrayAndResult();
 
         assertEquals(SESSION_KEY, bytesAndResult.getResult().getSessionKey().get().toString());
 
-        assertArrayEquals("Hello, World!\n".getBytes(StandardCharsets.UTF_8), bytesAndResult.getBytes());
+        assertArrayEquals(PLAINTEXT.getBytes(StandardCharsets.UTF_8), bytesAndResult.getBytes());
     }
 
     @ParameterizedTest
@@ -53,6 +55,6 @@ public class ExternalDecryptWithSessionKeyTest extends AbstractExternalSOPTest {
                 .toByteArrayAndResult()
                 .getBytes();
 
-        assertArrayEquals("Hello, World!\n".getBytes(StandardCharsets.UTF_8), decrypted);
+        assertArrayEquals(PLAINTEXT.getBytes(StandardCharsets.UTF_8), decrypted);
     }
 }

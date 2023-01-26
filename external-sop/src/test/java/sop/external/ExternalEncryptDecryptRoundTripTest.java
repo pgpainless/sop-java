@@ -25,7 +25,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static sop.testing.JUtils.assertSignedBy;
+import static sop.testing.TestData.ALICE_CERT;
+import static sop.testing.TestData.ALICE_KEY;
+import static sop.testing.TestData.ALICE_PRIMARY_FINGERPRINT;
+import static sop.testing.TestData.ALICE_SIGNING_FINGERPRINT;
+import static sop.testing.TestData.BOB_CERT;
+import static sop.testing.TestData.BOB_KEY;
+import static sop.testing.TestData.CAROL_CERT;
+import static sop.testing.TestData.CAROL_KEY;
+import static sop.testing.TestData.PLAINTEXT;
 
 @EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
 public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest {
@@ -33,7 +42,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void encryptDecryptRoundTripPasswordTest(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = sop.encrypt()
                 .withPassword("sw0rdf1sh")
                 .plaintext(message)
@@ -51,14 +60,14 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void encryptDecryptRoundTripAliceTest(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = sop.encrypt()
-                .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .withCert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
                 .getBytes();
 
         ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
-                .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKey(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult();
 
@@ -72,14 +81,14 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void encryptDecryptRoundTripBobTest(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = sop.encrypt()
-                .withCert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
+                .withCert(BOB_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
                 .getBytes();
 
         byte[] plaintext = sop.decrypt()
-                .withKey(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKey(BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult()
                 .getBytes();
@@ -90,14 +99,14 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void encryptDecryptRoundTripCarolTest(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = sop.encrypt()
-                .withCert(TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8))
+                .withCert(CAROL_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
                 .getBytes();
 
         byte[] plaintext = sop.decrypt()
-                .withKey(TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKey(CAROL_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult()
                 .getBytes();
@@ -108,9 +117,9 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void encryptNoArmorThenArmorThenDecryptRoundTrip(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = sop.encrypt()
-                .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .withCert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .noArmor()
                 .plaintext(message)
                 .getBytes();
@@ -120,7 +129,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
                 .getBytes();
 
         ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
-                .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKey(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(armored)
                 .toByteArrayAndResult();
 
@@ -131,16 +140,16 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void encryptSignDecryptVerifyRoundTripAliceTest(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = sop.encrypt()
-                .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
-                .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .withCert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .signWith(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
                 .getBytes();
 
         ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
-                .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
-                .verifyWithCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .withKey(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .verifyWithCert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult();
 
@@ -151,23 +160,23 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
         assertNotNull(result.getSessionKey().get());
         List<Verification> verificationList = result.getVerifications();
         assertEquals(1, verificationList.size());
-        assertTrue(verificationList.get(0).toString().contains("EB85BB5FA33A75E15E944E63F231550C4F47E38E EB85BB5FA33A75E15E944E63F231550C4F47E38E"));
+        assertSignedBy(verificationList, ALICE_SIGNING_FINGERPRINT, ALICE_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void encryptSignAsTextDecryptVerifyRoundTripAliceTest(SOP sop) throws IOException {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = sop.encrypt()
-                .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
-                .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .withCert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .signWith(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(EncryptAs.Text)
                 .plaintext(message)
                 .getBytes();
 
         ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
-                .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
-                .verifyWithCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .withKey(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .verifyWithCert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult();
 
@@ -178,7 +187,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
         assertNotNull(result.getSessionKey().get());
         List<Verification> verificationList = result.getVerifications();
         assertEquals(1, verificationList.size());
-        assertTrue(verificationList.get(0).toString().contains("EB85BB5FA33A75E15E944E63F231550C4F47E38E EB85BB5FA33A75E15E944E63F231550C4F47E38E"));
+        assertSignedBy(verificationList, ALICE_SIGNING_FINGERPRINT, ALICE_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -234,8 +243,8 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
 
         assertThrows(SOPGPException.NoSignature.class, () -> {
             ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
-                    .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
-                    .verifyWithCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                    .withKey(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                    .verifyWithCert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                     .verifyNotAfter(beforeSignature)
                     .ciphertext(message)
                     .toByteArrayAndResult();
@@ -267,8 +276,8 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
 
         assertThrows(SOPGPException.NoSignature.class, () -> {
             ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
-                    .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
-                    .verifyWithCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                    .withKey(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                    .verifyWithCert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                     .verifyNotBefore(afterSignature)
                     .ciphertext(message)
                     .toByteArrayAndResult();
@@ -282,7 +291,7 @@ public class ExternalEncryptDecryptRoundTripTest extends AbstractExternalSOPTest
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void missingArgsTest(SOP sop) {
-        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         assertThrows(SOPGPException.MissingArg.class, () -> sop.encrypt()
                 .plaintext(message)

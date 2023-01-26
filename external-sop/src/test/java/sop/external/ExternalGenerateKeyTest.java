@@ -8,20 +8,18 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
+import sop.testing.JUtils;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static sop.external.JUtils.assertArrayStartsWith;
+import static sop.testing.JUtils.assertArrayEndsWithIgnoreNewlines;
+import static sop.testing.JUtils.assertArrayStartsWith;
+import static sop.testing.TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK;
+import static sop.testing.TestData.END_PGP_PRIVATE_KEY_BLOCK;
 
 @EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
 public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
-
-    private static final Charset UTF8 = StandardCharsets.UTF_8;
-    private static final String BEGIN_PGP_PRIVATE_KEY_BLOCK = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n";
-    byte[] BEGIN_PGP_PRIVATE_KEY_BLOCK_BYTES = BEGIN_PGP_PRIVATE_KEY_BLOCK.getBytes(UTF8);
 
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
@@ -31,7 +29,8 @@ public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
                 .generate()
                 .getBytes();
 
-        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK_BYTES);
+        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        assertArrayEndsWithIgnoreNewlines(key, END_PGP_PRIVATE_KEY_BLOCK);
     }
 
     @ParameterizedTest
@@ -43,7 +42,7 @@ public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
                 .generate()
                 .getBytes();
 
-        assertFalse(JUtils.arrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK_BYTES));
+        assertFalse(JUtils.arrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK));
     }
 
     @ParameterizedTest
@@ -55,7 +54,8 @@ public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
                 .generate()
                 .getBytes();
 
-        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK_BYTES);
+        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        assertArrayEndsWithIgnoreNewlines(key, END_PGP_PRIVATE_KEY_BLOCK);
     }
 
     @ParameterizedTest
@@ -65,7 +65,8 @@ public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
                 .generate()
                 .getBytes();
 
-        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK_BYTES);
+        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        assertArrayEndsWithIgnoreNewlines(key, END_PGP_PRIVATE_KEY_BLOCK);
     }
 
     @ParameterizedTest
@@ -77,7 +78,8 @@ public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
                 .generate()
                 .getBytes();
 
-        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK_BYTES);
+        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        assertArrayEndsWithIgnoreNewlines(key, END_PGP_PRIVATE_KEY_BLOCK);
     }
 
     @ParameterizedTest
@@ -90,6 +92,7 @@ public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
                 .generate()
                 .getBytes();
 
-        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK_BYTES);
+        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        assertArrayEndsWithIgnoreNewlines(key, END_PGP_PRIVATE_KEY_BLOCK);
     }
 }

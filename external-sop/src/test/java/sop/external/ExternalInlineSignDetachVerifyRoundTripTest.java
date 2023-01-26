@@ -18,21 +18,23 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static sop.external.JUtils.arrayStartsWith;
-import static sop.external.JUtils.assertArrayStartsWith;
+import static sop.testing.JUtils.arrayStartsWith;
+import static sop.testing.JUtils.assertArrayStartsWith;
+import static sop.testing.TestData.ALICE_CERT;
+import static sop.testing.TestData.ALICE_KEY;
+import static sop.testing.TestData.BEGIN_PGP_SIGNATURE;
+import static sop.testing.TestData.PLAINTEXT;
 
 @EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
 public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExternalSOPTest {
 
-    private static final byte[] BEGIN_PGP_SIGNATURE = "-----BEGIN PGP SIGNATURE-----\n".getBytes(StandardCharsets.UTF_8);
-
     @ParameterizedTest
     @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
     public void inlineSignThenDetachThenDetachedVerifyTest(SOP sop) throws IOException {
-        byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
+        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] inlineSigned = sop.inlineSign()
-                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
@@ -47,7 +49,7 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
                 .getBytes();
 
         List<Verification> verifications = sop.detachedVerify()
-                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signatures)
                 .data(plaintext);
 
@@ -60,7 +62,7 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
 
         byte[] inlineSigned = sop.inlineSign()
-                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
@@ -82,7 +84,7 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
         assertArrayStartsWith(armored, BEGIN_PGP_SIGNATURE);
 
         List<Verification> verifications = sop.detachedVerify()
-                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(armored)
                 .data(plaintext);
 
