@@ -36,7 +36,8 @@ test {
 
     useJUnitPlatform()
 
-    // since we test external backends, we ignore test failures in this module
+    // since we test external backends which we might not control,
+    //  we ignore test failures in this module
     ignoreFailures = true
 }
 
