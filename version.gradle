@@ -8,6 +8,7 @@ allprojects {
         isSnapshot = true
         minAndroidSdk = 10
         javaSourceCompatibility = 1.8
+        gsonVersion = '2.10.1'
         jsrVersion = '3.0.2'
         junitVersion = '5.8.2'
         junitSysExitVersion = '1.1.2'
