@@ -2,26 +2,26 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.external;
+package sop.testsuite.external;
 
 import com.google.gson.Gson;
-import org.junit.jupiter.api.Named;
-import org.junit.jupiter.params.provider.Arguments;
 import sop.SOP;
+import sop.external.ExternalSOP;
+import sop.testsuite.SOPInstanceFactory;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Stream;
 
-public abstract class AbstractExternalSOPTest {
+public class ExternalSOPInstanceFactory extends SOPInstanceFactory {
 
-    private static final List<Arguments> backends = new ArrayList<>();
-
-    static {
+    @Override
+    public Map<String, SOP> provideSOPInstances() {
+        Map<String, SOP> backends = new HashMap<>();
         TestSuite suite = readConfiguration();
         if (suite != null && !suite.backends.isEmpty()) {
             for (TestSubject subject : suite.backends) {
@@ -37,30 +37,24 @@ public abstract class AbstractExternalSOPTest {
                 }
 
                 SOP sop = new ExternalSOP(subject.sop, env);
-                backends.add(Arguments.of(Named.of(subject.name, sop)));
+                backends.put(subject.name, sop);
             }
         }
+        return backends;
     }
 
-    public static Stream<Arguments> provideBackends() {
-        return backends.stream();
-    }
 
     public static TestSuite readConfiguration() {
         Gson gson = new Gson();
-        InputStream inputStream = AbstractExternalSOPTest.class.getResourceAsStream("config.json");
+        InputStream inputStream = ExternalSOPInstanceFactory.class.getResourceAsStream("config.json");
         if (inputStream == null) {
             return null;
         }
 
         InputStreamReader reader = new InputStreamReader(inputStream);
-        TestSuite suite = gson.fromJson(reader, TestSuite.class);
-        return suite;
+        return gson.fromJson(reader, TestSuite.class);
     }
 
-    public static boolean hasBackends() {
-        return !backends.isEmpty();
-    }
 
     // JSON DTOs
 

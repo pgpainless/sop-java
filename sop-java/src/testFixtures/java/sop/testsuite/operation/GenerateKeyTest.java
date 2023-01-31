@@ -2,39 +2,41 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.external;
+package sop.testsuite.operation;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
-import sop.testing.JUtils;
+import sop.testsuite.JUtils;
+import sop.testsuite.TestData;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static sop.testing.JUtils.assertArrayEndsWithIgnoreNewlines;
-import static sop.testing.JUtils.assertArrayStartsWith;
-import static sop.testing.TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK;
-import static sop.testing.TestData.END_PGP_PRIVATE_KEY_BLOCK;
+@EnabledIf("sop.operation.AbstractSOPTest#hasBackends")
+public class GenerateKeyTest extends AbstractSOPTest {
 
-@EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
-public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
+    static Stream<Arguments> provideInstances() {
+        return provideBackends();
+    }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void generateKeyTest(SOP sop) throws IOException {
         byte[] key = sop.generateKey()
                 .userId("Alice <alice@openpgp.org>")
                 .generate()
                 .getBytes();
 
-        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK);
-        assertArrayEndsWithIgnoreNewlines(key, END_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayStartsWith(key, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayEndsWithIgnoreNewlines(key, TestData.END_PGP_PRIVATE_KEY_BLOCK);
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void generateKeyNoArmor(SOP sop) throws IOException {
         byte[] key = sop.generateKey()
                 .userId("Alice <alice@openpgp.org>")
@@ -42,11 +44,11 @@ public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
                 .generate()
                 .getBytes();
 
-        assertFalse(JUtils.arrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK));
+        Assertions.assertFalse(JUtils.arrayStartsWith(key, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK));
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void generateKeyWithMultipleUserIdsTest(SOP sop) throws IOException {
         byte[] key = sop.generateKey()
                 .userId("Alice <alice@openpgp.org>")
@@ -54,23 +56,23 @@ public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
                 .generate()
                 .getBytes();
 
-        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK);
-        assertArrayEndsWithIgnoreNewlines(key, END_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayStartsWith(key, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayEndsWithIgnoreNewlines(key, TestData.END_PGP_PRIVATE_KEY_BLOCK);
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void generateKeyWithoutUserIdTest(SOP sop) throws IOException {
         byte[] key = sop.generateKey()
                 .generate()
                 .getBytes();
 
-        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK);
-        assertArrayEndsWithIgnoreNewlines(key, END_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayStartsWith(key, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayEndsWithIgnoreNewlines(key, TestData.END_PGP_PRIVATE_KEY_BLOCK);
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void generateKeyWithPasswordTest(SOP sop) throws IOException {
         byte[] key = sop.generateKey()
                 .userId("Alice <alice@openpgp.org>")
@@ -78,12 +80,12 @@ public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
                 .generate()
                 .getBytes();
 
-        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK);
-        assertArrayEndsWithIgnoreNewlines(key, END_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayStartsWith(key, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayEndsWithIgnoreNewlines(key, TestData.END_PGP_PRIVATE_KEY_BLOCK);
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void generateKeyWithMultipleUserIdsAndPassword(SOP sop) throws IOException {
         byte[] key = sop.generateKey()
                 .userId("Alice <alice@openpgp.org>")
@@ -92,7 +94,7 @@ public class ExternalGenerateKeyTest extends AbstractExternalSOPTest {
                 .generate()
                 .getBytes();
 
-        assertArrayStartsWith(key, BEGIN_PGP_PRIVATE_KEY_BLOCK);
-        assertArrayEndsWithIgnoreNewlines(key, END_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayStartsWith(key, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayEndsWithIgnoreNewlines(key, TestData.END_PGP_PRIVATE_KEY_BLOCK);
     }
 }

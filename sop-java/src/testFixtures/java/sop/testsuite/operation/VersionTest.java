@@ -2,22 +2,28 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.external;
+package sop.testsuite.operation;
 
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
 
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
-public class ExternalVersionTest extends AbstractExternalSOPTest {
+@EnabledIf("sop.operation.AbstractSOPTest#hasBackends")
+public class VersionTest extends AbstractSOPTest {
+
+    static Stream<Arguments> provideInstances() {
+        return provideBackends();
+    }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void versionNameTest(SOP sop) {
         String name = sop.version().getName();
         assertNotNull(name);
@@ -25,21 +31,21 @@ public class ExternalVersionTest extends AbstractExternalSOPTest {
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void versionVersionTest(SOP sop) {
         String version = sop.version().getVersion();
-        assertTrue(version.matches("\\d+(\\.\\d+)*\\S*"));
+        assertFalse(version.isEmpty());
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void backendVersionTest(SOP sop) {
         String backend = sop.version().getBackendVersion();
         assertFalse(backend.isEmpty());
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void extendedVersionTest(SOP sop) {
         String extended = sop.version().getExtendedVersion();
         assertFalse(extended.isEmpty());

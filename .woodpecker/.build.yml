@@ -7,7 +7,7 @@ pipeline:
       # Checkout code
       - git checkout $CI_COMMIT_BRANCH
       # Prepare CI
-      - cp external-sop/src/main/resources/sop/external/config.json.ci external-sop/src/main/resources/sop/external/config.json
+      - cp external-sop/src/main/resources/sop/testsuite/external/config.json.ci external-sop/src/main/resources/sop/testsuite/external/config.json
       # Code works
       - gradle test
       # Code is clean

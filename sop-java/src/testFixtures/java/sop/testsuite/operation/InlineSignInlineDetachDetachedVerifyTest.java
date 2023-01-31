@@ -2,39 +2,42 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.external;
+package sop.testsuite.operation;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.ByteArrayAndResult;
 import sop.SOP;
 import sop.Signatures;
 import sop.Verification;
+import sop.testsuite.JUtils;
+import sop.testsuite.TestData;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static sop.testing.JUtils.arrayStartsWith;
-import static sop.testing.JUtils.assertArrayStartsWith;
-import static sop.testing.TestData.ALICE_CERT;
-import static sop.testing.TestData.ALICE_KEY;
-import static sop.testing.TestData.BEGIN_PGP_SIGNATURE;
-import static sop.testing.TestData.PLAINTEXT;
 
-@EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
-public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExternalSOPTest {
+@EnabledIf("sop.operation.AbstractSOPTest#hasBackends")
+public class InlineSignInlineDetachDetachedVerifyTest extends AbstractSOPTest {
+
+    static Stream<Arguments> provideInstances() {
+        return provideBackends();
+    }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void inlineSignThenDetachThenDetachedVerifyTest(SOP sop) throws IOException {
-        byte[] message = PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         byte[] inlineSigned = sop.inlineSign()
-                .key(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
@@ -49,7 +52,7 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
                 .getBytes();
 
         List<Verification> verifications = sop.detachedVerify()
-                .cert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signatures)
                 .data(plaintext);
 
@@ -57,12 +60,12 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void inlineSignThenDetachNoArmorThenArmorThenDetachedVerifyTest(SOP sop) throws IOException {
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
 
         byte[] inlineSigned = sop.inlineSign()
-                .key(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
@@ -76,15 +79,15 @@ public class ExternalInlineSignDetachVerifyRoundTripTest extends AbstractExterna
 
         byte[] signatures = bytesAndResult.getResult()
                 .getBytes();
-        assertFalse(arrayStartsWith(signatures, BEGIN_PGP_SIGNATURE));
+        Assertions.assertFalse(JUtils.arrayStartsWith(signatures, TestData.BEGIN_PGP_SIGNATURE));
 
         byte[] armored = sop.armor()
                 .data(signatures)
                 .getBytes();
-        assertArrayStartsWith(armored, BEGIN_PGP_SIGNATURE);
+        JUtils.assertArrayStartsWith(armored, TestData.BEGIN_PGP_SIGNATURE);
 
         List<Verification> verifications = sop.detachedVerify()
-                .cert(ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(armored)
                 .data(plaintext);
 

@@ -2,26 +2,27 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.external;
+package sop.testsuite.operation;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.ByteArrayAndResult;
 import sop.DecryptionResult;
 import sop.SOP;
 import sop.SessionKey;
+import sop.testsuite.TestData;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static sop.testing.TestData.ALICE_KEY;
-import static sop.testing.TestData.PLAINTEXT;
 
-@EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
-public class ExternalDecryptWithSessionKeyTest extends AbstractExternalSOPTest {
+@EnabledIf("sop.operation.AbstractSOPTest#hasBackends")
+public class DecryptWithSessionKeyTest extends AbstractSOPTest {
 
     private static final String CIPHERTEXT = "-----BEGIN PGP MESSAGE-----\n" +
             "\n" +
@@ -33,21 +34,25 @@ public class ExternalDecryptWithSessionKeyTest extends AbstractExternalSOPTest {
             "-----END PGP MESSAGE-----\n";
     private static final String SESSION_KEY = "9:ED682800F5FEA829A82E8B7DDF8CE9CF4BF9BB45024B017764462EE53101C36A";
 
+    static Stream<Arguments> provideInstances() {
+        return provideBackends();
+    }
+
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void testDecryptAndExtractSessionKey(SOP sop) throws IOException {
         ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
-                .withKey(ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(CIPHERTEXT.getBytes(StandardCharsets.UTF_8))
                 .toByteArrayAndResult();
 
         assertEquals(SESSION_KEY, bytesAndResult.getResult().getSessionKey().get().toString());
 
-        assertArrayEquals(PLAINTEXT.getBytes(StandardCharsets.UTF_8), bytesAndResult.getBytes());
+        Assertions.assertArrayEquals(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8), bytesAndResult.getBytes());
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void testDecryptWithSessionKey(SOP sop) throws IOException {
         byte[] decrypted = sop.decrypt()
                 .withSessionKey(SessionKey.fromString(SESSION_KEY))
@@ -55,6 +60,6 @@ public class ExternalDecryptWithSessionKeyTest extends AbstractExternalSOPTest {
                 .toByteArrayAndResult()
                 .getBytes();
 
-        assertArrayEquals(PLAINTEXT.getBytes(StandardCharsets.UTF_8), decrypted);
+        Assertions.assertArrayEquals(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8), decrypted);
     }
 }

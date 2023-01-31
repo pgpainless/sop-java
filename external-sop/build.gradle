@@ -16,21 +16,27 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-    // Read json config file
-    testImplementation "com.google.code.gson:gson:2.10.1"
 
     api project(":sop-java")
-    testImplementation(testFixtures(project(":sop-java")))
-
     api "org.slf4j:slf4j-api:$slf4jVersion"
     testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
 
     // @Nonnull, @Nullable...
     implementation "com.google.code.findbugs:jsr305:$jsrVersion"
+
+    // The ExternalTestSubjectFactory reads json config file to find configured SOP binaries...
+    testImplementation "com.google.code.gson:gson:2.10.1"
+    // ...and extends TestSubjectFactory
+    testImplementation(testFixtures(project(":sop-java")))
 }
 
 test {
+    // Inject configured external SOP instances using our custom TestSubjectFactory
+    environment("test.implementation", "sop.testsuite.external.ExternalSOPInstanceFactory")
+
     useJUnitPlatform()
+
     // since we test external backends, we ignore test failures in this module
     ignoreFailures = true
 }
+

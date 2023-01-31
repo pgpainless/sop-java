@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.testing;
+package sop.testsuite;
 
 import sop.util.UTCUtil;
 

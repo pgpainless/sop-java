@@ -2,37 +2,32 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.external;
+package sop.testsuite.operation;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
-import sop.testing.TestData;
+import sop.testsuite.JUtils;
+import sop.testsuite.TestData;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static sop.testing.JUtils.arrayStartsWith;
-import static sop.testing.JUtils.assertArrayEndsWithIgnoreNewlines;
-import static sop.testing.JUtils.assertArrayStartsWith;
-import static sop.testing.JUtils.assertAsciiArmorEquals;
-import static sop.testing.TestData.BEGIN_PGP_MESSAGE;
-import static sop.testing.TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK;
-import static sop.testing.TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK;
-import static sop.testing.TestData.BEGIN_PGP_SIGNATURE;
-import static sop.testing.TestData.END_PGP_MESSAGE;
-import static sop.testing.TestData.END_PGP_PRIVATE_KEY_BLOCK;
-import static sop.testing.TestData.END_PGP_PUBLIC_KEY_BLOCK;
-import static sop.testing.TestData.END_PGP_SIGNATURE;
 
-@EnabledIf("sop.external.AbstractExternalSOPTest#hasBackends")
-public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
+@EnabledIf("sop.operation.AbstractSOPTest#hasBackends")
+public class ArmorDearmorTest {
+
+    static Stream<Arguments> provideInstances() {
+        return AbstractSOPTest.provideBackends();
+    }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void dearmorArmorAliceKey(SOP sop) throws IOException {
         byte[] aliceKey = TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8);
 
@@ -40,20 +35,20 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
                 .data(aliceKey)
                 .getBytes();
 
-        assertFalse(arrayStartsWith(dearmored, BEGIN_PGP_PRIVATE_KEY_BLOCK));
+        Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK));
 
         byte[] armored = sop.armor()
                 .data(dearmored)
                 .getBytes();
 
-        assertArrayStartsWith(armored, BEGIN_PGP_PRIVATE_KEY_BLOCK);
-        assertArrayEndsWithIgnoreNewlines(armored, END_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayStartsWith(armored, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayEndsWithIgnoreNewlines(armored, TestData.END_PGP_PRIVATE_KEY_BLOCK);
 
         // assertAsciiArmorEquals(aliceKey, armored);
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void dearmorArmorAliceCert(SOP sop) throws IOException {
         byte[] aliceCert = TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8);
 
@@ -61,20 +56,20 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
                 .data(aliceCert)
                 .getBytes();
 
-        assertFalse(arrayStartsWith(dearmored, BEGIN_PGP_PUBLIC_KEY_BLOCK));
+        Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK));
 
         byte[] armored = sop.armor()
                 .data(dearmored)
                 .getBytes();
 
-        assertArrayStartsWith(armored, BEGIN_PGP_PUBLIC_KEY_BLOCK);
-        assertArrayEndsWithIgnoreNewlines(armored, END_PGP_PUBLIC_KEY_BLOCK);
+        JUtils.assertArrayStartsWith(armored, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK);
+        JUtils.assertArrayEndsWithIgnoreNewlines(armored, TestData.END_PGP_PUBLIC_KEY_BLOCK);
 
         // assertAsciiArmorEquals(aliceCert, armored);
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void dearmorArmorBobKey(SOP sop) throws IOException {
         byte[] bobKey = TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8);
 
@@ -82,20 +77,20 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
                 .data(bobKey)
                 .getBytes();
 
-        assertFalse(arrayStartsWith(dearmored, BEGIN_PGP_PRIVATE_KEY_BLOCK));
+        Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK));
 
         byte[] armored = sop.armor()
                 .data(dearmored)
                 .getBytes();
 
-        assertArrayStartsWith(armored, BEGIN_PGP_PRIVATE_KEY_BLOCK);
-        assertArrayEndsWithIgnoreNewlines(armored, END_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayStartsWith(armored, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayEndsWithIgnoreNewlines(armored, TestData.END_PGP_PRIVATE_KEY_BLOCK);
 
         // assertAsciiArmorEquals(bobKey, armored);
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void dearmorArmorBobCert(SOP sop) throws IOException {
         byte[] bobCert = TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8);
 
@@ -103,20 +98,20 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
                 .data(bobCert)
                 .getBytes();
 
-        assertFalse(arrayStartsWith(dearmored, BEGIN_PGP_PUBLIC_KEY_BLOCK));
+        Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK));
 
         byte[] armored = sop.armor()
                 .data(dearmored)
                 .getBytes();
 
-        assertArrayStartsWith(armored, BEGIN_PGP_PUBLIC_KEY_BLOCK);
-        assertArrayEndsWithIgnoreNewlines(armored, END_PGP_PUBLIC_KEY_BLOCK);
+        JUtils.assertArrayStartsWith(armored, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK);
+        JUtils.assertArrayEndsWithIgnoreNewlines(armored, TestData.END_PGP_PUBLIC_KEY_BLOCK);
 
         // assertAsciiArmorEquals(bobCert, armored);
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void dearmorArmorCarolKey(SOP sop) throws IOException {
         byte[] carolKey = TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8);
 
@@ -124,20 +119,20 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
                 .data(carolKey)
                 .getBytes();
 
-        assertFalse(arrayStartsWith(dearmored, BEGIN_PGP_PRIVATE_KEY_BLOCK));
+        Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK));
 
         byte[] armored = sop.armor()
                 .data(dearmored)
                 .getBytes();
 
-        assertArrayStartsWith(armored, BEGIN_PGP_PRIVATE_KEY_BLOCK);
-        assertArrayEndsWithIgnoreNewlines(armored, END_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayStartsWith(armored, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK);
+        JUtils.assertArrayEndsWithIgnoreNewlines(armored, TestData.END_PGP_PRIVATE_KEY_BLOCK);
 
         // assertAsciiArmorEquals(carolKey, armored);
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void dearmorArmorCarolCert(SOP sop) throws IOException {
         byte[] carolCert = TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8);
 
@@ -145,20 +140,20 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
                 .data(carolCert)
                 .getBytes();
 
-        assertFalse(arrayStartsWith(dearmored, BEGIN_PGP_PUBLIC_KEY_BLOCK));
+        Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK));
 
         byte[] armored = sop.armor()
                 .data(dearmored)
                 .getBytes();
 
-        assertArrayStartsWith(armored, BEGIN_PGP_PUBLIC_KEY_BLOCK);
-        assertArrayEndsWithIgnoreNewlines(armored, END_PGP_PUBLIC_KEY_BLOCK);
+        JUtils.assertArrayStartsWith(armored, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK);
+        JUtils.assertArrayEndsWithIgnoreNewlines(armored, TestData.END_PGP_PUBLIC_KEY_BLOCK);
 
         // assertAsciiArmorEquals(carolCert, armored);
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void dearmorArmorMessage(SOP sop) throws IOException {
         byte[] message = ("-----BEGIN PGP MESSAGE-----\n" +
                 "\n" +
@@ -172,20 +167,20 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
                 .data(message)
                 .getBytes();
 
-        assertFalse(arrayStartsWith(dearmored, BEGIN_PGP_MESSAGE));
+        Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_MESSAGE));
 
         byte[] armored = sop.armor()
                 .data(dearmored)
                 .getBytes();
 
-        assertArrayStartsWith(armored, BEGIN_PGP_MESSAGE);
-        assertArrayEndsWithIgnoreNewlines(armored, END_PGP_MESSAGE);
+        JUtils.assertArrayStartsWith(armored, TestData.BEGIN_PGP_MESSAGE);
+        JUtils.assertArrayEndsWithIgnoreNewlines(armored, TestData.END_PGP_MESSAGE);
 
         // assertAsciiArmorEquals(message, armored);
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void dearmorArmorSignature(SOP sop) throws IOException {
         byte[] signature = ("-----BEGIN PGP SIGNATURE-----\n" +
                 "\n" +
@@ -200,20 +195,20 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
                 .data(signature)
                 .getBytes();
 
-        assertFalse(arrayStartsWith(dearmored, BEGIN_PGP_SIGNATURE));
+        Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_SIGNATURE));
 
         byte[] armored = sop.armor()
                 .data(dearmored)
                 .getBytes();
 
-        assertArrayStartsWith(armored, BEGIN_PGP_SIGNATURE);
-        assertArrayEndsWithIgnoreNewlines(armored, END_PGP_SIGNATURE);
+        JUtils.assertArrayStartsWith(armored, TestData.BEGIN_PGP_SIGNATURE);
+        JUtils.assertArrayEndsWithIgnoreNewlines(armored, TestData.END_PGP_SIGNATURE);
 
-        assertAsciiArmorEquals(signature, armored);
+        JUtils.assertAsciiArmorEquals(signature, armored);
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void testDearmoringTwiceIsIdempotent(SOP sop) throws IOException {
         byte[] dearmored = sop.dearmor()
                 .data(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
@@ -227,7 +222,7 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
     }
 
     @ParameterizedTest
-    @MethodSource("sop.external.AbstractExternalSOPTest#provideBackends")
+    @MethodSource("provideInstances")
     public void testArmoringTwiceIsIdempotent(SOP sop) throws IOException {
         byte[] armored = ("-----BEGIN PGP SIGNATURE-----\n" +
                 "\n" +
@@ -242,7 +237,7 @@ public class ExternalArmorDearmorRoundTripTest extends AbstractExternalSOPTest {
                 .data(armored)
                 .getBytes();
 
-        assertAsciiArmorEquals(armored, armoredAgain);
+        JUtils.assertAsciiArmorEquals(armored, armoredAgain);
     }
 
 }
