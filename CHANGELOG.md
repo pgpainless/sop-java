@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 4.1.1-SNAPSHOT
+## 4.1.1
 - Restructure test suite to allow simultaneous testing of multiple backends
 - Fix IOException in `sop sign` due to premature stream closing
 - Allow for downstream implementations of `sop-java` to reuse the test suite
