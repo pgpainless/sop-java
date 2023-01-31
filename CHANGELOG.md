@@ -9,6 +9,8 @@ SPDX-License-Identifier: Apache-2.0
 ## 4.1.1-SNAPSHOT
 - Restructure test suite to allow simultaneous testing of multiple backends
 - Fix IOException in `sop sign` due to premature stream closing
+- Allow for downstream implementations of `sop-java` to reuse the test suite
+  - Check out Javadoc of `sop-java/src/testFixtures/java/sop/testsuite/SOPInstanceFactory` for details
 
 ## 4.1.0
 - Add module `external-sop`
