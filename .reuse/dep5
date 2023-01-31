@@ -19,6 +19,6 @@ Files: .woodpecker/*
 Copyright: 2022 the original author or authors.
 License: Apache-2.0
 
-Files: external-sop/src/main/resources/sop/external/*
+Files: external-sop/src/main/resources/sop/testsuite/external/*
 Copyright: 2023 the original author or authors
 License: Apache-2.0
