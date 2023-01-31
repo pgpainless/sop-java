@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@EnabledIf("sop.operation.AbstractSOPTest#hasBackends")
+@EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class DecryptWithSessionKeyTest extends AbstractSOPTest {
 
     private static final String CIPHERTEXT = "-----BEGIN PGP MESSAGE-----\n" +

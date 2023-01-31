@@ -4,8 +4,10 @@
 
 package sop.testsuite.external.operation;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import sop.testsuite.operation.EncryptDecryptTest;
 
+@EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class ExternalEncryptDecryptTest extends EncryptDecryptTest {
 
 }

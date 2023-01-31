@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@EnabledIf("sop.operation.AbstractSOPTest#hasBackends")
+@EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class EncryptDecryptTest extends AbstractSOPTest {
 
     static Stream<Arguments> provideInstances() {

@@ -17,6 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * This implementation of {@link SOPInstanceFactory} reads the JSON file at
+ * <pre>external-sop/src/main/resources/sop/testsuite/external/config.json</pre>
+ * to determine configured external test backends
+ */
 public class ExternalSOPInstanceFactory extends SOPInstanceFactory {
 
     @Override

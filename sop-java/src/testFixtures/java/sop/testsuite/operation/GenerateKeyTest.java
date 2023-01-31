@@ -16,7 +16,7 @@ import sop.testsuite.TestData;
 import java.io.IOException;
 import java.util.stream.Stream;
 
-@EnabledIf("sop.operation.AbstractSOPTest#hasBackends")
+@EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class GenerateKeyTest extends AbstractSOPTest {
 
     static Stream<Arguments> provideInstances() {

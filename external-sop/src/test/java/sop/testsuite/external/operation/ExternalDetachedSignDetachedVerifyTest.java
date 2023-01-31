@@ -4,7 +4,9 @@
 
 package sop.testsuite.external.operation;
 
+import org.junit.jupiter.api.condition.EnabledIf;
 import sop.testsuite.operation.DetachedSignDetachedVerifyTest;
 
+@EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class ExternalDetachedSignDetachedVerifyTest extends DetachedSignDetachedVerifyTest {
 }

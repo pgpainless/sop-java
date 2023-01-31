@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-@EnabledIf("sop.operation.AbstractSOPTest#hasBackends")
+@EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class ExtractCertTest extends AbstractSOPTest {
 
     static Stream<Arguments> provideInstances() {

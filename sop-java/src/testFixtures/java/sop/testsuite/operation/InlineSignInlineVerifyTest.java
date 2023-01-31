@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@EnabledIf("sop.operation.AbstractSOPTest#hasBackends")
+@EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class InlineSignInlineVerifyTest extends AbstractSOPTest {
 
     static Stream<Arguments> provideInstances() {
