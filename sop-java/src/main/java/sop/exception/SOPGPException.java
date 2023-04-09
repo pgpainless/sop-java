@@ -378,4 +378,36 @@ public abstract class SOPGPException extends RuntimeException {
             return EXIT_CODE;
         }
     }
+
+    public static class IncompatibleOptions extends SOPGPException {
+
+        public static final int EXIT_CODE = 83;
+
+        public IncompatibleOptions() {
+            super();
+        }
+
+        public IncompatibleOptions(String errorMsg) {
+            super(errorMsg);
+        }
+
+        @Override
+        public int getExitCode() {
+            return EXIT_CODE;
+        }
+    }
+
+    public static class UnsupportedProfile extends SOPGPException {
+
+        public static final int EXIT_CODE = 89;
+
+        public UnsupportedProfile() {
+            super();
+        }
+
+        @Override
+        public int getExitCode() {
+            return EXIT_CODE;
+        }
+    }
 }
