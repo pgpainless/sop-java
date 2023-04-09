@@ -51,7 +51,7 @@ public class DecryptCmd extends AbstractSopCmd {
             paramLabel = "PASSWORD")
     List<String> withPassword = new ArrayList<>();
 
-    @CommandLine.Option(names = {OPT_VERIFICATIONS_OUT, "--verify-out"}, // TODO: Remove --verify-out at some point
+    @CommandLine.Option(names = {OPT_VERIFICATIONS_OUT, "--verify-out"}, // TODO: Remove --verify-out in 06
             paramLabel = "VERIFICATIONS")
     String verifyOut;
 
