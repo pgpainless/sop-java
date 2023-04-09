@@ -41,6 +41,11 @@ public class InlineSignCmd extends AbstractSopCmd {
         InlineSign inlineSign = throwIfUnsupportedSubcommand(
                 SopCLI.getSop().inlineSign(), "inline-sign");
 
+        if (!armor && type == InlineSignAs.clearsigned) {
+            String errorMsg = getMsg("sop.error.usage.incompatible_options.clearsigned_no_armor");
+            throw new SOPGPException.IncompatibleOptions(errorMsg);
+        }
+
         if (type != null) {
             try {
                 inlineSign.mode(type);
