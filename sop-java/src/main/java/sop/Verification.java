@@ -38,6 +38,13 @@ public class Verification {
             throw new IllegalArgumentException("Verification must be of the format 'UTC-DATE OpenPGPFingerprint OpenPGPFingerprint'");
         }
 
+        if (split.length == 3) {
+            return new Verification(UTCUtil.parseUTCDate(split[0]),
+                    split[1], // key FP
+                    split[2]  // cert FP
+            );
+        }
+
         SignatureMode mode = null;
         int index = 3;
         if (split[index].startsWith(MODE)) {
