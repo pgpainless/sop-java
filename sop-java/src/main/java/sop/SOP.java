@@ -15,6 +15,7 @@ import sop.operation.InlineSign;
 import sop.operation.InlineVerify;
 import sop.operation.DetachedSign;
 import sop.operation.DetachedVerify;
+import sop.operation.ListProfiles;
 import sop.operation.Version;
 
 /**
@@ -146,4 +147,5 @@ public interface SOP {
      */
     Dearmor dearmor();
 
+    ListProfiles listProfiles();
 }

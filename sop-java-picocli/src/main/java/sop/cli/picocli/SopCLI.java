@@ -16,6 +16,7 @@ import sop.cli.picocli.commands.ExtractCertCmd;
 import sop.cli.picocli.commands.GenerateKeyCmd;
 import sop.cli.picocli.commands.InlineSignCmd;
 import sop.cli.picocli.commands.InlineVerifyCmd;
+import sop.cli.picocli.commands.ListProfilesCmd;
 import sop.cli.picocli.commands.SignCmd;
 import sop.cli.picocli.commands.VerifyCmd;
 import sop.cli.picocli.commands.VersionCmd;
@@ -41,6 +42,7 @@ import java.util.ResourceBundle;
                 VerifyCmd.class,
                 InlineSignCmd.class,
                 InlineVerifyCmd.class,
+                ListProfilesCmd.class,
                 VersionCmd.class,
                 AutoComplete.GenerateCompletion.class
         }

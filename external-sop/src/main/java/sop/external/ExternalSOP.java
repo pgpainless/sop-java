@@ -18,6 +18,7 @@ import sop.external.operation.GenerateKeyExternal;
 import sop.external.operation.InlineDetachExternal;
 import sop.external.operation.InlineSignExternal;
 import sop.external.operation.InlineVerifyExternal;
+import sop.external.operation.ListProfilesExternal;
 import sop.external.operation.VersionExternal;
 import sop.operation.Armor;
 import sop.operation.Dearmor;
@@ -30,6 +31,7 @@ import sop.operation.GenerateKey;
 import sop.operation.InlineDetach;
 import sop.operation.InlineSign;
 import sop.operation.InlineVerify;
+import sop.operation.ListProfiles;
 import sop.operation.Version;
 
 import javax.annotation.Nonnull;
@@ -152,6 +154,11 @@ public class ExternalSOP implements SOP {
     @Override
     public Armor armor() {
         return new ArmorExternal(binaryName, properties);
+    }
+
+    @Override
+    public ListProfiles listProfiles() {
+        return new ListProfilesExternal(binaryName, properties);
     }
 
     @Override

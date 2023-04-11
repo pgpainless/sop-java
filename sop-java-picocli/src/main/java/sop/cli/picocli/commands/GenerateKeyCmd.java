@@ -30,6 +30,10 @@ public class GenerateKeyCmd extends AbstractSopCmd {
             paramLabel = "PASSWORD")
     String withKeyPassword;
 
+    @CommandLine.Option(names = "--profile",
+    paramLabel = "PROFILE")
+    String profile = "default";
+
     @Override
     public void run() {
         GenerateKey generateKey = throwIfUnsupportedSubcommand(
@@ -42,6 +46,8 @@ public class GenerateKeyCmd extends AbstractSopCmd {
         if (!armor) {
             generateKey.noArmor();
         }
+
+        generateKey.profile(profile);
 
         if (withKeyPassword != null) {
             try {

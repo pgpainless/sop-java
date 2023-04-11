@@ -6,6 +6,7 @@ package sop.operation;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import sop.Ready;
 import sop.exception.SOPGPException;
@@ -55,6 +56,14 @@ public interface GenerateKey {
             SOPGPException.UnsupportedOption {
         return withKeyPassword(UTF8Util.decodeUTF8(password));
     }
+
+    /**
+     * Pass in a profile identifier.
+     *
+     * @param profile profile identifier
+     * @return this
+     */
+    GenerateKey profile(String profile);
 
     /**
      * Generate the OpenPGP key and return it encoded as an {@link InputStream}.

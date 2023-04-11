@@ -26,6 +26,7 @@ import sop.operation.InlineSign;
 import sop.operation.InlineVerify;
 import sop.operation.DetachedSign;
 import sop.operation.DetachedVerify;
+import sop.operation.ListProfiles;
 import sop.operation.Version;
 
 public class SOPTest {
@@ -92,6 +93,11 @@ public class SOPTest {
 
             @Override
             public Dearmor dearmor() {
+                return null;
+            }
+
+            @Override
+            public ListProfiles listProfiles() {
                 return null;
             }
 
