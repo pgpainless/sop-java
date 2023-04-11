@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-public class ListProfilesExternal extends ListProfiles {
+public class ListProfilesExternal implements ListProfiles {
 
     private final List<String> commandList = new ArrayList<>();
     private final List<String> envList;

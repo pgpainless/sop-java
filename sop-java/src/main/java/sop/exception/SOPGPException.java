@@ -405,6 +405,10 @@ public abstract class SOPGPException extends RuntimeException {
             super();
         }
 
+        public UnsupportedProfile(String errorMessage) {
+            super(errorMessage);
+        }
+
         @Override
         public int getExitCode() {
             return EXIT_CODE;

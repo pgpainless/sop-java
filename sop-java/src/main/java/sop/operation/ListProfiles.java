@@ -6,14 +6,10 @@ package sop.operation;
 
 import java.util.List;
 
-public abstract class ListProfiles {
+public interface ListProfiles {
 
-    public ListProfiles() {
+    List<String> ofCommand(String command);
 
-    }
-
-    public abstract List<String> ofCommand(String command);
-
-    public abstract List<String> global();
+    List<String> global();
 
 }
