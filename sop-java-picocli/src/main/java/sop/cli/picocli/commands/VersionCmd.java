@@ -22,6 +22,9 @@ public class VersionCmd extends AbstractSopCmd {
 
         @CommandLine.Option(names = "--backend")
         boolean backend;
+
+        @CommandLine.Option(names = "--sop-spec")
+        boolean sopSpec;
     }
 
 
@@ -43,6 +46,11 @@ public class VersionCmd extends AbstractSopCmd {
 
         if (exclusive.backend) {
             Print.outln(version.getBackendVersion());
+            return;
+        }
+
+        if (exclusive.sopSpec) {
+            Print.outln(version.getSopSpecVersion());
             return;
         }
     }

@@ -99,4 +99,23 @@ public class VersionExternal implements Version {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public String getSopSpecVersion() {
+        String[] command = new String[] {binary, "version", "--sop-spec"};
+        String[] env = ExternalSOP.propertiesToEnv(environment).toArray(new String[0]);
+        try {
+            Process process = runtime.exec(command, env);
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = stdInput.readLine()) != null) {
+                sb.append(line).append('\n');
+            }
+            ExternalSOP.finish(process);
+            return sb.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

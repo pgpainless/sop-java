@@ -46,4 +46,14 @@ public interface Version {
      * @return extended version string
      */
     String getExtendedVersion();
+
+    /**
+     * Return the revision of the SOP specification that this implementation is implementing, for example,
+     * <pre>draft-dkg-openpgp-stateless-cli-06</pre>.
+     * If the implementation targets a specific draft but the implementer knows the implementation is incomplete,
+     * it should prefix the draft title with a "~" (TILDE, U+007E), for example: <pre>~draft-dkg-openpgp-stateless-cli-06</pre>.
+     *
+     * @return implemented SOP spec version
+     */
+    String getSopSpecVersion();
 }
