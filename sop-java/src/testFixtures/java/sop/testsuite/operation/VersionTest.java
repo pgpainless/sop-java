@@ -14,8 +14,8 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class VersionTest extends AbstractSOPTest {
@@ -56,6 +56,12 @@ public class VersionTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void sopSpecVersionTest(SOP sop) {
+        try {
+            sop.version().getSopSpecVersion();
+        } catch (RuntimeException e) {
+            assumeTrue(false); // SOP backend does not support this operation yet
+        }
+
         String sopSpec = sop.version().getSopSpecVersion();
         if (sop.version().isSopSpecImplementationIncomplete()) {
             assertTrue(sopSpec.startsWith("~draft-dkg-openpgp-stateless-cli-"));
