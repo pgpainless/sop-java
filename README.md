@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 # SOP for Java
 
 [![status-badge](https://ci.codeberg.org/api/badges/PGPainless/sop-java/status.svg)](https://ci.codeberg.org/PGPainless/sop-java)
-[![Spec Revision: 4](https://img.shields.io/badge/Spec%20Revision-4-blue)](https://datatracker.ietf.org/doc/draft-dkg-openpgp-stateless-cli/04/)
+[![Spec Revision: 5](https://img.shields.io/badge/Spec%20Revision-5-blue)](https://datatracker.ietf.org/doc/draft-dkg-openpgp-stateless-cli/05/)
 [![Coverage Status](https://coveralls.io/repos/github/pgpainless/sop-java/badge.svg?branch=main)](https://coveralls.io/github/pgpainless/sop-java?branch=main)
 [![REUSE status](https://api.reuse.software/badge/github.com/pgpainless/sop-java)](https://api.reuse.software/info/github.com/pgpainless/sop-java)
 
