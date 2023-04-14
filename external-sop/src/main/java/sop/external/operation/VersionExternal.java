@@ -101,6 +101,42 @@ public class VersionExternal implements Version {
     }
 
     @Override
+    public int getSopSpecVersionNumber() {
+        String revision = getSopSpecVersion();
+        String firstLine;
+        if (revision.contains("\n")) {
+            firstLine = revision.substring(0, revision.indexOf("\n"));
+        } else {
+            firstLine = revision;
+        }
+
+        if (!firstLine.contains("-")) {
+            return -1;
+        }
+
+        return Integer.parseInt(firstLine.substring(firstLine.lastIndexOf("-") + 1));
+    }
+
+    @Override
+    public boolean isSopSpecImplementationIncomplete() {
+        String revision = getSopSpecVersion();
+        return revision.startsWith("~");
+    }
+
+    @Override
+    public String getSopSpecImplementationIncompletenessRemarks() {
+        String revision = getSopSpecVersion();
+        if (revision.contains("\n")) {
+            String tail = revision.substring(revision.indexOf("\n") + 1).trim();
+
+            if (!tail.isEmpty()) {
+                return tail;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public String getSopSpecVersion() {
         String[] command = new String[] {binary, "version", "--sop-spec"};
         String[] env = ExternalSOP.propertiesToEnv(environment).toArray(new String[0]);

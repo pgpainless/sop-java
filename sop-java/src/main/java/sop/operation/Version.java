@@ -48,12 +48,61 @@ public interface Version {
     String getExtendedVersion();
 
     /**
+     * Return the version number of the latest targeted SOP spec revision.
+     *
+     * @return SOP spec revision number
+     */
+    int getSopSpecVersionNumber();
+
+    /**
+     * Return the latest targeted revision of the SOP spec.
+     *
+     * @return SOP spec revision string
+     */
+    default String getSopSpecRevisionString() {
+        return "draft-dkg-openpgp-stateless-cli-" + String.format("%02d", getSopSpecVersionNumber());
+    }
+
+    /**
+     * Return <pre>true</pre>, if this implementation of the SOP spec is known to be incomplete or defective.
+     *
+     * @return true if incomplete, false otherwise
+     */
+    boolean isSopSpecImplementationIncomplete();
+
+    /**
+     * Return free-form text containing remarks about the completeness of the SOP implementation.
+     * If no remarks are known, this method returns <pre>null</pre>.
+     *
+     * @return remarks or null
+     */
+    String getSopSpecImplementationIncompletenessRemarks();
+
+    /**
      * Return the revision of the SOP specification that this implementation is implementing, for example,
      * <pre>draft-dkg-openpgp-stateless-cli-06</pre>.
      * If the implementation targets a specific draft but the implementer knows the implementation is incomplete,
-     * it should prefix the draft title with a "~" (TILDE, U+007E), for example: <pre>~draft-dkg-openpgp-stateless-cli-06</pre>.
+     * it should prefix the draft title with a "~" (TILDE, U+007E), for example:
+     * <pre>~draft-dkg-openpgp-stateless-cli-06</pre>.
+     * The implementation MAY emit additional text about its relationship to the targeted draft on the lines following
+     * the versioned title.
      *
      * @return implemented SOP spec version
      */
-    String getSopSpecVersion();
+    default String getSopSpecVersion() {
+        StringBuilder sb = new StringBuilder();
+        if (isSopSpecImplementationIncomplete()) {
+            sb.append('~');
+        }
+
+        sb.append(getSopSpecRevisionString());
+
+        if (getSopSpecImplementationIncompletenessRemarks() != null) {
+            sb.append('\n')
+                    .append('\n')
+                    .append(getSopSpecImplementationIncompletenessRemarks());
+        }
+
+        return sb.toString();
+    }
 }
