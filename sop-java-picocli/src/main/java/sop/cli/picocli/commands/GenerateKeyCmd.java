@@ -32,12 +32,21 @@ public class GenerateKeyCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--profile",
             paramLabel = "PROFILE")
-    String profile = "default";
+    String profile;
 
     @Override
     public void run() {
         GenerateKey generateKey = throwIfUnsupportedSubcommand(
                 SopCLI.getSop().generateKey(), "generate-key");
+
+        if (profile != null) {
+            try {
+                generateKey.profile(profile);
+            } catch (SOPGPException.UnsupportedProfile e) {
+                String errorMsg = getMsg("sop.error.usage.profile_not_supported", "generate-key", profile);
+                throw new SOPGPException.UnsupportedProfile(errorMsg, e);
+            }
+        }
 
         for (String userId : userId) {
             generateKey.userId(userId);
@@ -45,13 +54,6 @@ public class GenerateKeyCmd extends AbstractSopCmd {
 
         if (!armor) {
             generateKey.noArmor();
-        }
-
-        try {
-            generateKey.profile(profile);
-        } catch (SOPGPException.UnsupportedProfile e) {
-            String errorMsg = getMsg("sop.error.usage.profile_not_supported", "generate-key", profile);
-            throw new SOPGPException.UnsupportedProfile(errorMsg, e);
         }
 
         if (withKeyPassword != null) {
