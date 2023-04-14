@@ -7,6 +7,7 @@ package sop.testsuite.operation;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import sop.Profile;
 import sop.SOP;
 
 import java.io.IOException;
@@ -23,17 +24,9 @@ public class ListProfilesTest extends AbstractSOPTest {
 
     @ParameterizedTest
     @MethodSource("provideInstances")
-    public void listGlobalProfiles(SOP sop) throws IOException {
-        List<String> profiles = sop.listProfiles()
-                .global();
-        assertFalse(profiles.isEmpty());
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideInstances")
     public void listGenerateKeyProfiles(SOP sop) throws IOException {
-        List<String> profiles = sop.listProfiles()
-                .ofCommand("generate-key");
+        List<Profile> profiles = sop.listProfiles()
+                .subcommand("generate-key");
         assertFalse(profiles.isEmpty());
     }
 

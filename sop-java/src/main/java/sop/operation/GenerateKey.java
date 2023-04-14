@@ -6,8 +6,8 @@ package sop.operation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
+import sop.Profile;
 import sop.Ready;
 import sop.exception.SOPGPException;
 import sop.util.UTF8Util;
@@ -58,10 +58,20 @@ public interface GenerateKey {
     }
 
     /**
+     * Pass in a profile.
+     *
+     * @param profile profile
+     * @return builder instance
+     */
+    default GenerateKey profile(Profile profile) {
+        return profile(profile.getName());
+    }
+
+    /**
      * Pass in a profile identifier.
      *
      * @param profile profile identifier
-     * @return this
+     * @return builder instance
      */
     GenerateKey profile(String profile);
 

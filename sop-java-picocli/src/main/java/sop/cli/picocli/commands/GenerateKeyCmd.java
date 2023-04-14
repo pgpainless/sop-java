@@ -31,7 +31,7 @@ public class GenerateKeyCmd extends AbstractSopCmd {
     String withKeyPassword;
 
     @CommandLine.Option(names = "--profile",
-    paramLabel = "PROFILE")
+            paramLabel = "PROFILE")
     String profile = "default";
 
     @Override
@@ -47,7 +47,12 @@ public class GenerateKeyCmd extends AbstractSopCmd {
             generateKey.noArmor();
         }
 
-        generateKey.profile(profile);
+        try {
+            generateKey.profile(profile);
+        } catch (SOPGPException.UnsupportedProfile e) {
+            String errorMsg = getMsg("sop.error.usage.profile_not_supported", "generate-key", profile);
+            throw new SOPGPException.UnsupportedProfile(errorMsg, e);
+        }
 
         if (withKeyPassword != null) {
             try {

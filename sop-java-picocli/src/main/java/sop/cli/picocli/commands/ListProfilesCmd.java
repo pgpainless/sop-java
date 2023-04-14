@@ -5,7 +5,9 @@
 package sop.cli.picocli.commands;
 
 import picocli.CommandLine;
+import sop.Profile;
 import sop.cli.picocli.SopCLI;
+import sop.exception.SOPGPException;
 import sop.operation.ListProfiles;
 
 @CommandLine.Command(name = "list-profiles",
@@ -13,7 +15,7 @@ import sop.operation.ListProfiles;
         exitCodeOnInvalidInput = 37)
 public class ListProfilesCmd extends AbstractSopCmd {
 
-    @CommandLine.Parameters(paramLabel = "COMMAND", arity="0..1", descriptionKey = "subcommand")
+    @CommandLine.Parameters(paramLabel = "COMMAND", arity="1", descriptionKey = "subcommand")
     String subcommand;
 
     @Override
@@ -21,19 +23,15 @@ public class ListProfilesCmd extends AbstractSopCmd {
         ListProfiles listProfiles = throwIfUnsupportedSubcommand(
                 SopCLI.getSop().listProfiles(), "list-profiles");
 
-        if (subcommand == null) {
-            for (String profile : listProfiles.global()) {
+        try {
+            for (Profile profile : listProfiles.subcommand(subcommand)) {
                 // CHECKSTYLE:OFF
                 System.out.println(profile);
                 // CHECKSTYLE:ON
             }
-            return;
-        }
-
-        for (String profile : listProfiles.ofCommand(subcommand)) {
-            // CHECKSTYLE:OFF
-            System.out.println(profile);
-            // CHECKSTYLE:ON
+        } catch (SOPGPException.UnsupportedProfile e) {
+            String errorMsg = getMsg("sop.error.feature_support.subcommand_does_not_support_profiles", subcommand);
+            throw new SOPGPException.UnsupportedProfile(errorMsg, e);
         }
     }
 }

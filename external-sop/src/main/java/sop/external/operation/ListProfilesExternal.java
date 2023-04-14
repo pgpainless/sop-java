@@ -4,12 +4,12 @@
 
 package sop.external.operation;
 
+import sop.Profile;
 import sop.external.ExternalSOP;
 import sop.operation.ListProfiles;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -25,23 +25,22 @@ public class ListProfilesExternal implements ListProfiles {
     }
 
     @Override
-    public List<String> ofCommand(String command) {
+    public List<Profile> subcommand(String command) {
         commandList.add(command);
         try {
             String output = new String(ExternalSOP.executeProducingOperation(Runtime.getRuntime(), commandList, envList).getBytes());
-            return Arrays.asList(output.split("\n"));
+            return toProfiles(output);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Override
-    public List<String> global() {
-        try {
-            String output = new String(ExternalSOP.executeProducingOperation(Runtime.getRuntime(), commandList, envList).getBytes());
-            return Arrays.asList(output.split("\n"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private List<Profile> toProfiles(String output) {
+        List<Profile> profiles = new ArrayList<>();
+        for (String line : output.split("\n")) {
+            String[] split = line.split(": ");
+            profiles.add(new Profile(split[0], split[1]));
         }
+        return profiles;
     }
 }

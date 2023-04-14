@@ -401,12 +401,33 @@ public abstract class SOPGPException extends RuntimeException {
 
         public static final int EXIT_CODE = 89;
 
-        public UnsupportedProfile() {
-            super();
+        private final String subcommand;
+        private final String profile;
+
+        public UnsupportedProfile(String subcommand) {
+            super("Subcommand '" + subcommand + "' does not support any profiles.");
+            this.subcommand = subcommand;
+            this.profile = null;
         }
 
-        public UnsupportedProfile(String errorMessage) {
-            super(errorMessage);
+        public UnsupportedProfile(String subcommand, String profile) {
+            super("Subcommand '" + subcommand + "' does not support profile '" + profile + "'.");
+            this.subcommand = subcommand;
+            this.profile = profile;
+        }
+
+        public UnsupportedProfile(String errorMsg, UnsupportedProfile e) {
+            super(errorMsg, e);
+            this.subcommand = e.getSubcommand();
+            this.profile = e.getProfile();
+        }
+
+        public String getSubcommand() {
+            return subcommand;
+        }
+
+        public String getProfile() {
+            return profile;
         }
 
         @Override

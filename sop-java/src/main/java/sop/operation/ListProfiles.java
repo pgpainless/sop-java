@@ -4,12 +4,12 @@
 
 package sop.operation;
 
+import sop.Profile;
+
 import java.util.List;
 
 public interface ListProfiles {
 
-    List<String> ofCommand(String command);
-
-    List<String> global();
+    List<Profile> subcommand(String command);
 
 }
