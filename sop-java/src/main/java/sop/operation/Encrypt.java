@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import sop.Profile;
 import sop.Ready;
 import sop.enums.EncryptAs;
 import sop.exception.SOPGPException;
@@ -145,6 +146,24 @@ public interface Encrypt {
             IOException {
         return withCert(new ByteArrayInputStream(cert));
     }
+
+    /**
+     * Pass in a profile.
+     *
+     * @param profile profile
+     * @return builder instance
+     */
+    default Encrypt profile(Profile profile) {
+        return profile(profile.getName());
+    }
+
+    /**
+     * Pass in a profile identifier.
+     *
+     * @param profileName profile identifier
+     * @return builder instance
+     */
+    Encrypt profile(String profileName);
 
     /**
      * Encrypt the given data yielding the ciphertext.

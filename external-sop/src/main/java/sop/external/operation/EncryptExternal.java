@@ -86,6 +86,12 @@ public class EncryptExternal implements Encrypt {
     }
 
     @Override
+    public Encrypt profile(String profileName) {
+        commandList.add("--profile=" + profileName);
+        return this;
+    }
+
+    @Override
     public Ready plaintext(InputStream plaintext)
             throws IOException, SOPGPException.KeyIsProtected {
         return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, plaintext);

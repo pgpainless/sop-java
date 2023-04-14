@@ -41,6 +41,10 @@ public class EncryptCmd extends AbstractSopCmd {
             paramLabel = "PASSWORD")
     List<String> withKeyPassword = new ArrayList<>();
 
+    @CommandLine.Option(names = "--profile",
+            paramLabel = "PROFILE")
+    String profile;
+
     @CommandLine.Parameters(index = "0..*",
             paramLabel = "CERTS")
     List<String> certs = new ArrayList<>();
@@ -49,6 +53,15 @@ public class EncryptCmd extends AbstractSopCmd {
     public void run() {
         Encrypt encrypt = throwIfUnsupportedSubcommand(
                 SopCLI.getSop().encrypt(), "encrypt");
+
+        if (profile != null) {
+            try {
+                encrypt.profile(profile);
+            } catch (SOPGPException.UnsupportedProfile e) {
+                String errorMsg = getMsg("sop.error.usage.profile_not_supported", "encrypt", profile);
+                throw new SOPGPException.UnsupportedProfile(errorMsg, e);
+            }
+        }
 
         if (type != null) {
             try {
