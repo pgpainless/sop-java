@@ -24,8 +24,14 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
+/**
+ * Abstract super class of SOP subcommands.
+ */
 public abstract class AbstractSopCmd implements Runnable {
 
+    /**
+     * Interface to modularize resolving of environment variables.
+     */
     public interface EnvironmentVariableResolver {
         /**
          * Resolve the value of the given environment variable.
