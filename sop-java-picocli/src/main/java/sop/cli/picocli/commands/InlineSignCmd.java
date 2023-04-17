@@ -41,6 +41,7 @@ public class InlineSignCmd extends AbstractSopCmd {
         InlineSign inlineSign = throwIfUnsupportedSubcommand(
                 SopCLI.getSop().inlineSign(), "inline-sign");
 
+        // Clearsigned messages are inherently armored, so --no-armor makes no sense.
         if (!armor && type == InlineSignAs.clearsigned) {
             String errorMsg = getMsg("sop.error.usage.incompatible_options.clearsigned_no_armor");
             throw new SOPGPException.IncompatibleOptions(errorMsg);
