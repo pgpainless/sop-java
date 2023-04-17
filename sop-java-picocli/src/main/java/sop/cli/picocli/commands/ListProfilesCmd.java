@@ -6,6 +6,7 @@ package sop.cli.picocli.commands;
 
 import picocli.CommandLine;
 import sop.Profile;
+import sop.cli.picocli.Print;
 import sop.cli.picocli.SopCLI;
 import sop.exception.SOPGPException;
 import sop.operation.ListProfiles;
@@ -25,9 +26,7 @@ public class ListProfilesCmd extends AbstractSopCmd {
 
         try {
             for (Profile profile : listProfiles.subcommand(subcommand)) {
-                // CHECKSTYLE:OFF
-                System.out.println(profile);
-                // CHECKSTYLE:ON
+                Print.outln(profile.toString());
             }
         } catch (SOPGPException.UnsupportedProfile e) {
             String errorMsg = getMsg("sop.error.feature_support.subcommand_does_not_support_profiles", subcommand);
