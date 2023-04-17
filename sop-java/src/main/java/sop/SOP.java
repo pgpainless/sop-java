@@ -20,6 +20,11 @@ import sop.operation.Version;
 
 /**
  * Stateless OpenPGP Interface.
+ * This class provides a stateless interface to various OpenPGP related operations.
+ * <br>
+ * Note: Subcommand objects acquired by calling any method of this interface are not intended for reuse.
+ * If you for example need to generate multiple keys, make a dedicated call to {@link #generateKey()} once per
+ * key generation.
  */
 public interface SOP {
 
