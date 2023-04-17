@@ -9,6 +9,9 @@ import java.util.Date;
 import sop.enums.SignatureMode;
 import sop.util.UTCUtil;
 
+/**
+ * Class bundling information about a verified signature.
+ */
 public class Verification {
 
     private final Date creationTime;
@@ -17,13 +20,28 @@ public class Verification {
     private final SignatureMode signatureMode;
     private final String description;
 
-    public static final String MODE = "mode:";
+    private static final String MODE = "mode:";
 
-
+    /**
+     * Create a new {@link Verification} without mode and description.
+     *
+     * @param creationTime signature creation time
+     * @param signingKeyFingerprint fingerprint of the signing (sub-) key
+     * @param signingCertFingerprint fingerprint of the certificate
+     */
     public Verification(Date creationTime, String signingKeyFingerprint, String signingCertFingerprint) {
         this(creationTime, signingKeyFingerprint, signingCertFingerprint, null, null);
     }
 
+    /**
+     * Create a new {@link Verification}.
+     *
+     * @param creationTime signature creation time
+     * @param signingKeyFingerprint fingerprint of the signing (sub-) key
+     * @param signingCertFingerprint fingerprint of the certificate
+     * @param signatureMode signature mode (optional, may be <pre>null</pre>)
+     * @param description free-form description, e.g. <pre>certificate from dkg.asc</pre> (optional, may be <pre>null</pre>)
+     */
     public Verification(Date creationTime, String signingKeyFingerprint, String signingCertFingerprint, SignatureMode signatureMode, String description) {
         this.creationTime = creationTime;
         this.signingKeyFingerprint = signingKeyFingerprint;
@@ -35,13 +53,14 @@ public class Verification {
     public static Verification fromString(String toString) {
         String[] split = toString.trim().split(" ");
         if (split.length < 3) {
-            throw new IllegalArgumentException("Verification must be of the format 'UTC-DATE OpenPGPFingerprint OpenPGPFingerprint'");
+            throw new IllegalArgumentException("Verification must be of the format 'UTC-DATE OpenPGPFingerprint OpenPGPFingerprint [mode] [info]'");
         }
 
         if (split.length == 3) {
-            return new Verification(UTCUtil.parseUTCDate(split[0]),
-                    split[1], // key FP
-                    split[2]  // cert FP
+            return new Verification(
+                    UTCUtil.parseUTCDate(split[0]), // timestamp
+                    split[1],                       // key FP
+                    split[2]                        // cert FP
             );
         }
 
@@ -61,10 +80,10 @@ public class Verification {
         }
 
         return new Verification(
-                UTCUtil.parseUTCDate(split[0]),
-                split[1], // key FP
-                split[2], // cert FP
-                mode,
+                UTCUtil.parseUTCDate(split[0]),         // timestamp
+                split[1],                               // key FP
+                split[2],                               // cert FP
+                mode,                                   // signature mode
                 sb.length() != 0 ? sb.toString() : null // description
         );
     }
@@ -98,6 +117,7 @@ public class Verification {
 
     /**
      * Return the mode of the signature.
+     * Optional, may return <pre>null</pre>.
      *
      * @return signature mode
      */
@@ -107,6 +127,7 @@ public class Verification {
 
     /**
      * Return an optional description.
+     * Optional, may return <pre>null</pre>.
      *
      * @return description
      */
