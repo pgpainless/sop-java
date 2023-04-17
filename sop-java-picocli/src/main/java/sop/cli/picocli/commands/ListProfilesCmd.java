@@ -16,7 +16,7 @@ import sop.operation.ListProfiles;
         exitCodeOnInvalidInput = 37)
 public class ListProfilesCmd extends AbstractSopCmd {
 
-    @CommandLine.Parameters(paramLabel = "COMMAND", arity="1", descriptionKey = "subcommand")
+    @CommandLine.Parameters(paramLabel = "COMMAND", arity = "1", descriptionKey = "subcommand")
     String subcommand;
 
     @Override
