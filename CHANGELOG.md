@@ -6,6 +6,12 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 6.0.0
+- Update implementation to [SOP Specification revision 06](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-06.html).
+  - Add option `--profile=XYZ` to `encrypt` subcommand
+  - Add option `--sop-spec` to `version` subcommand
+  - `Version`: Add different getters for specification-related values
+
 ## 5.0.0
 - Update implementation to [SOP Specification revision 05](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-05.html).
   - Add the concept of profiles
