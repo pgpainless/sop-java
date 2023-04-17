@@ -6,6 +6,15 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 5.0.0
+- Update implementation to [SOP Specification revision 05](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-05.html).
+  - Add the concept of profiles
+  - Add `list-profiles` subcommand
+  - Add option `--profile=XYZ` to `generate-key` subcommand
+  - `Verification` objects can now optionally indicate the type of the signature (`mode:text` or `mode:binary`)
+  - `Verification` objects can now contain an optional description of the signature
+  - `inline-sign` now throws an error if incompatible options `--as=clearsigned` and `--no-armor` are used
+
 ## 4.1.1
 - Restructure test suite to allow simultaneous testing of multiple backends
 - Fix IOException in `sop sign` due to premature stream closing
