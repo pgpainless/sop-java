@@ -379,6 +379,9 @@ public abstract class SOPGPException extends RuntimeException {
         }
     }
 
+    /**
+     * User provided incompatible options (e.g. "--as=clearsigned --no-armor").
+     */
     public static class IncompatibleOptions extends SOPGPException {
 
         public static final int EXIT_CODE = 83;
@@ -397,6 +400,10 @@ public abstract class SOPGPException extends RuntimeException {
         }
     }
 
+    /**
+     * The user provided a subcommand with an unsupported profile ("--profile=XYZ"),
+     * or the user tried to list profiles of a subcommand that does not support profiles at all.
+     */
     public static class UnsupportedProfile extends SOPGPException {
 
         public static final int EXIT_CODE = 89;
@@ -404,28 +411,56 @@ public abstract class SOPGPException extends RuntimeException {
         private final String subcommand;
         private final String profile;
 
+        /**
+         * Create an exception signalling a subcommand that does not support any profiles.
+         *
+         * @param subcommand subcommand
+         */
         public UnsupportedProfile(String subcommand) {
             super("Subcommand '" + subcommand + "' does not support any profiles.");
             this.subcommand = subcommand;
             this.profile = null;
         }
 
+        /**
+         * Create an exception signalling a subcommand does not support a specific profile.
+         *
+         * @param subcommand subcommand
+         * @param profile unsupported profile
+         */
         public UnsupportedProfile(String subcommand, String profile) {
             super("Subcommand '" + subcommand + "' does not support profile '" + profile + "'.");
             this.subcommand = subcommand;
             this.profile = profile;
         }
 
+        /**
+         * Wrap an exception into another instance with a possibly translated error message.
+         *
+         * @param errorMsg error message
+         * @param e exception
+         */
         public UnsupportedProfile(String errorMsg, UnsupportedProfile e) {
             super(errorMsg, e);
             this.subcommand = e.getSubcommand();
             this.profile = e.getProfile();
         }
 
+        /**
+         * Return the subcommand name.
+         *
+         * @return subcommand
+         */
         public String getSubcommand() {
             return subcommand;
         }
 
+        /**
+         * Return the profile name.
+         * May return <pre>null</pre>.
+         *
+         * @return profile name
+         */
         public String getProfile() {
             return profile;
         }
