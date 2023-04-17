@@ -35,7 +35,7 @@ public class ListProfilesExternal implements ListProfiles {
         }
     }
 
-    private List<Profile> toProfiles(String output) {
+    private static List<Profile> toProfiles(String output) {
         List<Profile> profiles = new ArrayList<>();
         for (String line : output.split("\n")) {
             String[] split = line.split(": ");
