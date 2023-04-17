@@ -152,5 +152,10 @@ public interface SOP {
      */
     Dearmor dearmor();
 
+    /**
+     * List supported {@link Profile Profiles} of a subcommand.
+     *
+     * @return builder instance
+     */
     ListProfiles listProfiles();
 }
