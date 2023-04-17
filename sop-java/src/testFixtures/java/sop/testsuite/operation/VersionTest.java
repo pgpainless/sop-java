@@ -69,7 +69,7 @@ public class VersionTest extends AbstractSOPTest {
             assertTrue(sopSpec.startsWith("draft-dkg-openpgp-stateless-cli-"));
         }
 
-        int sopRevision = sop.version().getSopSpecVersionNumber();
-        assertTrue(sop.version().getSopSpecRevisionString().endsWith("" + sopRevision));
+        int sopRevision = sop.version().getSopSpecRevisionNumber();
+        assertTrue(sop.version().getSopSpecRevisionName().endsWith("" + sopRevision));
     }
 }

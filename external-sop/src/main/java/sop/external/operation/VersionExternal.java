@@ -101,7 +101,7 @@ public class VersionExternal implements Version {
     }
 
     @Override
-    public int getSopSpecVersionNumber() {
+    public int getSopSpecRevisionNumber() {
         String revision = getSopSpecVersion();
         String firstLine;
         if (revision.contains("\n")) {
@@ -124,7 +124,7 @@ public class VersionExternal implements Version {
     }
 
     @Override
-    public String getSopSpecImplementationIncompletenessRemarks() {
+    public String getSopSpecImplementationRemarks() {
         String revision = getSopSpecVersion();
         if (revision.contains("\n")) {
             String tail = revision.substring(revision.indexOf("\n") + 1).trim();

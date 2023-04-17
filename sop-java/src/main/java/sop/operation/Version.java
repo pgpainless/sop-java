@@ -48,37 +48,6 @@ public interface Version {
     String getExtendedVersion();
 
     /**
-     * Return the version number of the latest targeted SOP spec revision.
-     *
-     * @return SOP spec revision number
-     */
-    int getSopSpecVersionNumber();
-
-    /**
-     * Return the latest targeted revision of the SOP spec.
-     *
-     * @return SOP spec revision string
-     */
-    default String getSopSpecRevisionString() {
-        return "draft-dkg-openpgp-stateless-cli-" + String.format("%02d", getSopSpecVersionNumber());
-    }
-
-    /**
-     * Return <pre>true</pre>, if this implementation of the SOP spec is known to be incomplete or defective.
-     *
-     * @return true if incomplete, false otherwise
-     */
-    boolean isSopSpecImplementationIncomplete();
-
-    /**
-     * Return free-form text containing remarks about the completeness of the SOP implementation.
-     * If no remarks are known, this method returns <pre>null</pre>.
-     *
-     * @return remarks or null
-     */
-    String getSopSpecImplementationIncompletenessRemarks();
-
-    /**
      * Return the revision of the SOP specification that this implementation is implementing, for example,
      * <pre>draft-dkg-openpgp-stateless-cli-06</pre>.
      * If the implementation targets a specific draft but the implementer knows the implementation is incomplete,
@@ -95,14 +64,46 @@ public interface Version {
             sb.append('~');
         }
 
-        sb.append(getSopSpecRevisionString());
+        sb.append(getSopSpecRevisionName());
 
-        if (getSopSpecImplementationIncompletenessRemarks() != null) {
+        if (getSopSpecImplementationRemarks() != null) {
             sb.append('\n')
                     .append('\n')
-                    .append(getSopSpecImplementationIncompletenessRemarks());
+                    .append(getSopSpecImplementationRemarks());
         }
 
         return sb.toString();
     }
+
+    /**
+     * Return the version number of the latest targeted SOP spec revision.
+     *
+     * @return SOP spec revision number
+     */
+    int getSopSpecRevisionNumber();
+
+    /**
+     * Return the name of the latest targeted revision of the SOP spec.
+     *
+     * @return SOP spec revision string
+     */
+    default String getSopSpecRevisionName() {
+        return "draft-dkg-openpgp-stateless-cli-" + String.format("%02d", getSopSpecRevisionNumber());
+    }
+
+    /**
+     * Return <pre>true</pre>, if this implementation of the SOP spec is known to be incomplete or defective.
+     *
+     * @return true if incomplete, false otherwise
+     */
+    boolean isSopSpecImplementationIncomplete();
+
+    /**
+     * Return free-form text containing remarks about the completeness of the SOP implementation.
+     * If there are no remarks, this method returns <pre>null</pre>.
+     *
+     * @return remarks or null
+     */
+    String getSopSpecImplementationRemarks();
+
 }
