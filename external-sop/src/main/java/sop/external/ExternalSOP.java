@@ -276,6 +276,7 @@ public class ExternalSOP implements SOP {
                         exitCode + "):\n" + errorMessage);
 
             default:
+                // Did you forget to add a case for a new exception type?
                 throw new RuntimeException("External SOP backend reported unknown exit code (" +
                         exitCode + "):\n" + errorMessage);
         }
