@@ -6,6 +6,11 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 5.0.1-SNAPSHOT
+- `external-sop`: Properly map error codes to new exception types:
+  - `UNSUPPORTED_PROFILE`
+  - `INCOMPATIBLE_OPTIONS`
+
 ## 5.0.0
 - Update implementation to [SOP Specification revision 05](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-05.html).
   - Add the concept of profiles
