@@ -27,8 +27,20 @@ public class ListProfilesTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void listGenerateKeyProfiles(SOP sop) throws IOException {
-        List<Profile> profiles = sop.listProfiles()
-                .subcommand("generate-key");
+        List<Profile> profiles = sop
+                .listProfiles()
+                .generateKey();
+
+        assertFalse(profiles.isEmpty());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void listEncryptProfiles(SOP sop) throws IOException {
+        List<Profile> profiles = sop
+                .listProfiles()
+                .encrypt();
+
         assertFalse(profiles.isEmpty());
     }
 
