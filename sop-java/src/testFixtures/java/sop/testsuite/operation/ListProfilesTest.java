@@ -9,12 +9,14 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.Profile;
 import sop.SOP;
+import sop.exception.SOPGPException;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ListProfilesTest extends AbstractSOPTest {
 
@@ -30,4 +32,11 @@ public class ListProfilesTest extends AbstractSOPTest {
         assertFalse(profiles.isEmpty());
     }
 
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void listUnsupportedProfiles(SOP sop) throws IOException {
+        assertThrows(SOPGPException.UnsupportedProfile.class, () -> sop
+                .listProfiles()
+                .subcommand("invalid"));
+    }
 }

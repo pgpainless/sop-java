@@ -267,6 +267,14 @@ public class ExternalSOP implements SOP {
                 throw new SOPGPException.KeyCannotSign("External SOP backend reported error KeyCannotSign (" +
                         exitCode + "):\n" + errorMessage);
 
+            case SOPGPException.IncompatibleOptions.EXIT_CODE:
+                throw new SOPGPException.IncompatibleOptions("External SOP backend reported error IncompatibleOptions (" +
+                        exitCode + "):\n" + errorMessage);
+
+            case SOPGPException.UnsupportedProfile.EXIT_CODE:
+                throw new SOPGPException.UnsupportedProfile("External SOP backend reported error UnsupportedProfile (" +
+                        exitCode + "):\n" + errorMessage);
+
             default:
                 throw new RuntimeException("External SOP backend reported unknown exit code (" +
                         exitCode + "):\n" + errorMessage);
