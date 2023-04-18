@@ -22,4 +22,22 @@ public interface ListProfiles {
      */
     List<Profile> subcommand(String command);
 
+    /**
+     * Return a list of {@link Profile Profiles} supported by the {@link GenerateKey} implementation.
+     *
+     * @return profiles
+     */
+    default List<Profile> generateKey() {
+        return subcommand("generate-key");
+    }
+
+    /**
+     * Return a list of {@link Profile Profiles} supported by the {@link Encrypt} implementation.
+     *
+     * @return profiles
+     */
+    default List<Profile> encrypt() {
+        return subcommand("encrypt");
+    }
+
 }
