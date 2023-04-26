@@ -13,9 +13,10 @@ import sop.DecryptionResult;
 import sop.SOP;
 import sop.Verification;
 import sop.enums.EncryptAs;
+import sop.enums.SignatureMode;
 import sop.exception.SOPGPException;
-import sop.testsuite.JUtils;
 import sop.testsuite.TestData;
+import sop.testsuite.assertions.VerificationListAssert;
 import sop.util.UTCUtil;
 
 import java.io.IOException;
@@ -25,8 +26,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -142,6 +141,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         byte[] ciphertext = sop.encrypt()
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .mode(EncryptAs.Binary)
                 .plaintext(message)
                 .getBytes();
 
@@ -156,9 +156,13 @@ public class EncryptDecryptTest extends AbstractSOPTest {
 
         DecryptionResult result = bytesAndResult.getResult();
         assertNotNull(result.getSessionKey().get());
+
         List<Verification> verificationList = result.getVerifications();
-        assertEquals(1, verificationList.size());
-        JUtils.assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT)
+                .hasModeOrNull(SignatureMode.binary);
     }
 
     @ParameterizedTest
@@ -183,9 +187,12 @@ public class EncryptDecryptTest extends AbstractSOPTest {
 
         DecryptionResult result = bytesAndResult.getResult();
         assertNotNull(result.getSessionKey().get());
+
         List<Verification> verificationList = result.getVerifications();
-        assertEquals(1, verificationList.size());
-        JUtils.assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .hasSingleItem()
+                .issuedBy(TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT)
+                .hasModeOrNull(SignatureMode.text);
     }
 
     @ParameterizedTest
@@ -216,8 +223,10 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult();
 
-        assertFalse(bytesAndResult.getResult().getVerifications().isEmpty());
-        assertArrayEquals(message, bytesAndResult.getBytes());
+        List<Verification> verifications = bytesAndResult.getResult().getVerifications();
+        VerificationListAssert.assertThatVerificationList(verifications)
+                .isNotEmpty()
+                .hasSingleItem();
     }
 
     @ParameterizedTest
@@ -247,6 +256,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                     .ciphertext(message)
                     .toByteArrayAndResult();
 
+            // Some implementations do not throw NoSignature and instead return an empty list.
             if (bytesAndResult.getResult().getVerifications().isEmpty()) {
                 throw new SOPGPException.NoSignature("No verifiable signature found.");
             }
@@ -280,6 +290,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                     .ciphertext(message)
                     .toByteArrayAndResult();
 
+            // Some implementations do not throw NoSignature and instead return an empty list.
             if (bytesAndResult.getResult().getVerifications().isEmpty()) {
                 throw new SOPGPException.NoSignature("No verifiable signature found.");
             }

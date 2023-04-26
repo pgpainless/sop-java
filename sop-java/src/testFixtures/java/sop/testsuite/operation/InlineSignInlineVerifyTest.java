@@ -13,9 +13,11 @@ import sop.ByteArrayAndResult;
 import sop.SOP;
 import sop.Verification;
 import sop.enums.InlineSignAs;
+import sop.enums.SignatureMode;
 import sop.exception.SOPGPException;
 import sop.testsuite.JUtils;
 import sop.testsuite.TestData;
+import sop.testsuite.assertions.VerificationListAssert;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -51,8 +53,12 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
                 .toByteArrayAndResult();
 
         assertArrayEquals(message, bytesAndResult.getBytes());
+
         List<Verification> verificationList = bytesAndResult.getResult();
-        JUtils.assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -74,8 +80,12 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
                 .toByteArrayAndResult();
 
         assertArrayEquals(message, bytesAndResult.getBytes());
+
         List<Verification> verificationList = bytesAndResult.getResult();
-        JUtils.assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -97,8 +107,12 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
                 .toByteArrayAndResult();
 
         assertArrayEquals(message, bytesAndResult.getBytes());
+
         List<Verification> verificationList = bytesAndResult.getResult();
-        JUtils.assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .hasSingleItem()
+                .issuedBy(TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT)
+                .hasModeOrNull(SignatureMode.text);
     }
 
     @ParameterizedTest
@@ -111,8 +125,13 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult();
+
         List<Verification> verificationList = bytesAndResult.getResult();
-        JUtils.assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT, signatureDate);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .isCreatedAt(signatureDate)
+                .issuedBy(TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -161,8 +180,12 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
                 .toByteArrayAndResult();
 
         assertArrayEquals(message, bytesAndResult.getBytes());
+
         List<Verification> verificationList = bytesAndResult.getResult();
-        JUtils.assertSignedBy(verificationList, TestData.BOB_SIGNING_FINGERPRINT, TestData.BOB_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.BOB_SIGNING_FINGERPRINT, TestData.BOB_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -183,8 +206,12 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
                 .toByteArrayAndResult();
 
         assertArrayEquals(message, bytesAndResult.getBytes());
+
         List<Verification> verificationList = bytesAndResult.getResult();
-        JUtils.assertSignedBy(verificationList, TestData.CAROL_SIGNING_FINGERPRINT, TestData.CAROL_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.CAROL_SIGNING_FINGERPRINT, TestData.CAROL_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -205,7 +232,9 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
                 .toByteArrayAndResult();
 
         List<Verification> verificationList = bytesAndResult.getResult();
-        JUtils.assertSignedBy(verificationList, TestData.PASSWORD_PROTECTED_SIGNING_FINGERPRINT, TestData.PASSWORD_PROTECTED_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .hasSingleItem()
+                .issuedBy(TestData.PASSWORD_PROTECTED_SIGNING_FINGERPRINT, TestData.PASSWORD_PROTECTED_PRIMARY_FINGERPRINT);
     }
 
 }

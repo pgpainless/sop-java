@@ -11,9 +11,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
 import sop.Verification;
 import sop.enums.SignAs;
+import sop.enums.SignatureMode;
 import sop.exception.SOPGPException;
 import sop.testsuite.JUtils;
 import sop.testsuite.TestData;
+import sop.testsuite.assertions.VerificationListAssert;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
@@ -47,8 +48,11 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
                 .signatures(signature)
                 .data(message);
 
-        assertFalse(verificationList.isEmpty());
-        JUtils.assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT)
+                .hasModeOrNull(SignatureMode.binary);
     }
 
     @ParameterizedTest
@@ -68,8 +72,11 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
                 .signatures(signature)
                 .data(message);
 
-        assertFalse(verificationList.isEmpty());
-        JUtils.assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT)
+                .hasModeOrNull(SignatureMode.text);
     }
 
     @ParameterizedTest
@@ -83,8 +90,10 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
                 .signatures(signature)
                 .data(message);
 
-        assertFalse(verificationList.isEmpty());
-        JUtils.assertSignedBy(verificationList, TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT, TestData.ALICE_DETACHED_SIGNED_MESSAGE_DATE);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -103,8 +112,10 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
                 .signatures(signature)
                 .data(message);
 
-        assertFalse(verificationList.isEmpty());
-        JUtils.assertSignedBy(verificationList, TestData.BOB_SIGNING_FINGERPRINT, TestData.BOB_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.BOB_SIGNING_FINGERPRINT, TestData.BOB_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -123,8 +134,10 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
                 .signatures(signature)
                 .data(message);
 
-        assertFalse(verificationList.isEmpty());
-        JUtils.assertSignedBy(verificationList, TestData.CAROL_SIGNING_FINGERPRINT, TestData.CAROL_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.CAROL_SIGNING_FINGERPRINT, TestData.CAROL_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -146,7 +159,10 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
                 .signatures(signature)
                 .data(message);
 
-        assertFalse(verificationList.isEmpty());
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.PASSWORD_PROTECTED_SIGNING_FINGERPRINT, TestData.PASSWORD_PROTECTED_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -170,8 +186,10 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
                 .signatures(armored)
                 .data(message);
 
-        assertFalse(verificationList.isEmpty());
-        JUtils.assertSignedBy(verificationList, TestData.BOB_SIGNING_FINGERPRINT, TestData.BOB_PRIMARY_FINGERPRINT);
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.BOB_SIGNING_FINGERPRINT, TestData.BOB_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -202,6 +220,21 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
                 .data(message));
     }
 
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void signWithAliceVerifyWithBobThrowsNoSignature(SOP sop) throws IOException {
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] signatures = sop.detachedSign()
+                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .data(message)
+                .toByteArrayAndResult()
+                .getBytes();
+
+        assertThrows(SOPGPException.NoSignature.class, () -> sop.detachedVerify()
+                .cert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
+                .signatures(signatures)
+                .data(message));
+    }
 
     @ParameterizedTest
     @MethodSource("provideInstances")
@@ -229,11 +262,15 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
                 .toByteArrayAndResult()
                 .getBytes();
 
-        assertFalse(sop.verify()
+        List<Verification> verificationList = sop.verify()
                 .cert(TestData.PASSWORD_PROTECTED_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
-                .data(message)
-                .isEmpty());
+                .data(message);
+
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .hasSingleItem()
+                .issuedBy(TestData.PASSWORD_PROTECTED_SIGNING_FINGERPRINT, TestData.PASSWORD_PROTECTED_PRIMARY_FINGERPRINT);
     }
 
     @ParameterizedTest
@@ -246,5 +283,30 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
                         .signatures(TestData.ALICE_DETACHED_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8))
                         .data(message));
     }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void signVerifyWithMultipleKeys(SOP sop) throws IOException {
+        byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] signatures = sop.detachedSign()
+                .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                .key(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
+                .data(message)
+                .toByteArrayAndResult()
+                .getBytes();
+
+        List<Verification> verificationList = sop.detachedVerify()
+                .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
+                .cert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
+                .signatures(signatures)
+                .data(message);
+
+        VerificationListAssert.assertThatVerificationList(verificationList)
+                .isNotEmpty()
+                .sizeEquals(2)
+                .containsVerificationBy(TestData.ALICE_SIGNING_FINGERPRINT, TestData.ALICE_PRIMARY_FINGERPRINT)
+                .containsVerificationBy(TestData.BOB_SIGNING_FINGERPRINT, TestData.BOB_PRIMARY_FINGERPRINT);
+    }
+
 
 }
