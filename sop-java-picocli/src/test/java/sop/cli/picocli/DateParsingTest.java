@@ -14,7 +14,7 @@ import sop.cli.picocli.commands.ArmorCmd;
 import sop.util.UTCUtil;
 
 public class DateParsingTest {
-    private AbstractSopCmd cmd = new ArmorCmd(); // we use ArmorCmd as a concrete implementation.
+    private final AbstractSopCmd cmd = new ArmorCmd(); // we use ArmorCmd as a concrete implementation.
 
     @Test
     public void parseNotAfterDashReturnsEndOfTime() {
