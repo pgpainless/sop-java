@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 5.0.1-SNAPSHOT
+## 5.0.1
 - `external-sop`: Properly map error codes to new exception types:
   - `UNSUPPORTED_PROFILE`
   - `INCOMPATIBLE_OPTIONS`
