@@ -54,7 +54,7 @@ public interface SOP {
     /**
      * Create detached signatures.
      * Customize the operation using the builder {@link DetachedSign}.
-     *
+     * <p>
      * If you want to sign a message inline, use {@link #inlineSign()} instead.
      *
      * @return builder instance
@@ -66,7 +66,7 @@ public interface SOP {
     /**
      * Create detached signatures.
      * Customize the operation using the builder {@link DetachedSign}.
-     *
+     * <p>
      * If you want to sign a message inline, use {@link #inlineSign()} instead.
      *
      * @return builder instance
@@ -75,7 +75,7 @@ public interface SOP {
 
     /**
      * Sign a message using inline signatures.
-     *
+     * <p>
      * If you need to create detached signatures, use {@link #detachedSign()} instead.
      *
      * @return builder instance
@@ -85,7 +85,7 @@ public interface SOP {
     /**
      * Verify detached signatures.
      * Customize the operation using the builder {@link DetachedVerify}.
-     *
+     * <p>
      * If you need to verify an inline-signed message, use {@link #inlineVerify()} instead.
      *
      * @return builder instance
@@ -97,7 +97,7 @@ public interface SOP {
     /**
      * Verify detached signatures.
      * Customize the operation using the builder {@link DetachedVerify}.
-     *
+     * <p>
      * If you need to verify an inline-signed message, use {@link #inlineVerify()} instead.
      *
      * @return builder instance
@@ -106,7 +106,7 @@ public interface SOP {
 
     /**
      * Verify signatures of an inline-signed message.
-     *
+     * <p>
      * If you need to verify detached signatures over a message, use {@link #detachedVerify()} instead.
      *
      * @return builder instance

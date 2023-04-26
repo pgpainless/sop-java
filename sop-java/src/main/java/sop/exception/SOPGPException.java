@@ -337,7 +337,7 @@ public abstract class SOPGPException extends RuntimeException {
     /**
      * Exception that gets thrown if a special designator (starting with @) is given, but the filesystem contains
      * a file matching the designator.
-     *
+     * <p>
      * E.g. <pre>@ENV:FOO</pre> is given, but <pre>./@ENV:FOO</pre> exists on the filesystem.
      */
     public static class AmbiguousInput extends SOPGPException {
