@@ -6,6 +6,18 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 6.0.1-SNAPSHOT
+- `listProfiles()`: Add shortcut methods `generateKey()` and `encrypt()`
+- Add DSL for testing `Verification` results
+- `external-sop`: Properly map error codes to new exception types:
+  - `UNSUPPORTED_PROFILE`
+  - `INCOMPATIBLE_OPTIONS`
+
+## 5.0.1
+- `external-sop`: Properly map error codes to new exception types:
+  - `UNSUPPORTED_PROFILE`
+  - `INCOMPATIBLE_OPTIONS`
+
 ## 6.0.0
 - Update implementation to [SOP Specification revision 06](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-06.html).
   - Add option `--profile=XYZ` to `encrypt` subcommand
