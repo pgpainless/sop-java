@@ -31,7 +31,7 @@ public class DetachedVerifyExternal implements DetachedVerify {
     private final List<String> commandList = new ArrayList<>();
     private final List<String> envList;
 
-    private Set<InputStream> certs = new HashSet<>();
+    private final Set<InputStream> certs = new HashSet<>();
     private InputStream signatures;
     private int certCounter = 0;
 
