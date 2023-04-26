@@ -11,7 +11,6 @@ import sop.Profile;
 import sop.SOP;
 import sop.exception.SOPGPException;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -26,7 +25,7 @@ public class ListProfilesTest extends AbstractSOPTest {
 
     @ParameterizedTest
     @MethodSource("provideInstances")
-    public void listGenerateKeyProfiles(SOP sop) throws IOException {
+    public void listGenerateKeyProfiles(SOP sop) {
         List<Profile> profiles = sop
                 .listProfiles()
                 .generateKey();
@@ -36,7 +35,7 @@ public class ListProfilesTest extends AbstractSOPTest {
 
     @ParameterizedTest
     @MethodSource("provideInstances")
-    public void listEncryptProfiles(SOP sop) throws IOException {
+    public void listEncryptProfiles(SOP sop) {
         List<Profile> profiles = sop
                 .listProfiles()
                 .encrypt();
@@ -46,7 +45,7 @@ public class ListProfilesTest extends AbstractSOPTest {
 
     @ParameterizedTest
     @MethodSource("provideInstances")
-    public void listUnsupportedProfiles(SOP sop) throws IOException {
+    public void listUnsupportedProfiles(SOP sop) {
         assertThrows(SOPGPException.UnsupportedProfile.class, () -> sop
                 .listProfiles()
                 .subcommand("invalid"));

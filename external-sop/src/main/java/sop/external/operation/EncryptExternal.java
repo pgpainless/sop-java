@@ -93,7 +93,7 @@ public class EncryptExternal implements Encrypt {
 
     @Override
     public Ready plaintext(InputStream plaintext)
-            throws IOException, SOPGPException.KeyIsProtected {
+            throws SOPGPException.KeyIsProtected {
         return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, plaintext);
     }
 }

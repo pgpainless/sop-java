@@ -10,11 +10,10 @@ import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.Armor;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Implementation of the {@link Armor} operation using an external SOP binary.
@@ -37,7 +36,7 @@ public class ArmorExternal implements Armor {
     }
 
     @Override
-    public Ready data(InputStream data) throws SOPGPException.BadData, IOException {
+    public Ready data(InputStream data) throws SOPGPException.BadData {
         return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, data);
     }
 }

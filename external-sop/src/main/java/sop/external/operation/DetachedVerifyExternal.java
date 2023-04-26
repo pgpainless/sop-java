@@ -54,13 +54,13 @@ public class DetachedVerifyExternal implements DetachedVerify {
     }
 
     @Override
-    public DetachedVerify cert(InputStream cert) throws SOPGPException.BadData, IOException {
+    public DetachedVerify cert(InputStream cert) throws SOPGPException.BadData {
         this.certs.add(cert);
         return this;
     }
 
     @Override
-    public VerifySignatures signatures(InputStream signatures) throws SOPGPException.BadData, IOException {
+    public VerifySignatures signatures(InputStream signatures) throws SOPGPException.BadData {
         this.signatures = signatures;
         return this;
     }

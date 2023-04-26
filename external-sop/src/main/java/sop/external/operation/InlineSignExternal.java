@@ -62,7 +62,7 @@ public class InlineSignExternal implements InlineSign {
     }
 
     @Override
-    public Ready data(InputStream data) throws IOException, SOPGPException.KeyIsProtected, SOPGPException.ExpectedText {
+    public Ready data(InputStream data) throws SOPGPException.KeyIsProtected, SOPGPException.ExpectedText {
         return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, data);
     }
 }
