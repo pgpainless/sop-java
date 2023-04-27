@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-package sop.util;
+package sop;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,6 +19,7 @@ import sop.ByteArrayAndResult;
 import sop.ReadyWithResult;
 import sop.Verification;
 import sop.exception.SOPGPException;
+import sop.util.UTCUtil;
 
 public class ReadyWithResultTest {
 
