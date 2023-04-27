@@ -6,6 +6,7 @@ package sop.operation;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.CharacterCodingException;
 
 import sop.Profile;
 import sop.Ready;
@@ -54,7 +55,11 @@ public interface GenerateKey {
     default GenerateKey withKeyPassword(byte[] password)
             throws SOPGPException.PasswordNotHumanReadable,
             SOPGPException.UnsupportedOption {
-        return withKeyPassword(UTF8Util.decodeUTF8(password));
+        try {
+            return withKeyPassword(UTF8Util.decodeUTF8(password));
+        } catch (CharacterCodingException e) {
+            throw new SOPGPException.PasswordNotHumanReadable();
+        }
     }
 
     /**

@@ -5,8 +5,8 @@
 package sop.util;
 
 import org.junit.jupiter.api.Test;
-import sop.exception.SOPGPException;
 
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UTF8UtilTest {
 
     @Test
-    public void testValidUtf8Decoding() {
+    public void testValidUtf8Decoding() throws CharacterCodingException {
         String utf8String = "Hello, World\n";
         String decoded = UTF8Util.decodeUTF8(utf8String.getBytes(StandardCharsets.UTF_8));
 
@@ -29,11 +29,11 @@ public class UTF8UtilTest {
      */
     @Test
     public void testInvalidUtf8StringThrows() {
-        assertThrows(SOPGPException.PasswordNotHumanReadable.class,
+        assertThrows(CharacterCodingException.class,
                 () -> UTF8Util.decodeUTF8(new byte[] {(byte) 0xa0, (byte) 0xa1}));
-        assertThrows(SOPGPException.PasswordNotHumanReadable.class,
+        assertThrows(CharacterCodingException.class,
                 () -> UTF8Util.decodeUTF8(new byte[] {(byte) 0xc0, (byte) 0xaf}));
-        assertThrows(SOPGPException.PasswordNotHumanReadable.class,
+        assertThrows(CharacterCodingException.class,
                 () -> UTF8Util.decodeUTF8(new byte[] {(byte) 0x80, (byte) 0xbf}));
     }
 }
