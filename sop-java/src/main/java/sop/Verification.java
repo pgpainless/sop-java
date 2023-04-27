@@ -8,6 +8,8 @@ import sop.enums.SignatureMode;
 import sop.util.Optional;
 import sop.util.UTCUtil;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Date;
 
 /**
@@ -30,7 +32,9 @@ public class Verification {
      * @param signingKeyFingerprint fingerprint of the signing (sub-) key
      * @param signingCertFingerprint fingerprint of the certificate
      */
-    public Verification(Date creationTime, String signingKeyFingerprint, String signingCertFingerprint) {
+    public Verification(@Nonnull Date creationTime,
+                        @Nonnull String signingKeyFingerprint,
+                        @Nonnull String signingCertFingerprint) {
         this(creationTime, signingKeyFingerprint, signingCertFingerprint, Optional.ofEmpty(), Optional.ofEmpty());
     }
 
@@ -43,7 +47,11 @@ public class Verification {
      * @param signatureMode signature mode (optional, may be <pre>null</pre>)
      * @param description free-form description, e.g. <pre>certificate from dkg.asc</pre> (optional, may be <pre>null</pre>)
      */
-    public Verification(Date creationTime, String signingKeyFingerprint, String signingCertFingerprint, SignatureMode signatureMode, String description) {
+    public Verification(@Nonnull Date creationTime,
+                        @Nonnull String signingKeyFingerprint,
+                        @Nonnull String signingCertFingerprint,
+                        @Nullable SignatureMode signatureMode,
+                        @Nullable String description) {
         this(
                 creationTime,
                 signingKeyFingerprint,
@@ -53,7 +61,11 @@ public class Verification {
         );
     }
 
-    private Verification(Date creationTime, String signingKeyFingerprint, String signingCertFingerprint, Optional<SignatureMode> signatureMode, Optional<String> description) {
+    private Verification(@Nonnull Date creationTime,
+                         @Nonnull String signingKeyFingerprint,
+                         @Nonnull String signingCertFingerprint,
+                         @Nonnull Optional<SignatureMode> signatureMode,
+                         @Nonnull Optional<String> description) {
         this.creationTime = creationTime;
         this.signingKeyFingerprint = signingKeyFingerprint;
         this.signingCertFingerprint = signingCertFingerprint;
@@ -61,14 +73,15 @@ public class Verification {
         this.description = description;
     }
 
-    private static String nullSafeTrim(String string) {
+    private static String nullSafeTrim(@Nullable String string) {
         if (string == null) {
             return null;
         }
         return string.trim();
     }
 
-    public static Verification fromString(String toString) {
+    @Nonnull
+    public static Verification fromString(@Nonnull String toString) {
         String[] split = toString.trim().split(" ");
         if (split.length < 3) {
             throw new IllegalArgumentException("Verification must be of the format 'UTC-DATE OpenPGPFingerprint OpenPGPFingerprint [mode] [info]'");
@@ -111,6 +124,7 @@ public class Verification {
      *
      * @return signature creation time
      */
+    @Nonnull
     public Date getCreationTime() {
         return creationTime;
     }
@@ -120,6 +134,7 @@ public class Verification {
      *
      * @return signing key fingerprint
      */
+    @Nonnull
     public String getSigningKeyFingerprint() {
         return signingKeyFingerprint;
     }
@@ -129,6 +144,7 @@ public class Verification {
      *
      * @return signing certificate fingerprint
      */
+    @Nonnull
     public String getSigningCertFingerprint() {
         return signingCertFingerprint;
     }
@@ -139,6 +155,7 @@ public class Verification {
      *
      * @return signature mode
      */
+    @Nonnull
     public Optional<SignatureMode> getSignatureMode() {
         return signatureMode;
     }
@@ -149,6 +166,7 @@ public class Verification {
      *
      * @return description
      */
+    @Nonnull
     public Optional<String> getDescription() {
         return description;
     }
