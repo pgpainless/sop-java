@@ -5,11 +5,11 @@
 package sop.operation;
 
 import sop.exception.SOPGPException;
+import sop.util.UTF8Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 
 public interface AbstractSign<T> {
 
@@ -67,7 +67,7 @@ public interface AbstractSign<T> {
     default T withKeyPassword(String password)
             throws SOPGPException.UnsupportedOption,
             SOPGPException.PasswordNotHumanReadable {
-        return withKeyPassword(password.getBytes(Charset.forName("UTF8")));
+        return withKeyPassword(password.getBytes(UTF8Util.UTF8));
     }
 
     /**

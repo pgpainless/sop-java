@@ -4,7 +4,7 @@
 
 package sop;
 
-import java.nio.charset.Charset;
+import sop.util.UTF8Util;
 
 /**
  * Tuple class bundling a profile name and description.
@@ -77,6 +77,6 @@ public class Profile {
      */
     private static boolean exceeds1000CharLineLimit(Profile profile) {
         String line = profile.toString();
-        return line.getBytes(Charset.forName("UTF8")).length > 1000;
+        return line.getBytes(UTF8Util.UTF8).length > 1000;
     }
 }

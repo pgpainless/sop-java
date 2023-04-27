@@ -8,11 +8,11 @@ import sop.DecryptionResult;
 import sop.ReadyWithResult;
 import sop.SessionKey;
 import sop.exception.SOPGPException;
+import sop.util.UTF8Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.Date;
 
 public interface Decrypt {
@@ -138,7 +138,7 @@ public interface Decrypt {
     default Decrypt withKeyPassword(String password)
             throws SOPGPException.UnsupportedOption,
             SOPGPException.PasswordNotHumanReadable {
-        return withKeyPassword(password.getBytes(Charset.forName("UTF8")));
+        return withKeyPassword(password.getBytes(UTF8Util.UTF8));
     }
 
     /**

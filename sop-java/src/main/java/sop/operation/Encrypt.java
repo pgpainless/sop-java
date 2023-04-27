@@ -4,15 +4,15 @@
 
 package sop.operation;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-
 import sop.Profile;
 import sop.Ready;
 import sop.enums.EncryptAs;
 import sop.exception.SOPGPException;
+import sop.util.UTF8Util;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public interface Encrypt {
 
@@ -82,7 +82,7 @@ public interface Encrypt {
     default Encrypt withKeyPassword(String password)
             throws SOPGPException.PasswordNotHumanReadable,
             SOPGPException.UnsupportedOption {
-        return withKeyPassword(password.getBytes(Charset.forName("UTF8")));
+        return withKeyPassword(password.getBytes(UTF8Util.UTF8));
     }
 
     /**
