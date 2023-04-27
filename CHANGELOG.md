@@ -6,10 +6,14 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 6.0.1-SNAPSHOT
+## 6.1.0-SNAPSHOT
 - `listProfiles()`: Add shortcut methods `generateKey()` and `encrypt()`
 - Add DSL for testing `Verification` results
-- `external-sop`: Properly map error codes to new exception types:
+- `Verification`: Return `Optional<>` for `getSignatureMode()` and `getDescription()`
+- `sop-java`: Add dependency on `com.google.code.findbugs:jsr305` for `@Nullable`, `@Nonnull` annotations
+- `UTCUtil`: `parseUTCDate()` is now `@Nonnull` and throws a `ParseException` for invalid inputs
+- `UTF8Util`: `decodeUTF8()` now throws `CharacterCodingException` instead of `SOPGPException.PasswordNotHumanReadable`
+- `external-sop`: Properly map error codes to new exception types (ported from `5.0.1`):
   - `UNSUPPORTED_PROFILE`
   - `INCOMPATIBLE_OPTIONS`
 
