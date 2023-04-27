@@ -38,8 +38,10 @@ public class ListProfilesExternal implements ListProfiles {
     private static List<Profile> toProfiles(String output) {
         List<Profile> profiles = new ArrayList<>();
         for (String line : output.split("\n")) {
-            String[] split = line.split(": ");
-            profiles.add(new Profile(split[0], split[1]));
+            if (line.trim().isEmpty()) {
+                continue;
+            }
+            profiles.add(Profile.parse(line));
         }
         return profiles;
     }

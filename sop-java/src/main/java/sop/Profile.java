@@ -4,7 +4,11 @@
 
 package sop;
 
+import sop.util.Optional;
 import sop.util.UTF8Util;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Tuple class bundling a profile name and description.
@@ -15,7 +19,7 @@ import sop.util.UTF8Util;
 public class Profile {
 
     private final String name;
-    private final String description;
+    private final Optional<String> description;
 
     /**
      * Create a new {@link Profile} object.
@@ -24,13 +28,60 @@ public class Profile {
      * @param name profile name
      * @param description profile description
      */
-    public Profile(String name, String description) {
+    public Profile(@Nonnull String name, @Nullable String description) {
+        if (name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be empty.");
+        }
+        if (name.contains(":")) {
+            throw new IllegalArgumentException("Name cannot contain ':'.");
+        }
+        if (name.contains(" ") || name.contains("\n") || name.contains("\t") || name.contains("\r")) {
+            throw new IllegalArgumentException("Name cannot contain whitespace characters.");
+        }
+
         this.name = name;
-        this.description = description;
+
+        if (description == null) {
+            this.description = Optional.ofEmpty();
+        } else {
+            String trimmedDescription = description.trim();
+            if (trimmedDescription.isEmpty()) {
+                this.description = Optional.ofEmpty();
+            } else {
+                this.description = Optional.of(trimmedDescription);
+            }
+        }
 
         if (exceeds1000CharLineLimit(this)) {
             throw new IllegalArgumentException("The line representation of a profile MUST NOT exceed 1000 bytes.");
         }
+    }
+
+    public Profile(String name) {
+        this(name, null);
+    }
+
+    /**
+     * Parse a {@link Profile} from its string representation.
+     *
+     * @param string string representation
+     * @return profile
+     */
+    public static Profile parse(String string) {
+        if (string.contains(": ")) {
+            // description after colon, e.g. "default: Use implementers recommendations."
+            String name = string.substring(0, string.indexOf(": "));
+            String description = string.substring(string.indexOf(": ") + 2);
+            return new Profile(name, description.trim());
+        }
+
+        if (string.endsWith(":")) {
+            // empty description, e.g. "default:"
+            return new Profile(string.substring(0, string.length() - 1));
+        }
+
+        // no description
+        return new Profile(string.trim());
     }
 
     /**
@@ -48,6 +99,7 @@ public class Profile {
      *
      * @return name
      */
+    @Nonnull
     public String getName() {
         return name;
     }
@@ -57,8 +109,13 @@ public class Profile {
      *
      * @return description
      */
-    public String getDescription() {
+    @Nonnull
+    public Optional<String> getDescription() {
         return description;
+    }
+
+    public boolean hasDescription() {
+        return description.isPresent();
     }
 
     /**
@@ -66,8 +123,12 @@ public class Profile {
      *
      * @return string
      */
+    @Override
     public String toString() {
-        return getName() + ": " + getDescription();
+        if (getDescription().isEmpty()) {
+            return getName();
+        }
+        return getName() + ": " + getDescription().get();
     }
 
     /**
