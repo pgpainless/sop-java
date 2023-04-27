@@ -5,7 +5,6 @@
 package sop;
 
 import org.junit.jupiter.api.Test;
-import sop.Profile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

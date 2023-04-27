@@ -5,7 +5,6 @@
 package sop;
 
 import org.junit.jupiter.api.Test;
-import sop.Verification;
 import sop.enums.SignatureMode;
 import sop.testsuite.assertions.VerificationAssert;
 import sop.util.UTCUtil;

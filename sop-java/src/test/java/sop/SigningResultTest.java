@@ -4,11 +4,9 @@
 
 package sop;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
-import sop.MicAlg;
-import sop.SigningResult;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SigningResultTest {
 

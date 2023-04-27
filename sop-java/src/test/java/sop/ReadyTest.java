@@ -4,14 +4,13 @@
 
 package sop;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.jupiter.api.Test;
-import sop.Ready;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 public class ReadyTest {
 
