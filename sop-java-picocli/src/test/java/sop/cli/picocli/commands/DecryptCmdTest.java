@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
 
@@ -187,7 +188,7 @@ public class DecryptCmdTest {
     }
 
     @Test
-    public void assertSessionKeyAndVerificationsIsProperlyWrittenToSessionKeyFile() throws SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData, IOException {
+    public void assertSessionKeyAndVerificationsIsProperlyWrittenToSessionKeyFile() throws SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData, IOException, ParseException {
         Date signDate = UTCUtil.parseUTCDate("2022-11-07T15:01:24Z");
         String keyFP = "F9E6F53F7201C60A87064EAB0B27F2B0760A1209";
         String certFP = "4E2C78519512C2AE9A8BFE7EB3298EB2FBE5F51B";
@@ -281,7 +282,7 @@ public class DecryptCmdTest {
     }
 
     @Test
-    public void verifyOutIsProperlyWritten() throws IOException, SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData {
+    public void verifyOutIsProperlyWritten() throws IOException, SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData, ParseException {
         File certFile = File.createTempFile("verify-out-cert", ".asc");
         File verifyOut = new File(certFile.getParent(), "verify-out.txt");
         if (verifyOut.exists()) {

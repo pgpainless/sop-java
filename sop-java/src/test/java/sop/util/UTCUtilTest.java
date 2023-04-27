@@ -4,12 +4,13 @@
 
 package sop.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import org.junit.jupiter.api.Test;
 
+import java.text.ParseException;
 import java.util.Date;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Test parsing some date examples from the stateless OpenPGP CLI spec.
@@ -19,30 +20,29 @@ import org.junit.jupiter.api.Test;
 public class UTCUtilTest {
 
     @Test
-    public void parseExample1() {
+    public void parseExample1() throws ParseException {
         String timestamp = "2019-10-29T12:11:04+00:00";
         Date date = UTCUtil.parseUTCDate(timestamp);
         assertEquals("2019-10-29T12:11:04Z", UTCUtil.formatUTCDate(date));
     }
 
     @Test
-    public void parseExample2() {
+    public void parseExample2() throws ParseException {
         String timestamp = "2019-10-24T23:48:29Z";
         Date date = UTCUtil.parseUTCDate(timestamp);
         assertEquals("2019-10-24T23:48:29Z", UTCUtil.formatUTCDate(date));
     }
 
     @Test
-    public void parseExample3() {
+    public void parseExample3() throws ParseException {
         String timestamp = "20191029T121104Z";
         Date date = UTCUtil.parseUTCDate(timestamp);
         assertEquals("2019-10-29T12:11:04Z", UTCUtil.formatUTCDate(date));
     }
 
     @Test
-    public void invalidDateReturnsNull() {
+    public void invalidDateThrows() {
         String invalidTimestamp = "foobar";
-        Date expectNull = UTCUtil.parseUTCDate(invalidTimestamp);
-        assertNull(expectNull);
+        assertThrows(ParseException.class, () -> UTCUtil.parseUTCDate(invalidTimestamp));
     }
 }

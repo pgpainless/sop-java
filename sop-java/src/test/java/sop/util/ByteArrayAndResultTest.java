@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,7 +19,7 @@ import sop.Verification;
 public class ByteArrayAndResultTest {
 
     @Test
-    public void testCreationAndGetters() {
+    public void testCreationAndGetters() throws ParseException {
         byte[] bytes = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
         List<Verification> result = Collections.singletonList(
                 new Verification(UTCUtil.parseUTCDate("2019-10-24T23:48:29Z"),

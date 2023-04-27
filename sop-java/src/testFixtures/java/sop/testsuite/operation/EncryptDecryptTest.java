@@ -21,6 +21,7 @@ import sop.util.UTCUtil;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -231,7 +232,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
 
     @ParameterizedTest
     @MethodSource("provideInstances")
-    public void decryptVerifyNotAfterTest(SOP sop) {
+    public void decryptVerifyNotAfterTest(SOP sop) throws ParseException {
         byte[] message = ("-----BEGIN PGP MESSAGE-----\n" +
                 "\n" +
                 "wV4DR2b2udXyHrYSAQdAwlOwwyxFDJta5+H9abgSj8jum9v7etUc9usdrElESmow\n" +
@@ -265,7 +266,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
 
     @ParameterizedTest
     @MethodSource("provideInstances")
-    public void decryptVerifyNotBeforeTest(SOP sop) {
+    public void decryptVerifyNotBeforeTest(SOP sop) throws ParseException {
         byte[] message = ("-----BEGIN PGP MESSAGE-----\n" +
                 "\n" +
                 "wV4DR2b2udXyHrYSAQdAwlOwwyxFDJta5+H9abgSj8jum9v7etUc9usdrElESmow\n" +

@@ -9,6 +9,7 @@ import sop.Verification;
 import sop.enums.SignatureMode;
 import sop.testsuite.assertions.VerificationAssert;
 
+import java.text.ParseException;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class VerificationTest {
 
     @Test
-    public void limitedConstructorTest() {
+    public void limitedConstructorTest() throws ParseException {
         Date signDate = UTCUtil.parseUTCDate("2022-11-07T15:01:24Z");
         String keyFP = "F9E6F53F7201C60A87064EAB0B27F2B0760A1209";
         String certFP = "4E2C78519512C2AE9A8BFE7EB3298EB2FBE5F51B";
@@ -32,7 +33,7 @@ public class VerificationTest {
     }
 
     @Test
-    public void limitedParsingTest() {
+    public void limitedParsingTest() throws ParseException {
         String string = "2022-11-07T15:01:24Z F9E6F53F7201C60A87064EAB0B27F2B0760A1209 4E2C78519512C2AE9A8BFE7EB3298EB2FBE5F51B";
         Verification verification = Verification.fromString(string);
         assertEquals(string, verification.toString());
@@ -44,7 +45,7 @@ public class VerificationTest {
     }
 
     @Test
-    public void parsingWithModeTest() {
+    public void parsingWithModeTest() throws ParseException {
         String string = "2022-11-07T15:01:24Z F9E6F53F7201C60A87064EAB0B27F2B0760A1209 4E2C78519512C2AE9A8BFE7EB3298EB2FBE5F51B mode:text";
         Verification verification = Verification.fromString(string);
         assertEquals(string, verification.toString());
@@ -56,7 +57,7 @@ public class VerificationTest {
     }
 
     @Test
-    public void extendedConstructorTest() {
+    public void extendedConstructorTest() throws ParseException {
         Date signDate = UTCUtil.parseUTCDate("2022-11-07T15:01:24Z");
         String keyFP = "F9E6F53F7201C60A87064EAB0B27F2B0760A1209";
         String certFP = "4E2C78519512C2AE9A8BFE7EB3298EB2FBE5F51B";
@@ -73,7 +74,7 @@ public class VerificationTest {
     }
 
     @Test
-    public void extendedParsingTest() {
+    public void extendedParsingTest() throws ParseException {
         String string = "2022-11-07T15:01:24Z F9E6F53F7201C60A87064EAB0B27F2B0760A1209 4E2C78519512C2AE9A8BFE7EB3298EB2FBE5F51B mode:binary certificate from dkg.asc";
         Verification verification = Verification.fromString(string);
         assertEquals(string, verification.toString());

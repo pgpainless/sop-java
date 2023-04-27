@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import sop.exception.SOPGPException;
 public class ReadyWithResultTest {
 
     @Test
-    public void testReadyWithResult() throws SOPGPException.NoSignature, IOException {
+    public void testReadyWithResult() throws SOPGPException.NoSignature, IOException, ParseException {
         byte[] data = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
         List<Verification> result = Collections.singletonList(
                 new Verification(UTCUtil.parseUTCDate("2019-10-24T23:48:29Z"),

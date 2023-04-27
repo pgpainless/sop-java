@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
@@ -246,21 +247,36 @@ public abstract class AbstractSopCmd implements Runnable {
     }
 
     public Date parseNotAfter(String notAfter) {
-        Date date = notAfter.equals("now") ? new Date() : notAfter.equals("-") ? END_OF_TIME : UTCUtil.parseUTCDate(notAfter);
-        if (date == null) {
+        if (notAfter.equals("now")) {
+            return new Date();
+        }
+
+        if (notAfter.equals("-")) {
+            return END_OF_TIME;
+        }
+
+        try {
+            return UTCUtil.parseUTCDate(notAfter);
+        } catch (ParseException e) {
             String errorMsg = getMsg("sop.error.input.malformed_not_after");
             throw new IllegalArgumentException(errorMsg);
         }
-        return date;
     }
 
     public Date parseNotBefore(String notBefore) {
-        Date date = notBefore.equals("now") ? new Date() : notBefore.equals("-") ? BEGINNING_OF_TIME : UTCUtil.parseUTCDate(notBefore);
-        if (date == null) {
+        if (notBefore.equals("now")) {
+            return new Date();
+        }
+
+        if (notBefore.equals("-")) {
+            return BEGINNING_OF_TIME;
+        }
+
+        try {
+            return UTCUtil.parseUTCDate(notBefore);
+        } catch (ParseException e) {
             String errorMsg = getMsg("sop.error.input.malformed_not_before");
             throw new IllegalArgumentException(errorMsg);
         }
-        return date;
     }
-
 }

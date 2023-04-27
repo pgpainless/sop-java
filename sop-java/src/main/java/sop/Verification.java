@@ -10,6 +10,7 @@ import sop.util.UTCUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.text.ParseException;
 import java.util.Date;
 
 /**
@@ -89,7 +90,7 @@ public class Verification {
 
         if (split.length == 3) {
             return new Verification(
-                    UTCUtil.parseUTCDate(split[0]), // timestamp
+                    parseUTCDate(split[0]),         // timestamp
                     split[1],                       // key FP
                     split[2]                        // cert FP
             );
@@ -111,12 +112,20 @@ public class Verification {
         }
 
         return new Verification(
-                UTCUtil.parseUTCDate(split[0]),         // timestamp
+                parseUTCDate(split[0]),                 // timestamp
                 split[1],                               // key FP
                 split[2],                               // cert FP
                 mode,                                   // signature mode
                 sb.length() != 0 ? sb.toString() : null // description
         );
+    }
+
+    private static Date parseUTCDate(String utcFormatted) {
+        try {
+            return UTCUtil.parseUTCDate(utcFormatted);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Malformed UTC timestamp.", e);
+        }
     }
 
     /**

@@ -4,6 +4,7 @@
 
 package sop.util;
 
+import javax.annotation.Nonnull;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,15 +34,22 @@ public class UTCUtil {
      * @param dateString string
      * @return date
      */
-    public static Date parseUTCDate(String dateString) {
+    @Nonnull
+    public static Date parseUTCDate(String dateString) throws ParseException {
+        ParseException exception = null;
         for (SimpleDateFormat parser : UTC_PARSERS) {
             try {
                 return parser.parse(dateString);
             } catch (ParseException e) {
+                // Store first exception (that of UTC_FORMATTER) to throw if we fail to parse the date
+                if (exception == null) {
+                    exception = e;
+                }
                 // Try next parser
             }
         }
-        return null;
+        // No parser worked, so we throw the store exception
+        throw exception;
     }
 
     /**

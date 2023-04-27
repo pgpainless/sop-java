@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -41,7 +42,7 @@ public class VerifyCmdTest {
     PrintStream originalSout;
 
     @BeforeEach
-    public void prepare() throws SOPGPException.UnsupportedOption, SOPGPException.BadData, SOPGPException.NoSignature, IOException {
+    public void prepare() throws SOPGPException.UnsupportedOption, SOPGPException.BadData, SOPGPException.NoSignature, IOException, ParseException {
         originalSout = System.out;
 
         detachedVerify = mock(DetachedVerify.class);
@@ -73,7 +74,7 @@ public class VerifyCmdTest {
     }
 
     @Test
-    public void notAfter_passedDown() throws SOPGPException.UnsupportedOption {
+    public void notAfter_passedDown() throws SOPGPException.UnsupportedOption, ParseException {
         Date date = UTCUtil.parseUTCDate("2019-10-29T18:36:45Z");
         SopCLI.main(new String[] {"verify", "--not-after", "2019-10-29T18:36:45Z", signature.getAbsolutePath(), cert.getAbsolutePath()});
         verify(detachedVerify, times(1)).notAfter(date);
@@ -100,7 +101,7 @@ public class VerifyCmdTest {
     }
 
     @Test
-    public void notBefore_passedDown() throws SOPGPException.UnsupportedOption {
+    public void notBefore_passedDown() throws SOPGPException.UnsupportedOption, ParseException {
         Date date = UTCUtil.parseUTCDate("2019-10-29T18:36:45Z");
         SopCLI.main(new String[] {"verify", "--not-before", "2019-10-29T18:36:45Z", signature.getAbsolutePath(), cert.getAbsolutePath()});
         verify(detachedVerify, times(1)).notBefore(date);
@@ -178,7 +179,7 @@ public class VerifyCmdTest {
     }
 
     @Test
-    public void resultIsPrintedProperly() throws SOPGPException.NoSignature, IOException, SOPGPException.BadData {
+    public void resultIsPrintedProperly() throws SOPGPException.NoSignature, IOException, SOPGPException.BadData, ParseException {
         when(detachedVerify.data((InputStream) any())).thenReturn(Arrays.asList(
                 new Verification(UTCUtil.parseUTCDate("2019-10-29T18:36:45Z"),
                         "EB85BB5FA33A75E15E944E63F231550C4F47E38E",

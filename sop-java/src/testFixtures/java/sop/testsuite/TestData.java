@@ -7,6 +7,7 @@ package sop.testsuite;
 import sop.util.UTCUtil;
 
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.Date;
 
 public class TestData {
@@ -59,7 +60,7 @@ public class TestData {
             "sfcfswMA\n" +
             "=RDAo\n" +
             "-----END PGP MESSAGE-----";
-    public static final Date ALICE_INLINE_SIGNED_MESSAGE_DATE = UTCUtil.parseUTCDate("2023-01-13T17:20:47Z");
+    public static final Date ALICE_INLINE_SIGNED_MESSAGE_DATE = parseUTCDate("2023-01-13T17:20:47Z");
     // signature over PLAINTEXT
     public static final String ALICE_DETACHED_SIGNED_MESSAGE = "-----BEGIN PGP SIGNATURE-----\n" +
             "\n" +
@@ -68,7 +69,7 @@ public class TestData {
             "0K1UgT5roym9Fln8U5W8R03TSbfNiwE=\n" +
             "=bxPN\n" +
             "-----END PGP SIGNATURE-----";
-    public static final Date ALICE_DETACHED_SIGNED_MESSAGE_DATE = UTCUtil.parseUTCDate("2023-01-13T16:57:57Z");
+    public static final Date ALICE_DETACHED_SIGNED_MESSAGE_DATE = parseUTCDate("2023-01-13T16:57:57Z");
 
     // 'Bob' key from draft-bre-openpgp-samples-00
     public static final String BOB_CERT = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
@@ -421,4 +422,12 @@ public class TestData {
     public static final byte[] BEGIN_PGP_SIGNATURE = "-----BEGIN PGP SIGNATURE-----\n".getBytes(StandardCharsets.UTF_8);
     public static final byte[] END_PGP_SIGNATURE = "-----END PGP SIGNATURE-----".getBytes(StandardCharsets.UTF_8);
     public static final byte[] BEGIN_PGP_SIGNED_MESSAGE = "-----BEGIN PGP SIGNED MESSAGE-----\n".getBytes(StandardCharsets.UTF_8);
+
+    private static Date parseUTCDate(String utcFormatted) {
+        try {
+            return UTCUtil.parseUTCDate(utcFormatted);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Malformed UTC timestamp.", e);
+        }
+    }
 }
