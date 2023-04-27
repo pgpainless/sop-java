@@ -45,12 +45,12 @@ public final class VerificationAssert {
     }
 
     public VerificationAssert hasDescription(String description) {
-        assertEquals(description, verification.getDescription());
+        assertEquals(description, verification.getDescription().get());
         return this;
     }
 
     public VerificationAssert hasDescriptionOrNull(String description) {
-        if (verification.getDescription() == null) {
+        if (verification.getDescription().isEmpty()) {
             return this;
         }
 
@@ -58,12 +58,12 @@ public final class VerificationAssert {
     }
 
     public VerificationAssert hasMode(SignatureMode mode) {
-        assertEquals(mode, verification.getSignatureMode());
+        assertEquals(mode, verification.getSignatureMode().get());
         return this;
     }
 
     public VerificationAssert hasModeOrNull(SignatureMode mode) {
-        if (verification.getSignatureMode() == null) {
+        if (verification.getSignatureMode().isEmpty()) {
             return this;
         }
         return hasMode(mode);

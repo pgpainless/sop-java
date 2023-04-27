@@ -4,10 +4,11 @@
 
 package sop;
 
-import java.util.Date;
-
 import sop.enums.SignatureMode;
+import sop.util.Optional;
 import sop.util.UTCUtil;
+
+import java.util.Date;
 
 /**
  * Class bundling information about a verified signature.
@@ -17,8 +18,8 @@ public class Verification {
     private final Date creationTime;
     private final String signingKeyFingerprint;
     private final String signingCertFingerprint;
-    private final SignatureMode signatureMode;
-    private final String description;
+    private final Optional<SignatureMode> signatureMode;
+    private final Optional<String> description;
 
     private static final String MODE = "mode:";
 
@@ -30,7 +31,7 @@ public class Verification {
      * @param signingCertFingerprint fingerprint of the certificate
      */
     public Verification(Date creationTime, String signingKeyFingerprint, String signingCertFingerprint) {
-        this(creationTime, signingKeyFingerprint, signingCertFingerprint, null, null);
+        this(creationTime, signingKeyFingerprint, signingCertFingerprint, Optional.ofEmpty(), Optional.ofEmpty());
     }
 
     /**
@@ -43,11 +44,28 @@ public class Verification {
      * @param description free-form description, e.g. <pre>certificate from dkg.asc</pre> (optional, may be <pre>null</pre>)
      */
     public Verification(Date creationTime, String signingKeyFingerprint, String signingCertFingerprint, SignatureMode signatureMode, String description) {
+        this(
+                creationTime,
+                signingKeyFingerprint,
+                signingCertFingerprint,
+                Optional.ofNullable(signatureMode),
+                Optional.ofNullable(nullSafeTrim(description))
+        );
+    }
+
+    private Verification(Date creationTime, String signingKeyFingerprint, String signingCertFingerprint, Optional<SignatureMode> signatureMode, Optional<String> description) {
         this.creationTime = creationTime;
         this.signingKeyFingerprint = signingKeyFingerprint;
         this.signingCertFingerprint = signingCertFingerprint;
         this.signatureMode = signatureMode;
-        this.description = description == null ? null : description.trim();
+        this.description = description;
+    }
+
+    private static String nullSafeTrim(String string) {
+        if (string == null) {
+            return null;
+        }
+        return string.trim();
     }
 
     public static Verification fromString(String toString) {
@@ -121,7 +139,7 @@ public class Verification {
      *
      * @return signature mode
      */
-    public SignatureMode getSignatureMode() {
+    public Optional<SignatureMode> getSignatureMode() {
         return signatureMode;
     }
 
@@ -131,7 +149,7 @@ public class Verification {
      *
      * @return description
      */
-    public String getDescription() {
+    public Optional<String> getDescription() {
         return description;
     }
 
@@ -144,12 +162,12 @@ public class Verification {
                 .append(' ')
                 .append(getSigningCertFingerprint());
 
-        if (signatureMode != null) {
-            sb.append(' ').append(MODE).append(signatureMode);
+        if (signatureMode.isPresent()) {
+            sb.append(' ').append(MODE).append(signatureMode.get());
         }
 
-        if (description != null) {
-            sb.append(' ').append(description);
+        if (description.isPresent()) {
+            sb.append(' ').append(description.get());
         }
 
         return sb.toString();
