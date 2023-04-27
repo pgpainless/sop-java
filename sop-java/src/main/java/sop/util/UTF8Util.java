@@ -26,6 +26,7 @@ public class UTF8Util {
      * @param data utf-8 encoded bytes
      *
      * @return decoded string
+     * @throws CharacterCodingException if the input data does not resemble UTF8
      */
     public static String decodeUTF8(byte[] data)
             throws CharacterCodingException {

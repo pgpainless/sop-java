@@ -33,6 +33,7 @@ public class UTCUtil {
      *
      * @param dateString string
      * @return date
+     * @throws ParseException if the date string is malformed and cannot be parsed
      */
     @Nonnull
     public static Date parseUTCDate(String dateString) throws ParseException {
