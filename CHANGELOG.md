@@ -9,7 +9,13 @@ SPDX-License-Identifier: Apache-2.0
 ## 6.1.0-SNAPSHOT
 - `listProfiles()`: Add shortcut methods `generateKey()` and `encrypt()`
 - Add DSL for testing `Verification` results
-- `Verification`: Return `Optional<>` for `getSignatureMode()` and `getDescription()`
+- `Verification`
+  - Return `Optional<SignatureMode>` for `getSignatureMode()`
+  - Return `Optional<String>` for `getDescription()`
+- `Profile`
+  - Add support for profiles without description
+  - Return `Optional<String>` for `getDescription()`
+  - Add `parse(String)` method for parsing profile lines
 - `sop-java`: Add dependency on `com.google.code.findbugs:jsr305` for `@Nullable`, `@Nonnull` annotations
 - `UTCUtil`: `parseUTCDate()` is now `@Nonnull` and throws a `ParseException` for invalid inputs
 - `UTF8Util`: `decodeUTF8()` now throws `CharacterCodingException` instead of `SOPGPException.PasswordNotHumanReadable`
