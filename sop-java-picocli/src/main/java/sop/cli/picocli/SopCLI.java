@@ -8,6 +8,7 @@ import picocli.AutoComplete;
 import picocli.CommandLine;
 import sop.SOP;
 import sop.cli.picocli.commands.ArmorCmd;
+import sop.cli.picocli.commands.ChangeKeyPasswordCmd;
 import sop.cli.picocli.commands.DearmorCmd;
 import sop.cli.picocli.commands.DecryptCmd;
 import sop.cli.picocli.commands.InlineDetachCmd;
@@ -45,6 +46,7 @@ import java.util.ResourceBundle;
                 InlineVerifyCmd.class,
                 ListProfilesCmd.class,
                 RevokeKeyCmd.class,
+                ChangeKeyPasswordCmd.class,
                 VersionCmd.class,
                 AutoComplete.GenerateCompletion.class
         }

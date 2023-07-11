@@ -8,6 +8,7 @@ import sop.Ready;
 import sop.SOP;
 import sop.exception.SOPGPException;
 import sop.external.operation.ArmorExternal;
+import sop.external.operation.ChangeKeyPasswordExternal;
 import sop.external.operation.DearmorExternal;
 import sop.external.operation.DecryptExternal;
 import sop.external.operation.DetachedSignExternal;
@@ -22,6 +23,7 @@ import sop.external.operation.ListProfilesExternal;
 import sop.external.operation.RevokeKeyExternal;
 import sop.external.operation.VersionExternal;
 import sop.operation.Armor;
+import sop.operation.ChangeKeyPassword;
 import sop.operation.Dearmor;
 import sop.operation.Decrypt;
 import sop.operation.DetachedSign;
@@ -166,6 +168,11 @@ public class ExternalSOP implements SOP {
     @Override
     public RevokeKey revokeKey() {
         return new RevokeKeyExternal(binaryName, properties);
+    }
+
+    @Override
+    public ChangeKeyPassword changeKeyPassword() {
+        return new ChangeKeyPasswordExternal(binaryName, properties);
     }
 
     @Override

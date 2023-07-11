@@ -5,6 +5,7 @@
 package sop;
 
 import sop.operation.Armor;
+import sop.operation.ChangeKeyPassword;
 import sop.operation.Dearmor;
 import sop.operation.Decrypt;
 import sop.operation.Encrypt;
@@ -166,4 +167,11 @@ public interface SOP {
      * @return builder instance
      */
     RevokeKey revokeKey();
+
+    /**
+     * Update a key's password.
+     *
+     * @return builder instance
+     */
+    ChangeKeyPassword changeKeyPassword();
 }

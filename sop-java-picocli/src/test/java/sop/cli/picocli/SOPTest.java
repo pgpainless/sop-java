@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import sop.SOP;
 import sop.exception.SOPGPException;
 import sop.operation.Armor;
+import sop.operation.ChangeKeyPassword;
 import sop.operation.Dearmor;
 import sop.operation.Decrypt;
 import sop.operation.InlineDetach;
@@ -104,6 +105,11 @@ public class SOPTest {
 
             @Override
             public RevokeKey revokeKey() {
+                return null;
+            }
+
+            @Override
+            public ChangeKeyPassword changeKeyPassword() {
                 return null;
             }
 
