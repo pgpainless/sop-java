@@ -19,6 +19,7 @@ import sop.external.operation.InlineDetachExternal;
 import sop.external.operation.InlineSignExternal;
 import sop.external.operation.InlineVerifyExternal;
 import sop.external.operation.ListProfilesExternal;
+import sop.external.operation.RevokeKeyExternal;
 import sop.external.operation.VersionExternal;
 import sop.operation.Armor;
 import sop.operation.Dearmor;
@@ -164,7 +165,7 @@ public class ExternalSOP implements SOP {
 
     @Override
     public RevokeKey revokeKey() {
-        return null;
+        return new RevokeKeyExternal(binaryName, properties);
     }
 
     @Override

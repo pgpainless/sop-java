@@ -8,6 +8,7 @@ import sop.Ready;
 import sop.exception.SOPGPException;
 import sop.util.UTF8Util;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 public interface RevokeKey {
@@ -44,6 +45,10 @@ public interface RevokeKey {
     RevokeKey withKeyPassword(byte[] password)
             throws SOPGPException.UnsupportedOption,
             SOPGPException.PasswordNotHumanReadable;
+
+    default Ready keys(byte[] bytes) {
+        return keys(new ByteArrayInputStream(bytes));
+    }
 
     Ready keys(InputStream keys);
 }
