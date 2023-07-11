@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 6.1.1-SNAPSHOT
+- Add `dearmor.data(String)` utility method
+
 ## 6.1.0
 - `listProfiles()`: Add shortcut methods `generateKey()` and `encrypt()`
 - Add DSL for testing `Verification` results
