@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @CommandLine.Command(name = "change-key-password",
-        resourceBundle = "msg_dearmor", // TODO
+        resourceBundle = "msg_change-key-password",
         exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class ChangeKeyPasswordCmd extends AbstractSopCmd {
 
