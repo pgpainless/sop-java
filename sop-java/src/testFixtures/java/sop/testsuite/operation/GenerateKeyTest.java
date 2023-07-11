@@ -10,11 +10,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
+import sop.exception.SOPGPException;
 import sop.testsuite.JUtils;
 import sop.testsuite.TestData;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class GenerateKeyTest extends AbstractSOPTest {
@@ -96,5 +100,22 @@ public class GenerateKeyTest extends AbstractSOPTest {
 
         JUtils.assertArrayStartsWith(key, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK);
         JUtils.assertArrayEndsWithIgnoreNewlines(key, TestData.END_PGP_PRIVATE_KEY_BLOCK);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void generateSigningOnlyKey(SOP sop) throws IOException {
+        byte[] signingOnlyKey = sop.generateKey()
+                .signingOnly()
+                .userId("Alice <alice@pgpainless.org>")
+                .generate()
+                .getBytes();
+        byte[] signingOnlyCert = sop.extractCert()
+                .key(signingOnlyKey)
+                .getBytes();
+
+        assertThrows(SOPGPException.CertCannotEncrypt.class, () ->
+                sop.encrypt().withCert(signingOnlyCert)
+                        .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8)));
     }
 }

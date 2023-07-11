@@ -81,6 +81,13 @@ public interface GenerateKey {
     GenerateKey profile(String profile);
 
     /**
+     * If this options is set, the generated key will not be capable of encryption / decryption.
+     *
+     * @return builder instance
+     */
+    GenerateKey signingOnly();
+
+    /**
      * Generate the OpenPGP key and return it encoded as an {@link InputStream}.
      *
      * @return key

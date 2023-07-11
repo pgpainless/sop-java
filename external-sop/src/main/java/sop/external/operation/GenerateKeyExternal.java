@@ -58,6 +58,12 @@ public class GenerateKeyExternal implements GenerateKey {
     }
 
     @Override
+    public GenerateKey signingOnly() {
+        commandList.add("--signing-only");
+        return this;
+    }
+
+    @Override
     public Ready generate()
             throws SOPGPException.MissingArg, SOPGPException.UnsupportedAsymmetricAlgo {
         return ExternalSOP.executeProducingOperation(Runtime.getRuntime(), commandList, envList);

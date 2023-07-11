@@ -34,6 +34,9 @@ public class GenerateKeyCmd extends AbstractSopCmd {
             paramLabel = "PROFILE")
     String profile;
 
+    @CommandLine.Option(names = "--signing-only")
+    boolean signingOnly = false;
+
     @Override
     public void run() {
         GenerateKey generateKey = throwIfUnsupportedSubcommand(
@@ -46,6 +49,10 @@ public class GenerateKeyCmd extends AbstractSopCmd {
                 String errorMsg = getMsg("sop.error.usage.profile_not_supported", "generate-key", profile);
                 throw new SOPGPException.UnsupportedProfile(errorMsg, e);
             }
+        }
+
+        if (signingOnly) {
+            generateKey.signingOnly();
         }
 
         for (String userId : userId) {
