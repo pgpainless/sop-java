@@ -16,6 +16,7 @@ import sop.operation.InlineVerify;
 import sop.operation.DetachedSign;
 import sop.operation.DetachedVerify;
 import sop.operation.ListProfiles;
+import sop.operation.RevokeKey;
 import sop.operation.Version;
 
 /**
@@ -158,4 +159,11 @@ public interface SOP {
      * @return builder instance
      */
     ListProfiles listProfiles();
+
+    /**
+     * Revoke one or more secret keys.
+     *
+     * @return builder instance
+     */
+    RevokeKey revokeKey();
 }

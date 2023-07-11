@@ -27,6 +27,7 @@ import sop.operation.InlineVerify;
 import sop.operation.DetachedSign;
 import sop.operation.DetachedVerify;
 import sop.operation.ListProfiles;
+import sop.operation.RevokeKey;
 import sop.operation.Version;
 
 public class SOPTest {
@@ -98,6 +99,11 @@ public class SOPTest {
 
             @Override
             public ListProfiles listProfiles() {
+                return null;
+            }
+
+            @Override
+            public RevokeKey revokeKey() {
                 return null;
             }
 

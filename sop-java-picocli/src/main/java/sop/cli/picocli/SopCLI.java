@@ -17,6 +17,7 @@ import sop.cli.picocli.commands.GenerateKeyCmd;
 import sop.cli.picocli.commands.InlineSignCmd;
 import sop.cli.picocli.commands.InlineVerifyCmd;
 import sop.cli.picocli.commands.ListProfilesCmd;
+import sop.cli.picocli.commands.RevokeKeyCmd;
 import sop.cli.picocli.commands.SignCmd;
 import sop.cli.picocli.commands.VerifyCmd;
 import sop.cli.picocli.commands.VersionCmd;
@@ -43,6 +44,7 @@ import java.util.ResourceBundle;
                 InlineSignCmd.class,
                 InlineVerifyCmd.class,
                 ListProfilesCmd.class,
+                RevokeKeyCmd.class,
                 VersionCmd.class,
                 AutoComplete.GenerateCompletion.class
         }

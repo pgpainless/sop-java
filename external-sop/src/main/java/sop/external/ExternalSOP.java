@@ -32,6 +32,7 @@ import sop.operation.InlineDetach;
 import sop.operation.InlineSign;
 import sop.operation.InlineVerify;
 import sop.operation.ListProfiles;
+import sop.operation.RevokeKey;
 import sop.operation.Version;
 
 import javax.annotation.Nonnull;
@@ -159,6 +160,11 @@ public class ExternalSOP implements SOP {
     @Override
     public ListProfiles listProfiles() {
         return new ListProfilesExternal(binaryName, properties);
+    }
+
+    @Override
+    public RevokeKey revokeKey() {
+        return null;
     }
 
     @Override
