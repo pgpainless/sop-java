@@ -6,6 +6,12 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 7.0.0-SNAPSHOT
+- Update implementation to [SOP Specification revision 07](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-07.html).
+  - Add support for new `revoke-key` subcommand
+  - Add support for new `change-key-password` subcommand
+  - Add support for new `--signing-only` option of `generate-key` subcommand
+
 ## 6.1.1-SNAPSHOT
 - Add `dearmor.data(String)` utility method
 
