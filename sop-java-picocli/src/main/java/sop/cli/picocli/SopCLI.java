@@ -32,22 +32,27 @@ import java.util.ResourceBundle;
         resourceBundle = "msg_sop",
         exitCodeOnInvalidInput = 69,
         subcommands = {
-                CommandLine.HelpCommand.class,
-                ArmorCmd.class,
-                DearmorCmd.class,
-                DecryptCmd.class,
-                InlineDetachCmd.class,
-                EncryptCmd.class,
-                ExtractCertCmd.class,
+                // Meta Subcommands
+                VersionCmd.class,
+                ListProfilesCmd.class,
+                // Key and Certificate Management Subcommands
                 GenerateKeyCmd.class,
+                ChangeKeyPasswordCmd.class,
+                RevokeKeyCmd.class,
+                ExtractCertCmd.class,
+                // Messaging Subcommands
                 SignCmd.class,
                 VerifyCmd.class,
+                EncryptCmd.class,
+                DecryptCmd.class,
+                InlineDetachCmd.class,
                 InlineSignCmd.class,
                 InlineVerifyCmd.class,
-                ListProfilesCmd.class,
-                RevokeKeyCmd.class,
-                ChangeKeyPasswordCmd.class,
-                VersionCmd.class,
+                // Transport Subcommands
+                ArmorCmd.class,
+                DearmorCmd.class,
+                // Miscellaneous Subcommands
+                CommandLine.HelpCommand.class,
                 AutoComplete.GenerateCompletion.class
         }
 )
