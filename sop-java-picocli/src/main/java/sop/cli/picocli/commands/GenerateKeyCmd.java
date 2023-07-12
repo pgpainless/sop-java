@@ -16,7 +16,7 @@ import java.util.List;
 
 @CommandLine.Command(name = "generate-key",
         resourceBundle = "msg_generate-key",
-        exitCodeOnInvalidInput = 37)
+        exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class GenerateKeyCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",

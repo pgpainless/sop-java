@@ -18,7 +18,7 @@ import java.util.List;
 
 @CommandLine.Command(name = "encrypt",
         resourceBundle = "msg_encrypt",
-        exitCodeOnInvalidInput = 37)
+        exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class EncryptCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",

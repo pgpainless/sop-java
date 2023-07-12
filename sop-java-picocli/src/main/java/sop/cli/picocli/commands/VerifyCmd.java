@@ -18,7 +18,7 @@ import java.util.List;
 
 @CommandLine.Command(name = "verify",
         resourceBundle = "msg_detached-verify",
-        exitCodeOnInvalidInput = 37)
+        exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class VerifyCmd extends AbstractSopCmd {
 
     @CommandLine.Parameters(index = "0",

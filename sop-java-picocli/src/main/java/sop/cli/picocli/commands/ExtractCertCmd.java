@@ -14,7 +14,7 @@ import sop.operation.ExtractCert;
 
 @CommandLine.Command(name = "extract-cert",
         resourceBundle = "msg_extract-cert",
-        exitCodeOnInvalidInput = 37)
+        exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class ExtractCertCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",

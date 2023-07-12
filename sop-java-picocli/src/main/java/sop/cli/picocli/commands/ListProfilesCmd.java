@@ -13,7 +13,7 @@ import sop.operation.ListProfiles;
 
 @CommandLine.Command(name = "list-profiles",
         resourceBundle = "msg_list-profiles",
-        exitCodeOnInvalidInput = 37)
+        exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class ListProfilesCmd extends AbstractSopCmd {
 
     @CommandLine.Parameters(paramLabel = "COMMAND", arity = "1", descriptionKey = "subcommand")

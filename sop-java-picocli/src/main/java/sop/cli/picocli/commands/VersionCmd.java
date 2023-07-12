@@ -7,10 +7,11 @@ package sop.cli.picocli.commands;
 import picocli.CommandLine;
 import sop.cli.picocli.Print;
 import sop.cli.picocli.SopCLI;
+import sop.exception.SOPGPException;
 import sop.operation.Version;
 
 @CommandLine.Command(name = "version", resourceBundle = "msg_version",
-        exitCodeOnInvalidInput = 37)
+        exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class VersionCmd extends AbstractSopCmd {
 
     @CommandLine.ArgGroup()

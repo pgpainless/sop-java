@@ -20,7 +20,7 @@ import java.util.List;
 
 @CommandLine.Command(name = "inline-verify",
         resourceBundle = "msg_inline-verify",
-        exitCodeOnInvalidInput = 37)
+        exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class InlineVerifyCmd extends AbstractSopCmd {
 
     @CommandLine.Parameters(arity = "0..*",

@@ -18,7 +18,7 @@ import java.util.List;
 
 @CommandLine.Command(name = "inline-sign",
         resourceBundle = "msg_inline-sign",
-        exitCodeOnInvalidInput = 37)
+        exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class InlineSignCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",

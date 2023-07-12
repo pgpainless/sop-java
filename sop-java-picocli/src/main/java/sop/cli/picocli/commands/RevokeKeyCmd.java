@@ -14,7 +14,7 @@ import java.io.IOException;
 
 @CommandLine.Command(name = "revoke-key",
         resourceBundle = "msg_revoke-key",
-        exitCodeOnInvalidInput = 37)
+        exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class RevokeKeyCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",

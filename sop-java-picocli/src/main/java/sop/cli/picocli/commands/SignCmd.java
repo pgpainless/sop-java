@@ -21,7 +21,7 @@ import java.util.List;
 
 @CommandLine.Command(name = "sign",
         resourceBundle = "msg_detached-sign",
-        exitCodeOnInvalidInput = 37)
+        exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 public class SignCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--no-armor",

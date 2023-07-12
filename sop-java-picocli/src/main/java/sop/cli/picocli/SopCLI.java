@@ -22,6 +22,7 @@ import sop.cli.picocli.commands.RevokeKeyCmd;
 import sop.cli.picocli.commands.SignCmd;
 import sop.cli.picocli.commands.VerifyCmd;
 import sop.cli.picocli.commands.VersionCmd;
+import sop.exception.SOPGPException;
 
 import java.util.List;
 import java.util.Locale;
@@ -30,7 +31,7 @@ import java.util.ResourceBundle;
 @CommandLine.Command(
         name = "sop",
         resourceBundle = "msg_sop",
-        exitCodeOnInvalidInput = 69,
+        exitCodeOnInvalidInput = SOPGPException.UnsupportedSubcommand.EXIT_CODE,
         subcommands = {
                 // Meta Subcommands
                 VersionCmd.class,
