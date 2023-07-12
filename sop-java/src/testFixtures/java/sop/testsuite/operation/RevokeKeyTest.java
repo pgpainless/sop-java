@@ -10,6 +10,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
 import sop.exception.SOPGPException;
+import sop.testsuite.JUtils;
+import sop.testsuite.TestData;
 import sop.util.UTF8Util;
 
 import java.io.IOException;
@@ -18,6 +20,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class RevokeKeyTest extends AbstractSOPTest {
@@ -32,7 +35,27 @@ public class RevokeKeyTest extends AbstractSOPTest {
         byte[] secretKey = sop.generateKey().userId("Alice <alice@pgpainless.org>").generate().getBytes();
         byte[] revocation = sop.revokeKey().keys(secretKey).getBytes();
 
+        assertTrue(JUtils.arrayStartsWith(revocation, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK));
         assertFalse(Arrays.equals(secretKey, revocation));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void revokeUnprotectedKeyUnarmored(SOP sop) throws IOException {
+        byte[] secretKey = sop.generateKey().userId("Alice <alice@pgpainless.org>").noArmor().generate().getBytes();
+        byte[] revocation = sop.revokeKey().noArmor().keys(secretKey).getBytes();
+
+        assertFalse(JUtils.arrayStartsWith(revocation, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK));
+        assertFalse(Arrays.equals(secretKey, revocation));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void revokeCertificateFails(SOP sop) throws IOException {
+        byte[] secretKey = sop.generateKey().generate().getBytes();
+        byte[] certificate = sop.extractCert().key(secretKey).getBytes();
+
+        assertThrows(SOPGPException.BadData.class, () -> sop.revokeKey().keys(certificate).getBytes());
     }
 
     @ParameterizedTest
