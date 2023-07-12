@@ -9,13 +9,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
+import sop.Verification;
 import sop.exception.SOPGPException;
 import sop.testsuite.JUtils;
 import sop.testsuite.TestData;
+import sop.testsuite.assertions.VerificationListAssert;
 import sop.util.UTF8Util;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -96,5 +100,24 @@ public class RevokeKeyTest extends AbstractSOPTest {
         byte[] secretKey = sop.generateKey().withKeyPassword(password).userId("Alice <alice@pgpainless.org>").generate().getBytes();
 
         assertThrows(SOPGPException.KeyIsProtected.class, () -> sop.revokeKey().withKeyPassword(wrongPassword).keys(secretKey).getBytes());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void revokeKeyIsNowHardRevoked(SOP sop) throws IOException {
+        byte[] key = sop.generateKey().generate().getBytes();
+        byte[] cert = sop.extractCert().key(key).getBytes();
+
+        // Sign a message with the key
+        byte[] msg = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
+        byte[] signedMsg = sop.inlineSign().key(key).data(msg).getBytes();
+
+        // Verifying the message with the valid cert works
+        List<Verification> result = sop.inlineVerify().cert(cert).data(signedMsg).toByteArrayAndResult().getResult();
+        VerificationListAssert.assertThatVerificationList(result).hasSingleItem();
+
+        // Now hard revoke the key and re-check signature, expecting no valid certification
+        byte[] revokedCert = sop.revokeKey().keys(key).getBytes();
+        assertThrows(SOPGPException.NoSignature.class, () -> sop.inlineVerify().cert(revokedCert).data(signedMsg).toByteArrayAndResult());
     }
 }
