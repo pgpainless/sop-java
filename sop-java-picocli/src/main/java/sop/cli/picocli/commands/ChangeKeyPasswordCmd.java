@@ -22,10 +22,12 @@ public class ChangeKeyPasswordCmd extends AbstractSopCmd {
             negatable = true)
     boolean armor = true;
 
-    @CommandLine.Option(names = {"--old-key-password"})
+    @CommandLine.Option(names = {"--old-key-password"},
+            paramLabel = "PASSWORD")
     List<String> oldKeyPasswords = new ArrayList<>();
 
-    @CommandLine.Option(names = {"--new-key-password"}, arity = "0..1")
+    @CommandLine.Option(names = {"--new-key-password"}, arity = "0..1",
+            paramLabel = "PASSWORD")
     String newKeyPassword = null;
 
     @Override

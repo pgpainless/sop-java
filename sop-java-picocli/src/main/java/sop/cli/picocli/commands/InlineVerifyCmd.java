@@ -35,7 +35,7 @@ public class InlineVerifyCmd extends AbstractSopCmd {
             paramLabel = "DATE")
     String notAfter = "now";
 
-    @CommandLine.Option(names = "--verifications-out")
+    @CommandLine.Option(names = "--verifications-out", paramLabel = "VERIFICATIONS")
     String verificationsOut;
 
     @Override
