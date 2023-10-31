@@ -18,7 +18,7 @@ public class MicAlgTest {
 
     @Test
     public void constructorNullArgThrows() {
-        assertThrows(IllegalArgumentException.class, () -> new MicAlg(null));
+        assertThrows(NullPointerException.class, () -> new MicAlg(null));
     }
 
     @Test
