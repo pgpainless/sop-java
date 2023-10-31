@@ -19,6 +19,8 @@ buildscript {
 
 plugins {
     id 'ru.vyarus.animalsniffer' version '1.5.3'
+    id 'org.jetbrains.kotlin.jvm' version "1.8.10"
+    id 'com.diffplug.spotless' version '6.22.0' apply false
 }
 
 apply from: 'version.gradle'
@@ -29,6 +31,8 @@ allprojects {
     apply plugin: 'eclipse'
     apply plugin: 'jacoco'
     apply plugin: 'checkstyle'
+    apply plugin: 'kotlin'
+    apply plugin: 'com.diffplug.spotless'
 
     // For non-cli modules enable android api compatibility check
     if (it.name.equals('sop-java')) {
@@ -53,6 +57,12 @@ allprojects {
         toolVersion = '8.18'
     }
 
+    spotless {
+        kotlin {
+            ktfmt().dropboxStyle()
+        }
+    }
+
     group 'org.pgpainless'
     description = "Stateless OpenPGP Protocol API for Java"
     version = shortVersion
@@ -67,6 +77,13 @@ allprojects {
     tasks.withType(AbstractArchiveTask) {
         preserveFileTimestamps = false
         reproducibleFileOrder = true
+    }
+
+    // Compatibility of default implementations in kotlin interfaces with Java implementations.
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            freeCompilerArgs += ["-Xjvm-default=all-compatibility"]
+        }
     }
 
     project.ext {
