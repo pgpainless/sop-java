@@ -99,9 +99,7 @@ interface Decrypt {
      * @throws IOException in case of an IO error
      */
     @Throws(BadData::class, UnsupportedAsymmetricAlgo::class, IOException::class)
-    fun withKey(key: ByteArray): Decrypt {
-        return withKey(key.inputStream())
-    }
+    fun withKey(key: ByteArray): Decrypt = withKey(key.inputStream())
 
     /**
      * Provide the decryption password for the secret key.
@@ -112,9 +110,8 @@ interface Decrypt {
      * @throws PasswordNotHumanReadable if the password is not human-readable
      */
     @Throws(UnsupportedOption::class, PasswordNotHumanReadable::class)
-    fun withKeyPassword(password: String): Decrypt {
-        return withKeyPassword(password.toByteArray(UTF8Util.UTF8))
-    }
+    fun withKeyPassword(password: String): Decrypt =
+        withKeyPassword(password.toByteArray(UTF8Util.UTF8))
 
     /**
      * Provide the decryption password for the secret key.
@@ -163,7 +160,6 @@ interface Decrypt {
         CannotDecrypt::class,
         KeyIsProtected::class,
         IOException::class)
-    fun ciphertext(ciphertext: ByteArray): ReadyWithResult<DecryptionResult> {
-        return ciphertext(ciphertext.inputStream())
-    }
+    fun ciphertext(ciphertext: ByteArray): ReadyWithResult<DecryptionResult> =
+        ciphertext(ciphertext.inputStream())
 }
