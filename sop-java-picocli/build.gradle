@@ -38,6 +38,7 @@ application {
 
 jar {
     dependsOn(":sop-java:jar")
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 
     manifest {
         attributes 'Main-Class': "$mainClassName"
