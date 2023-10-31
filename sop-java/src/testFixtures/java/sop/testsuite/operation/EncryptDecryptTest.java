@@ -10,13 +10,16 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.ByteArrayAndResult;
 import sop.DecryptionResult;
+import sop.EncryptionResult;
 import sop.SOP;
+import sop.SessionKey;
 import sop.Verification;
 import sop.enums.EncryptAs;
 import sop.enums.SignatureMode;
 import sop.exception.SOPGPException;
 import sop.testsuite.TestData;
 import sop.testsuite.assertions.VerificationListAssert;
+import sop.util.Optional;
 import sop.util.UTCUtil;
 
 import java.io.IOException;
@@ -27,6 +30,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -41,18 +45,26 @@ public class EncryptDecryptTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void encryptDecryptRoundTripPasswordTest(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
-        byte[] ciphertext = sop.encrypt()
+        ByteArrayAndResult<EncryptionResult> encResult = sop.encrypt()
                 .withPassword("sw0rdf1sh")
                 .plaintext(message)
-                .getBytes();
+                .toByteArrayAndResult();
 
-        byte[] plaintext = sop.decrypt()
+        byte[] ciphertext = encResult.getBytes();
+        Optional<SessionKey> encSessionKey = encResult.getResult().getSessionKey();
+
+        ByteArrayAndResult<DecryptionResult> decResult = sop.decrypt()
                 .withPassword("sw0rdf1sh")
                 .ciphertext(ciphertext)
-                .toByteArrayAndResult()
-                .getBytes();
+                .toByteArrayAndResult();
+
+        byte[] plaintext = decResult.getBytes();
+        Optional<SessionKey> decSessionKey = decResult.getResult().getSessionKey();
 
         assertArrayEquals(message, plaintext);
+        if (encSessionKey.isPresent() && decSessionKey.isPresent()) {
+            assertEquals(encSessionKey.get(), decSessionKey.get());
+        }
     }
 
     @ParameterizedTest
@@ -62,6 +74,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         byte[] ciphertext = sop.encrypt()
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
+                .toByteArrayAndResult()
                 .getBytes();
 
         ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
@@ -83,6 +96,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         byte[] ciphertext = sop.encrypt()
                 .withCert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
+                .toByteArrayAndResult()
                 .getBytes();
 
         byte[] plaintext = sop.decrypt()
@@ -101,6 +115,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         byte[] ciphertext = sop.encrypt()
                 .withCert(TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
+                .toByteArrayAndResult()
                 .getBytes();
 
         byte[] plaintext = sop.decrypt()
@@ -120,6 +135,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .noArmor()
                 .plaintext(message)
+                .toByteArrayAndResult()
                 .getBytes();
 
         byte[] armored = sop.armor()
@@ -144,6 +160,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                 .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(EncryptAs.binary)
                 .plaintext(message)
+                .toByteArrayAndResult()
                 .getBytes();
 
         ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
@@ -175,6 +192,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                 .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(EncryptAs.text)
                 .plaintext(message)
+                .toByteArrayAndResult()
                 .getBytes();
 
         ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
@@ -215,6 +233,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                 .signWith(key)
                 .withKeyPassword(keyPassword)
                 .plaintext(message)
+                .toByteArrayAndResult()
                 .getBytes();
 
         ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
@@ -305,6 +324,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
 
         assertThrows(SOPGPException.MissingArg.class, () -> sop.encrypt()
                 .plaintext(message)
+                .toByteArrayAndResult()
                 .getBytes());
     }
 }

@@ -147,7 +147,7 @@ public class ExternalSOP implements SOP {
 
     @Override
     public Encrypt encrypt() {
-        return new EncryptExternal(binaryName, properties);
+        return new EncryptExternal(binaryName, properties, tempDirProvider);
     }
 
     @Override

@@ -5,7 +5,9 @@
 package sop.cli.picocli.commands;
 
 import picocli.CommandLine;
-import sop.Ready;
+import sop.EncryptionResult;
+import sop.ReadyWithResult;
+import sop.SessionKey;
 import sop.cli.picocli.SopCLI;
 import sop.enums.EncryptAs;
 import sop.exception.SOPGPException;
@@ -13,6 +15,8 @@ import sop.operation.Encrypt;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,10 +53,17 @@ public class EncryptCmd extends AbstractSopCmd {
             paramLabel = "CERTS")
     List<String> certs = new ArrayList<>();
 
+    @CommandLine.Option(
+            names = {"--session-key-out"},
+            paramLabel = "SESSIONKEY")
+    String sessionKeyOut;
+
     @Override
     public void run() {
         Encrypt encrypt = throwIfUnsupportedSubcommand(
                 SopCLI.getSop().encrypt(), "encrypt");
+
+        throwIfOutputExists(sessionKeyOut);
 
         if (profile != null) {
             try {
@@ -145,8 +156,27 @@ public class EncryptCmd extends AbstractSopCmd {
         }
 
         try {
-            Ready ready = encrypt.plaintext(System.in);
-            ready.writeTo(System.out);
+            ReadyWithResult<EncryptionResult> ready = encrypt.plaintext(System.in);
+            EncryptionResult result = ready.writeTo(System.out);
+
+            if (sessionKeyOut == null) {
+                return;
+            }
+            try (OutputStream outputStream = getOutput(sessionKeyOut)) {
+                if (!result.getSessionKey().isPresent()) {
+                    String errorMsg = getMsg("sop.error.runtime.no_session_key_extracted");
+                    throw new SOPGPException.UnsupportedOption(String.format(errorMsg, "--session-key-out"));
+                }
+                SessionKey sessionKey = result.getSessionKey().get();
+                if (sessionKey == null) {
+                    return;
+                }
+                PrintWriter writer = new PrintWriter(outputStream);
+                // CHECKSTYLE:OFF
+                writer.println(sessionKey);
+                // CHECKSTYLE:ON
+                writer.flush();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

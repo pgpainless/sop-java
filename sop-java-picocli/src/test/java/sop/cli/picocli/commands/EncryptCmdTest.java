@@ -4,28 +4,30 @@
 
 package sop.cli.picocli.commands;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sop.Ready;
+import sop.EncryptionResult;
+import sop.ReadyWithResult;
 import sop.SOP;
 import sop.cli.picocli.SopCLI;
 import sop.cli.picocli.TestFileUtil;
 import sop.enums.EncryptAs;
 import sop.exception.SOPGPException;
 import sop.operation.Encrypt;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class EncryptCmdTest {
 
@@ -34,10 +36,10 @@ public class EncryptCmdTest {
     @BeforeEach
     public void mockComponents() throws IOException {
         encrypt = mock(Encrypt.class);
-        when(encrypt.plaintext((InputStream) any())).thenReturn(new Ready() {
+        when(encrypt.plaintext((InputStream) any())).thenReturn(new ReadyWithResult<EncryptionResult>() {
             @Override
-            public void writeTo(OutputStream outputStream) {
-
+            public EncryptionResult writeTo(@NotNull OutputStream outputStream) throws IOException, SOPGPException {
+                return new EncryptionResult(null);
             }
         });
 
@@ -190,9 +192,9 @@ public class EncryptCmdTest {
     @Test
     @ExpectSystemExitWithStatus(1)
     public void writeTo_ioExceptionCausesExit1() throws IOException {
-        when(encrypt.plaintext((InputStream) any())).thenReturn(new Ready() {
+        when(encrypt.plaintext((InputStream) any())).thenReturn(new ReadyWithResult<EncryptionResult>() {
             @Override
-            public void writeTo(OutputStream outputStream) throws IOException {
+            public EncryptionResult writeTo(@NotNull OutputStream outputStream) throws IOException, SOPGPException {
                 throw new IOException();
             }
         });
