@@ -62,7 +62,7 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
 
         byte[] signature = sop.detachedSign()
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
-                .mode(SignAs.Text)
+                .mode(SignAs.text)
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();

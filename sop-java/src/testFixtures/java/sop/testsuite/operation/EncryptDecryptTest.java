@@ -142,7 +142,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         byte[] ciphertext = sop.encrypt()
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
-                .mode(EncryptAs.Binary)
+                .mode(EncryptAs.binary)
                 .plaintext(message)
                 .getBytes();
 
@@ -173,7 +173,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         byte[] ciphertext = sop.encrypt()
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
-                .mode(EncryptAs.Text)
+                .mode(EncryptAs.text)
                 .plaintext(message)
                 .getBytes();
 
