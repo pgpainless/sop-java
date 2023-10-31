@@ -12,8 +12,8 @@ class UTCUtil {
 
     companion object {
 
-        @JvmStatic val UTC_FORMATTER = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-        @JvmStatic
+        @JvmField val UTC_FORMATTER = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        @JvmField
         val UTC_PARSERS =
             arrayOf(
                     UTC_FORMATTER,
