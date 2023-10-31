@@ -6,11 +6,10 @@ package sop
 
 import sop.util.Optional
 
-data class DecryptionResult
-internal constructor(val sessionKey: Optional<SessionKey>, val verifications: List<Verification>) {
+class DecryptionResult(sessionKey: SessionKey?, val verifications: List<Verification>) {
+    val sessionKey: Optional<SessionKey>
 
-    constructor(
-        sessionKey: SessionKey?,
-        verifications: List<Verification>
-    ) : this(Optional.ofNullable(sessionKey), verifications)
+    init {
+        this.sessionKey = Optional.ofNullable(sessionKey)
+    }
 }
