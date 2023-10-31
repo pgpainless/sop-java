@@ -4,7 +4,6 @@
 
 package sop.operation
 
-import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
 import sop.exception.SOPGPException.BadData
@@ -31,6 +30,5 @@ interface DetachedVerify : AbstractVerify<DetachedVerify>, VerifySignatures {
      * @throws IOException in case of an IO error
      */
     @Throws(BadData::class, IOException::class)
-    fun signatures(signatures: ByteArray): VerifySignatures =
-        signatures(ByteArrayInputStream(signatures))
+    fun signatures(signatures: ByteArray): VerifySignatures = signatures(signatures.inputStream())
 }

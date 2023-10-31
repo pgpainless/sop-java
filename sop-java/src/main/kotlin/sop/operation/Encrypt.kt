@@ -4,7 +4,6 @@
 
 package sop.operation
 
-import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
 import sop.Profile
@@ -57,7 +56,7 @@ interface Encrypt {
      */
     @Throws(
         KeyCannotSign::class, UnsupportedAsymmetricAlgo::class, BadData::class, IOException::class)
-    fun signWith(key: ByteArray): Encrypt = signWith(ByteArrayInputStream(key))
+    fun signWith(key: ByteArray): Encrypt = signWith(key.inputStream())
 
     /**
      * Provide the password for the secret key used for signing.
@@ -125,7 +124,7 @@ interface Encrypt {
         UnsupportedAsymmetricAlgo::class,
         BadData::class,
         IOException::class)
-    fun withCert(cert: ByteArray): Encrypt = withCert(ByteArrayInputStream(cert))
+    fun withCert(cert: ByteArray): Encrypt = withCert(cert.inputStream())
 
     /**
      * Pass in a profile.
@@ -162,5 +161,5 @@ interface Encrypt {
      * @throws KeyIsProtected if at least one signing key cannot be unlocked
      */
     @Throws(IOException::class, KeyIsProtected::class)
-    fun plaintext(plaintext: ByteArray): Ready = plaintext(ByteArrayInputStream(plaintext))
+    fun plaintext(plaintext: ByteArray): Ready = plaintext(plaintext.inputStream())
 }

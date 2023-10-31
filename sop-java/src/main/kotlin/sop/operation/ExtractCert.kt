@@ -4,7 +4,6 @@
 
 package sop.operation
 
-import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
 import sop.Ready
@@ -38,5 +37,5 @@ interface ExtractCert {
      * @throws BadData if the byte array does not contain an OpenPGP key
      */
     @Throws(IOException::class, BadData::class)
-    fun key(key: ByteArray): Ready = key(ByteArrayInputStream(key))
+    fun key(key: ByteArray): Ready = key(key.inputStream())
 }
