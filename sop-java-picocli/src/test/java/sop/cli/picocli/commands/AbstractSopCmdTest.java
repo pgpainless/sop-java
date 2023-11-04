@@ -36,7 +36,7 @@ public class AbstractSopCmdTest {
 
     @Test
     public void getInput_NullInvalid() {
-        assertThrows(IllegalArgumentException.class, () -> abstractCmd.getInput(null));
+        assertThrows(NullPointerException.class, () -> abstractCmd.getInput(null));
     }
 
     @Test
