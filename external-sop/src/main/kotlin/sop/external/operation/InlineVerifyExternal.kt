@@ -62,9 +62,9 @@ class InlineVerifyExternal(
                     val verificationsOutIn = FileInputStream(verificationsOut)
                     val reader = BufferedReader(InputStreamReader(verificationsOutIn))
                     val verificationList: MutableList<Verification> = mutableListOf()
-                    var line: String
+                    var line: String?
                     while (reader.readLine().also { line = it } != null) {
-                        verificationList.add(fromString(line.trim()))
+                        verificationList.add(fromString(line!!.trim()))
                     }
 
                     return verificationList
