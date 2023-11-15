@@ -12,6 +12,7 @@ import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.DetachedSign;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,13 +44,15 @@ public class DetachedSignExternal implements DetachedSign {
     }
 
     @Override
+    @Nonnull
     public DetachedSign noArmor() {
         commandList.add("--no-armor");
         return this;
     }
 
     @Override
-    public DetachedSign key(InputStream key) throws SOPGPException.KeyCannotSign, SOPGPException.BadData, SOPGPException.UnsupportedAsymmetricAlgo, IOException {
+    @Nonnull
+    public DetachedSign key(@Nonnull InputStream key) throws SOPGPException.KeyCannotSign, SOPGPException.BadData, SOPGPException.UnsupportedAsymmetricAlgo, IOException {
         String envVar = "KEY_" + keyCounter++;
         commandList.add("@ENV:" + envVar);
         envList.add(envVar + "=" + ExternalSOP.readString(key));
@@ -57,7 +60,8 @@ public class DetachedSignExternal implements DetachedSign {
     }
 
     @Override
-    public DetachedSign withKeyPassword(byte[] password) throws SOPGPException.UnsupportedOption, SOPGPException.PasswordNotHumanReadable {
+    @Nonnull
+    public DetachedSign withKeyPassword(@Nonnull byte[] password) throws SOPGPException.UnsupportedOption, SOPGPException.PasswordNotHumanReadable {
         String envVar = "WITH_KEY_PASSWORD_" + withKeyPasswordCounter++;
         commandList.add("--with-key-password=@ENV:" + envVar);
         envList.add(envVar + "=" + new String(password));
@@ -65,13 +69,15 @@ public class DetachedSignExternal implements DetachedSign {
     }
 
     @Override
-    public DetachedSign mode(SignAs mode) throws SOPGPException.UnsupportedOption {
+    @Nonnull
+    public DetachedSign mode(@Nonnull SignAs mode) throws SOPGPException.UnsupportedOption {
         commandList.add("--as=" + mode);
         return this;
     }
 
     @Override
-    public ReadyWithResult<SigningResult> data(InputStream data)
+    @Nonnull
+    public ReadyWithResult<SigningResult> data(@Nonnull InputStream data)
             throws IOException, SOPGPException.KeyIsProtected, SOPGPException.ExpectedText {
 
         File tempDir = tempDirProvider.provideTempDirectory();
@@ -88,7 +94,7 @@ public class DetachedSignExternal implements DetachedSign {
 
             return new ReadyWithResult<SigningResult>() {
                 @Override
-                public SigningResult writeTo(OutputStream outputStream) throws IOException {
+                public SigningResult writeTo(@Nonnull OutputStream outputStream) throws IOException {
                     byte[] buf = new byte[4096];
                     int r;
                     while ((r = data.read(buf)) > 0) {

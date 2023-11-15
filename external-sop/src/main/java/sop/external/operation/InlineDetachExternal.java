@@ -10,6 +10,7 @@ import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.InlineDetach;
 
+import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,13 +38,15 @@ public class InlineDetachExternal implements InlineDetach {
     }
 
     @Override
+    @Nonnull
     public InlineDetach noArmor() {
         commandList.add("--no-armor");
         return this;
     }
 
     @Override
-    public ReadyWithResult<Signatures> message(InputStream messageInputStream) throws IOException, SOPGPException.BadData {
+    @Nonnull
+    public ReadyWithResult<Signatures> message(@Nonnull InputStream messageInputStream) throws IOException, SOPGPException.BadData {
         File tempDir = tempDirProvider.provideTempDirectory();
 
         File signaturesOut = new File(tempDir, "signatures");
@@ -60,7 +63,7 @@ public class InlineDetachExternal implements InlineDetach {
 
             return new ReadyWithResult<Signatures>() {
                 @Override
-                public Signatures writeTo(OutputStream outputStream) throws IOException {
+                public Signatures writeTo(@Nonnull OutputStream outputStream) throws IOException {
                     byte[] buf = new byte[4096];
                     int r;
                     while ((r = messageInputStream.read(buf)) > 0) {
@@ -90,7 +93,7 @@ public class InlineDetachExternal implements InlineDetach {
                     final byte[] sigBytes = signaturesBuffer.toByteArray();
                     return new Signatures() {
                         @Override
-                        public void writeTo(OutputStream signatureOutputStream) throws IOException {
+                        public void writeTo(@Nonnull OutputStream signatureOutputStream) throws IOException {
                             signatureOutputStream.write(sigBytes);
                         }
                     };

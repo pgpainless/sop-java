@@ -9,6 +9,7 @@ import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.ExtractCert;
 
+import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +30,15 @@ public class ExtractCertExternal implements ExtractCert {
     }
 
     @Override
+    @Nonnull
     public ExtractCert noArmor() {
         this.commandList.add("--no-armor");
         return this;
     }
 
     @Override
-    public Ready key(InputStream keyInputStream) throws SOPGPException.BadData {
+    @Nonnull
+    public Ready key(@Nonnull InputStream keyInputStream) throws SOPGPException.BadData {
         return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, keyInputStream);
     }
 }

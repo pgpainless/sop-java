@@ -13,6 +13,7 @@ import sop.external.ExternalSOP;
 import sop.operation.Decrypt;
 import sop.util.UTCUtil;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,21 +49,24 @@ public class DecryptExternal implements Decrypt {
     }
 
     @Override
-    public Decrypt verifyNotBefore(Date timestamp)
+    @Nonnull
+    public Decrypt verifyNotBefore(@Nonnull Date timestamp)
             throws SOPGPException.UnsupportedOption {
         this.commandList.add("--verify-not-before=" + UTCUtil.formatUTCDate(timestamp));
         return this;
     }
 
     @Override
-    public Decrypt verifyNotAfter(Date timestamp)
+    @Nonnull
+    public Decrypt verifyNotAfter(@Nonnull Date timestamp)
             throws SOPGPException.UnsupportedOption {
         this.commandList.add("--verify-not-after=" + UTCUtil.formatUTCDate(timestamp));
         return this;
     }
 
     @Override
-    public Decrypt verifyWithCert(InputStream cert)
+    @Nonnull
+    public Decrypt verifyWithCert(@Nonnull InputStream cert)
             throws SOPGPException.BadData, SOPGPException.UnsupportedAsymmetricAlgo, IOException {
         String envVar = "VERIFY_WITH_" + verifyWithCounter++;
         commandList.add("--verify-with=@ENV:" + envVar);
@@ -71,7 +75,8 @@ public class DecryptExternal implements Decrypt {
     }
 
     @Override
-    public Decrypt withSessionKey(SessionKey sessionKey)
+    @Nonnull
+    public Decrypt withSessionKey(@Nonnull SessionKey sessionKey)
             throws SOPGPException.UnsupportedOption {
         String envVar = "SESSION_KEY_" + withSessionKeyCounter++;
         commandList.add("--with-session-key=@ENV:" + envVar);
@@ -80,7 +85,8 @@ public class DecryptExternal implements Decrypt {
     }
 
     @Override
-    public Decrypt withPassword(String password)
+    @Nonnull
+    public Decrypt withPassword(@Nonnull String password)
             throws SOPGPException.PasswordNotHumanReadable, SOPGPException.UnsupportedOption {
         String envVar = "PASSWORD_" + withPasswordCounter++;
         commandList.add("--with-password=@ENV:" + envVar);
@@ -89,7 +95,8 @@ public class DecryptExternal implements Decrypt {
     }
 
     @Override
-    public Decrypt withKey(InputStream key)
+    @Nonnull
+    public Decrypt withKey(@Nonnull InputStream key)
             throws SOPGPException.BadData, SOPGPException.UnsupportedAsymmetricAlgo, IOException {
         String envVar = "KEY_" + keyCounter++;
         commandList.add("@ENV:" + envVar);
@@ -98,7 +105,8 @@ public class DecryptExternal implements Decrypt {
     }
 
     @Override
-    public Decrypt withKeyPassword(byte[] password)
+    @Nonnull
+    public Decrypt withKeyPassword(@Nonnull byte[] password)
             throws SOPGPException.UnsupportedOption, SOPGPException.PasswordNotHumanReadable {
         String envVar = "KEY_PASSWORD_" + withKeyPasswordCounter++;
         commandList.add("--with-key-password=@ENV:" + envVar);
@@ -107,7 +115,8 @@ public class DecryptExternal implements Decrypt {
     }
 
     @Override
-    public ReadyWithResult<DecryptionResult> ciphertext(InputStream ciphertext)
+    @Nonnull
+    public ReadyWithResult<DecryptionResult> ciphertext(@Nonnull InputStream ciphertext)
             throws SOPGPException.BadData, SOPGPException.MissingArg, SOPGPException.CannotDecrypt,
             SOPGPException.KeyIsProtected, IOException {
         File tempDir = tempDirProvider.provideTempDirectory();
@@ -131,7 +140,7 @@ public class DecryptExternal implements Decrypt {
 
             return new ReadyWithResult<DecryptionResult>() {
                 @Override
-                public DecryptionResult writeTo(OutputStream outputStream) throws IOException {
+                public DecryptionResult writeTo(@Nonnull OutputStream outputStream) throws IOException {
                     byte[] buf = new byte[4096];
                     int r;
                     while ((r = ciphertext.read(buf)) > 0) {

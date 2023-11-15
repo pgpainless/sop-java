@@ -9,6 +9,7 @@ import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.RevokeKey;
 
+import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,15 @@ public class RevokeKeyExternal implements RevokeKey {
     }
 
     @Override
+    @Nonnull
     public RevokeKey noArmor() {
         this.commandList.add("--no-armor");
         return this;
     }
 
     @Override
-    public RevokeKey withKeyPassword(byte[] password) throws SOPGPException.UnsupportedOption, SOPGPException.PasswordNotHumanReadable {
+    @Nonnull
+    public RevokeKey withKeyPassword(@Nonnull byte[] password) throws SOPGPException.UnsupportedOption, SOPGPException.PasswordNotHumanReadable {
         String envVar = "KEY_PASSWORD_" + withKeyPasswordCounter++;
         commandList.add("--with-key-password=@ENV:" + envVar);
         envList.add(envVar + "=" + new String(password));
@@ -42,7 +45,8 @@ public class RevokeKeyExternal implements RevokeKey {
     }
 
     @Override
-    public Ready keys(InputStream keys) {
+    @Nonnull
+    public Ready keys(@Nonnull InputStream keys) {
         return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, keys);
     }
 }

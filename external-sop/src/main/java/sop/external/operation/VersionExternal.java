@@ -7,6 +7,7 @@ package sop.external.operation;
 import sop.external.ExternalSOP;
 import sop.operation.Version;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,6 +28,7 @@ public class VersionExternal implements Version {
     }
 
     @Override
+    @Nonnull
     public String getName() {
         String[] command = new String[] {binary, "version"};
         String[] env = ExternalSOP.propertiesToEnv(environment).toArray(new String[0]);
@@ -45,6 +47,7 @@ public class VersionExternal implements Version {
     }
 
     @Override
+    @Nonnull
     public String getVersion() {
         String[] command = new String[] {binary, "version"};
         String[] env = ExternalSOP.propertiesToEnv(environment).toArray(new String[0]);
@@ -63,6 +66,7 @@ public class VersionExternal implements Version {
     }
 
     @Override
+    @Nonnull
     public String getBackendVersion() {
         String[] command = new String[] {binary, "version", "--backend"};
         String[] env = ExternalSOP.propertiesToEnv(environment).toArray(new String[0]);
@@ -82,6 +86,7 @@ public class VersionExternal implements Version {
     }
 
     @Override
+    @Nonnull
     public String getExtendedVersion() {
         String[] command = new String[] {binary, "version", "--extended"};
         String[] env = ExternalSOP.propertiesToEnv(environment).toArray(new String[0]);
@@ -137,6 +142,7 @@ public class VersionExternal implements Version {
     }
 
     @Override
+    @Nonnull
     public String getSopSpecVersion() {
         String[] command = new String[] {binary, "version", "--sop-spec"};
         String[] env = ExternalSOP.propertiesToEnv(environment).toArray(new String[0]);

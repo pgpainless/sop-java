@@ -9,6 +9,7 @@ import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.Dearmor;
 
+import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,8 @@ public class DearmorExternal implements Dearmor {
     }
 
     @Override
-    public Ready data(InputStream data) throws SOPGPException.BadData {
+    @Nonnull
+    public Ready data(@Nonnull InputStream data) throws SOPGPException.BadData {
         return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, data);
     }
 }

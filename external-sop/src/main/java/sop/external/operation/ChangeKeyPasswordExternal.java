@@ -9,6 +9,7 @@ import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.ChangeKeyPassword;
 
+import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +28,15 @@ public class ChangeKeyPasswordExternal implements ChangeKeyPassword {
     }
 
     @Override
+    @Nonnull
     public ChangeKeyPassword noArmor() {
         this.commandList.add("--no-armor");
         return this;
     }
 
     @Override
-    public ChangeKeyPassword oldKeyPassphrase(String oldPassphrase) {
+    @Nonnull
+    public ChangeKeyPassword oldKeyPassphrase(@Nonnull String oldPassphrase) {
         this.commandList.add("--old-key-password=@ENV:KEY_PASSWORD_" + keyPasswordCounter);
         this.envList.add("KEY_PASSWORD_" + keyPasswordCounter + "=" + oldPassphrase);
         keyPasswordCounter++;
@@ -42,7 +45,8 @@ public class ChangeKeyPasswordExternal implements ChangeKeyPassword {
     }
 
     @Override
-    public ChangeKeyPassword newKeyPassphrase(String newPassphrase) {
+    @Nonnull
+    public ChangeKeyPassword newKeyPassphrase(@Nonnull String newPassphrase) {
         this.commandList.add("--new-key-password=@ENV:KEY_PASSWORD_" + keyPasswordCounter);
         this.envList.add("KEY_PASSWORD_" + keyPasswordCounter + "=" + newPassphrase);
         keyPasswordCounter++;
@@ -51,7 +55,8 @@ public class ChangeKeyPasswordExternal implements ChangeKeyPassword {
     }
 
     @Override
-    public Ready keys(InputStream inputStream) throws SOPGPException.KeyIsProtected, SOPGPException.BadData {
+    @Nonnull
+    public Ready keys(@Nonnull InputStream inputStream) throws SOPGPException.KeyIsProtected, SOPGPException.BadData {
         return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, inputStream);
     }
 }

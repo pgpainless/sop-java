@@ -11,6 +11,7 @@ import sop.external.ExternalSOP;
 import sop.operation.InlineVerify;
 import sop.util.UTCUtil;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,19 +43,22 @@ public class InlineVerifyExternal implements InlineVerify {
     }
 
     @Override
-    public InlineVerify notBefore(Date timestamp) throws SOPGPException.UnsupportedOption {
+    @Nonnull
+    public InlineVerify notBefore(@Nonnull Date timestamp) throws SOPGPException.UnsupportedOption {
         commandList.add("--not-before=" + UTCUtil.formatUTCDate(timestamp));
         return this;
     }
 
     @Override
-    public InlineVerify notAfter(Date timestamp) throws SOPGPException.UnsupportedOption {
+    @Nonnull
+    public InlineVerify notAfter(@Nonnull Date timestamp) throws SOPGPException.UnsupportedOption {
         commandList.add("--not-after=" + UTCUtil.formatUTCDate(timestamp));
         return this;
     }
 
     @Override
-    public InlineVerify cert(InputStream cert) throws SOPGPException.BadData, IOException {
+    @Nonnull
+    public InlineVerify cert(@Nonnull InputStream cert) throws SOPGPException.BadData, IOException {
         String envVar = "CERT_" + certCounter++;
         commandList.add("@ENV:" + envVar);
         envList.add(envVar + "=" + ExternalSOP.readString(cert));
@@ -62,7 +66,8 @@ public class InlineVerifyExternal implements InlineVerify {
     }
 
     @Override
-    public ReadyWithResult<List<Verification>> data(InputStream data) throws IOException, SOPGPException.NoSignature, SOPGPException.BadData {
+    @Nonnull
+    public ReadyWithResult<List<Verification>> data(@Nonnull InputStream data) throws IOException, SOPGPException.NoSignature, SOPGPException.BadData {
         File tempDir = tempDirProvider.provideTempDirectory();
 
         File verificationsOut = new File(tempDir, "verifications-out");
@@ -79,7 +84,7 @@ public class InlineVerifyExternal implements InlineVerify {
 
             return new ReadyWithResult<List<Verification>>() {
                 @Override
-                public List<Verification> writeTo(OutputStream outputStream) throws IOException, SOPGPException.NoSignature {
+                public List<Verification> writeTo(@Nonnull OutputStream outputStream) throws IOException, SOPGPException.NoSignature {
                     byte[] buf = new byte[4096];
                     int r;
                     while ((r = data.read(buf)) > 0) {

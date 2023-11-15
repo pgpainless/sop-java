@@ -10,6 +10,7 @@ import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.InlineSign;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -34,13 +35,15 @@ public class InlineSignExternal implements InlineSign {
     }
 
     @Override
+    @Nonnull
     public InlineSign noArmor() {
         commandList.add("--no-armor");
         return this;
     }
 
     @Override
-    public InlineSign key(InputStream key) throws SOPGPException.KeyCannotSign, SOPGPException.BadData, SOPGPException.UnsupportedAsymmetricAlgo, IOException {
+    @Nonnull
+    public InlineSign key(@Nonnull InputStream key) throws SOPGPException.KeyCannotSign, SOPGPException.BadData, SOPGPException.UnsupportedAsymmetricAlgo, IOException {
         String envVar = "KEY_" + keyCounter++;
         commandList.add("@ENV:" + envVar);
         envList.add(envVar + "=" + ExternalSOP.readString(key));
@@ -48,7 +51,8 @@ public class InlineSignExternal implements InlineSign {
     }
 
     @Override
-    public InlineSign withKeyPassword(byte[] password) throws SOPGPException.UnsupportedOption, SOPGPException.PasswordNotHumanReadable {
+    @Nonnull
+    public InlineSign withKeyPassword(@Nonnull byte[] password) throws SOPGPException.UnsupportedOption, SOPGPException.PasswordNotHumanReadable {
         String envVar = "WITH_KEY_PASSWORD_" + withKeyPasswordCounter++;
         commandList.add("--with-key-password=@ENV:" + envVar);
         envList.add(envVar + "=" + new String(password));
@@ -56,13 +60,15 @@ public class InlineSignExternal implements InlineSign {
     }
 
     @Override
-    public InlineSign mode(InlineSignAs mode) throws SOPGPException.UnsupportedOption {
+    @Nonnull
+    public InlineSign mode(@Nonnull InlineSignAs mode) throws SOPGPException.UnsupportedOption {
         commandList.add("--as=" + mode);
         return this;
     }
 
     @Override
-    public Ready data(InputStream data) throws SOPGPException.KeyIsProtected, SOPGPException.ExpectedText {
+    @Nonnull
+    public Ready data(@Nonnull InputStream data) throws SOPGPException.KeyIsProtected, SOPGPException.ExpectedText {
         return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, data);
     }
 }

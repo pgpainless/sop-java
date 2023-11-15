@@ -8,6 +8,7 @@ import sop.Profile;
 import sop.external.ExternalSOP;
 import sop.operation.ListProfiles;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,8 @@ public class ListProfilesExternal implements ListProfiles {
     }
 
     @Override
-    public List<Profile> subcommand(String command) {
+    @Nonnull
+    public List<Profile> subcommand(@Nonnull String command) {
         commandList.add(command);
         try {
             String output = new String(ExternalSOP.executeProducingOperation(Runtime.getRuntime(), commandList, envList).getBytes());

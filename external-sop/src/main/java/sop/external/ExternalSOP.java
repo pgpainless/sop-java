@@ -106,76 +106,91 @@ public class ExternalSOP implements SOP {
     }
 
     @Override
+    @Nonnull
     public Version version() {
         return new VersionExternal(binaryName, properties);
     }
 
     @Override
+    @Nonnull
     public GenerateKey generateKey() {
         return new GenerateKeyExternal(binaryName, properties);
     }
 
     @Override
+    @Nonnull
     public ExtractCert extractCert() {
         return new ExtractCertExternal(binaryName, properties);
     }
 
     @Override
+    @Nonnull
     public DetachedSign detachedSign() {
         return new DetachedSignExternal(binaryName, properties, tempDirProvider);
     }
 
     @Override
+    @Nonnull
     public InlineSign inlineSign() {
         return new InlineSignExternal(binaryName, properties);
     }
 
     @Override
+    @Nonnull
     public DetachedVerify detachedVerify() {
         return new DetachedVerifyExternal(binaryName, properties);
     }
 
     @Override
+    @Nonnull
     public InlineVerify inlineVerify() {
         return new InlineVerifyExternal(binaryName, properties, tempDirProvider);
     }
 
     @Override
+    @Nonnull
     public InlineDetach inlineDetach() {
         return new InlineDetachExternal(binaryName, properties, tempDirProvider);
     }
 
     @Override
+    @Nonnull
     public Encrypt encrypt() {
         return new EncryptExternal(binaryName, properties, tempDirProvider);
     }
 
     @Override
+    @Nonnull
     public Decrypt decrypt() {
         return new DecryptExternal(binaryName, properties, tempDirProvider);
     }
 
     @Override
+    @Nonnull
     public Armor armor() {
         return new ArmorExternal(binaryName, properties);
     }
 
     @Override
+    @Nonnull
     public ListProfiles listProfiles() {
         return new ListProfilesExternal(binaryName, properties);
     }
 
     @Override
+    @Nonnull
     public RevokeKey revokeKey() {
         return new RevokeKeyExternal(binaryName, properties);
     }
 
     @Override
+    @Nonnull
     public ChangeKeyPassword changeKeyPassword() {
         return new ChangeKeyPasswordExternal(binaryName, properties);
     }
 
     @Override
+    @Nonnull
     public Dearmor dearmor() {
         return new DearmorExternal(binaryName, properties);
     }
@@ -349,7 +364,7 @@ public class ExternalSOP implements SOP {
 
             return new Ready() {
                 @Override
-                public void writeTo(OutputStream outputStream) throws IOException {
+                public void writeTo(@Nonnull OutputStream outputStream) throws IOException {
                     byte[] buf = new byte[4096];
                     int r;
                     while ((r = stdIn.read(buf)) >= 0) {
@@ -388,7 +403,7 @@ public class ExternalSOP implements SOP {
 
             return new Ready() {
                 @Override
-                public void writeTo(OutputStream outputStream) throws IOException {
+                public void writeTo(@Nonnull OutputStream outputStream) throws IOException {
                     byte[] buf = new byte[4096];
                     int r;
                     while ((r = standardIn.read(buf)) > 0) {

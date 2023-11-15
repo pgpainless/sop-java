@@ -12,6 +12,7 @@ import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.Encrypt;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,20 +43,23 @@ public class EncryptExternal implements Encrypt {
     }
 
     @Override
+    @Nonnull
     public Encrypt noArmor() {
         this.commandList.add("--no-armor");
         return this;
     }
 
     @Override
-    public Encrypt mode(EncryptAs mode)
+    @Nonnull
+    public Encrypt mode(@Nonnull EncryptAs mode)
             throws SOPGPException.UnsupportedOption {
         this.commandList.add("--as=" + mode);
         return this;
     }
 
     @Override
-    public Encrypt signWith(InputStream key)
+    @Nonnull
+    public Encrypt signWith(@Nonnull InputStream key)
             throws SOPGPException.KeyCannotSign, SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.BadData,
             IOException {
         String envVar = "SIGN_WITH_" + SIGN_WITH_COUNTER++;
@@ -65,7 +69,8 @@ public class EncryptExternal implements Encrypt {
     }
 
     @Override
-    public Encrypt withKeyPassword(byte[] password)
+    @Nonnull
+    public Encrypt withKeyPassword(@Nonnull byte[] password)
             throws SOPGPException.PasswordNotHumanReadable, SOPGPException.UnsupportedOption {
         String envVar = "KEY_PASSWORD_" + KEY_PASSWORD_COUNTER++;
         commandList.add("--with-key-password=@ENV:" + envVar);
@@ -74,7 +79,8 @@ public class EncryptExternal implements Encrypt {
     }
 
     @Override
-    public Encrypt withPassword(String password)
+    @Nonnull
+    public Encrypt withPassword(@Nonnull String password)
             throws SOPGPException.PasswordNotHumanReadable, SOPGPException.UnsupportedOption {
         String envVar = "PASSWORD_" + PASSWORD_COUNTER++;
         commandList.add("--with-password=@ENV:" + envVar);
@@ -83,7 +89,8 @@ public class EncryptExternal implements Encrypt {
     }
 
     @Override
-    public Encrypt withCert(InputStream cert)
+    @Nonnull
+    public Encrypt withCert(@Nonnull InputStream cert)
             throws SOPGPException.CertCannotEncrypt, SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.BadData,
             IOException {
         String envVar = "CERT_" + CERT_COUNTER++;
@@ -93,13 +100,15 @@ public class EncryptExternal implements Encrypt {
     }
 
     @Override
-    public Encrypt profile(String profileName) {
+    @Nonnull
+    public Encrypt profile(@Nonnull String profileName) {
         commandList.add("--profile=" + profileName);
         return this;
     }
 
     @Override
-    public ReadyWithResult<EncryptionResult> plaintext(InputStream plaintext)
+    @Nonnull
+    public ReadyWithResult<EncryptionResult> plaintext(@Nonnull InputStream plaintext)
             throws SOPGPException.KeyIsProtected, IOException {
         File tempDir = tempDirProvider.provideTempDirectory();
 
@@ -116,7 +125,7 @@ public class EncryptExternal implements Encrypt {
 
             return new ReadyWithResult<EncryptionResult>() {
                 @Override
-                public EncryptionResult writeTo(OutputStream outputStream) throws IOException {
+                public EncryptionResult writeTo(@Nonnull OutputStream outputStream) throws IOException {
                     byte[] buf = new byte[4096];
                     int r;
                     while ((r = plaintext.read(buf)) > 0) {

@@ -9,6 +9,7 @@ import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.GenerateKey;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -30,19 +31,22 @@ public class GenerateKeyExternal implements GenerateKey {
     }
 
     @Override
+    @Nonnull
     public GenerateKey noArmor() {
         this.commandList.add("--no-armor");
         return this;
     }
 
     @Override
-    public GenerateKey userId(String userId) {
+    @Nonnull
+    public GenerateKey userId(@Nonnull String userId) {
         this.commandList.add(userId);
         return this;
     }
 
     @Override
-    public GenerateKey withKeyPassword(String password)
+    @Nonnull
+    public GenerateKey withKeyPassword(@Nonnull String password)
             throws SOPGPException.PasswordNotHumanReadable, SOPGPException.UnsupportedOption {
         this.commandList.add("--with-key-password=@ENV:KEY_PASSWORD_" + keyPasswordCounter);
         this.envList.add("KEY_PASSWORD_" + keyPasswordCounter + "=" + password);
@@ -52,18 +56,21 @@ public class GenerateKeyExternal implements GenerateKey {
     }
 
     @Override
-    public GenerateKey profile(String profile) {
+    @Nonnull
+    public GenerateKey profile(@Nonnull String profile) {
         commandList.add("--profile=" + profile);
         return this;
     }
 
     @Override
+    @Nonnull
     public GenerateKey signingOnly() {
         commandList.add("--signing-only");
         return this;
     }
 
     @Override
+    @Nonnull
     public Ready generate()
             throws SOPGPException.MissingArg, SOPGPException.UnsupportedAsymmetricAlgo {
         return ExternalSOP.executeProducingOperation(Runtime.getRuntime(), commandList, envList);

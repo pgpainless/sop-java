@@ -11,6 +11,7 @@ import sop.operation.DetachedVerify;
 import sop.operation.VerifySignatures;
 import sop.util.UTCUtil;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,31 +43,36 @@ public class DetachedVerifyExternal implements DetachedVerify {
     }
 
     @Override
-    public DetachedVerify notBefore(Date timestamp) throws SOPGPException.UnsupportedOption {
+    @Nonnull
+    public DetachedVerify notBefore(@Nonnull Date timestamp) throws SOPGPException.UnsupportedOption {
         commandList.add("--not-before=" + UTCUtil.formatUTCDate(timestamp));
         return this;
     }
 
     @Override
-    public DetachedVerify notAfter(Date timestamp) throws SOPGPException.UnsupportedOption {
+    @Nonnull
+    public DetachedVerify notAfter(@Nonnull Date timestamp) throws SOPGPException.UnsupportedOption {
         commandList.add("--not-after=" + UTCUtil.formatUTCDate(timestamp));
         return this;
     }
 
     @Override
-    public DetachedVerify cert(InputStream cert) throws SOPGPException.BadData {
+    @Nonnull
+    public DetachedVerify cert(@Nonnull InputStream cert) throws SOPGPException.BadData {
         this.certs.add(cert);
         return this;
     }
 
     @Override
-    public VerifySignatures signatures(InputStream signatures) throws SOPGPException.BadData {
+    @Nonnull
+    public VerifySignatures signatures(@Nonnull InputStream signatures) throws SOPGPException.BadData {
         this.signatures = signatures;
         return this;
     }
 
     @Override
-    public List<Verification> data(InputStream data) throws IOException, SOPGPException.NoSignature, SOPGPException.BadData {
+    @Nonnull
+    public List<Verification> data(@Nonnull InputStream data) throws IOException, SOPGPException.NoSignature, SOPGPException.BadData {
         commandList.add("@ENV:SIGNATURE");
         envList.add("SIGNATURE=" + ExternalSOP.readString(signatures));
 
