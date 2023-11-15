@@ -45,7 +45,7 @@ public class SOPTest {
     @Test
     @ExpectSystemExitWithStatus(1)
     public void assertThrowsIfNoSOPBackendSet() {
-        SopCLI.SOP_INSTANCE = null;
+        SopCLI.setSopInstance(null);
         // At this point, no SOP backend is set, so an InvalidStateException triggers exit(1)
         SopCLI.main(new String[] {"armor"});
     }

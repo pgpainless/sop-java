@@ -278,7 +278,7 @@ public class DecryptCmdTest {
         File certFile = File.createTempFile("existing-verify-out-cert", ".asc");
         File existingVerifyOut = File.createTempFile("existing-verify-out", ".tmp");
 
-        SopCLI.main(new String[] {"decrypt", "--verify-out", existingVerifyOut.getAbsolutePath(), "--verify-with", certFile.getAbsolutePath()});
+        SopCLI.main(new String[] {"decrypt", "--verifications-out", existingVerifyOut.getAbsolutePath(), "--verify-with", certFile.getAbsolutePath()});
     }
 
     @Test
@@ -302,7 +302,7 @@ public class DecryptCmdTest {
             }
         });
 
-        SopCLI.main(new String[] {"decrypt", "--verify-out", verifyOut.getAbsolutePath(), "--verify-with", certFile.getAbsolutePath()});
+        SopCLI.main(new String[] {"decrypt", "--verifications-out", verifyOut.getAbsolutePath(), "--verify-with", certFile.getAbsolutePath()});
         try (BufferedReader reader = new BufferedReader(new FileReader(verifyOut))) {
             String line = reader.readLine();
             assertEquals("2021-07-11T20:58:23Z 1B66A707819A920925BC6777C3E0AFC0B2DFF862 C8CD564EBF8D7BBA90611D8D071773658BF6BF86", line);
@@ -377,6 +377,6 @@ public class DecryptCmdTest {
     @Test
     @ExpectSystemExitWithStatus(SOPGPException.IncompleteVerification.EXIT_CODE)
     public void verifyOutWithoutVerifyWithCausesExit23() {
-        SopCLI.main(new String[] {"decrypt", "--verify-out", "out.file"});
+        SopCLI.main(new String[] {"decrypt", "--verifications-out", "out.file"});
     }
 }

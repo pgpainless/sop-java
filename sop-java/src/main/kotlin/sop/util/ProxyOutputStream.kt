@@ -15,7 +15,7 @@ import java.io.OutputStream
  * class is useful if we need to provide an [OutputStream] at one point in time when the final
  * target output stream is not yet known.
  */
-class ProxyOutputStream {
+class ProxyOutputStream : OutputStream() {
     private val buffer = ByteArrayOutputStream()
     private var swapped: OutputStream? = null
 
@@ -27,7 +27,7 @@ class ProxyOutputStream {
 
     @Synchronized
     @Throws(IOException::class)
-    fun write(b: ByteArray) {
+    override fun write(b: ByteArray) {
         if (swapped == null) {
             buffer.write(b)
         } else {
@@ -37,7 +37,7 @@ class ProxyOutputStream {
 
     @Synchronized
     @Throws(IOException::class)
-    fun write(b: ByteArray, off: Int, len: Int) {
+    override fun write(b: ByteArray, off: Int, len: Int) {
         if (swapped == null) {
             buffer.write(b, off, len)
         } else {
@@ -47,7 +47,7 @@ class ProxyOutputStream {
 
     @Synchronized
     @Throws(IOException::class)
-    fun flush() {
+    override fun flush() {
         buffer.flush()
         if (swapped != null) {
             swapped!!.flush()
@@ -56,7 +56,7 @@ class ProxyOutputStream {
 
     @Synchronized
     @Throws(IOException::class)
-    fun close() {
+    override fun close() {
         buffer.close()
         if (swapped != null) {
             swapped!!.close()
@@ -65,7 +65,7 @@ class ProxyOutputStream {
 
     @Synchronized
     @Throws(IOException::class)
-    fun write(i: Int) {
+    override fun write(i: Int) {
         if (swapped == null) {
             buffer.write(i)
         } else {
