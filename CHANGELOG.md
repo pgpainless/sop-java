@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 8.0.0-SNAPSHOT
+## 8.0.0
 - Rewrote `sop-java` in Kotlin
 - Rewrote `sop-java-picocli` in Kotlin
 - Rewrote `external-sop` in Kotlin
