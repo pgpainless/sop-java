@@ -20,7 +20,7 @@ class GenerateKeyCmd : AbstractSopCmd() {
 
     @Parameters(paramLabel = "USERID") var userId: List<String> = listOf()
 
-    @Option(names = ["---with-key-password"], paramLabel = "PASSWORD")
+    @Option(names = ["--with-key-password"], paramLabel = "PASSWORD")
     var withKeyPassword: String? = null
 
     @Option(names = ["--profile"], paramLabel = "PROFILE") var profile: String? = null
