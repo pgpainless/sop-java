@@ -45,6 +45,15 @@ public class RevokeKeyTest extends AbstractSOPTest {
 
     @ParameterizedTest
     @MethodSource("provideInstances")
+    public void revokeUnprotectedKeyNoArmor(SOP sop) throws IOException {
+        byte[] secretKey = sop.generateKey().userId("Alice <alice@pgpainless.org>").generate().getBytes();
+        byte[] revocation = sop.revokeKey().noArmor().keys(secretKey).getBytes();
+
+        assertFalse(JUtils.arrayStartsWith(revocation, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
     public void revokeUnprotectedKeyUnarmored(SOP sop) throws IOException {
         byte[] secretKey = sop.generateKey().userId("Alice <alice@pgpainless.org>").noArmor().generate().getBytes();
         byte[] revocation = sop.revokeKey().noArmor().keys(secretKey).getBytes();

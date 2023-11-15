@@ -10,6 +10,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
 import sop.exception.SOPGPException;
+import sop.testsuite.JUtils;
+import sop.testsuite.TestData;
 import sop.util.UTF8Util;
 
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
@@ -94,5 +97,28 @@ public class ChangeKeyPasswordTest extends AbstractSOPTest {
         assertThrows(SOPGPException.PasswordNotHumanReadable.class, () ->
                 sop.changeKeyPassword().newKeyPassphrase(new byte[] {(byte) 0xff, (byte) 0xfe}));
 
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void testNoArmor(SOP sop) throws IOException {
+        byte[] oldPassword = "sw0rdf1sh".getBytes(UTF8Util.UTF8);
+        byte[] newPassword = "0r4ng3".getBytes(UTF8Util.UTF8);
+        byte[] protectedKey = sop.generateKey().withKeyPassword(oldPassword).generate().getBytes();
+
+        byte[] armored = sop.changeKeyPassword()
+                .oldKeyPassphrase(oldPassword)
+                .newKeyPassphrase(newPassword)
+                .keys(protectedKey)
+                .getBytes();
+        JUtils.assertArrayStartsWith(armored, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK);
+
+        byte[] unarmored = sop.changeKeyPassword()
+                .noArmor()
+                .oldKeyPassphrase(oldPassword)
+                .newKeyPassphrase(newPassword)
+                .keys(protectedKey)
+                .getBytes();
+        assertFalse(JUtils.arrayStartsWith(unarmored, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK));
     }
 }
