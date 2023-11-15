@@ -1,6 +1,6 @@
-pipeline:
+steps:
   run:
-    image: gradle:7.5-jdk8-jammy
+    image: gradle:7.6-jdk11-jammy
     commands:
       # Install Sequoia-SOP
       - apt update && apt install --yes sqop
@@ -14,4 +14,4 @@ pipeline:
       - gradle check javadocAll
       # Code has coverage
       - gradle jacocoRootReport coveralls
-    secrets: [COVERALLS_REPO_TOKEN]
+    secrets: [coveralls_repo_token]

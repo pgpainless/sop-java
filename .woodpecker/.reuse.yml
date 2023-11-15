@@ -1,6 +1,6 @@
 # Code is licensed properly
 # See https://reuse.software/
-pipeline:
+steps:
   reuse:
     image: fsfe/reuse:latest
     commands:
