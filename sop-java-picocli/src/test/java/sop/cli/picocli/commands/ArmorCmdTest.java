@@ -4,17 +4,6 @@
 
 package sop.cli.picocli.commands;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import com.ginsberg.junit.exit.FailOnSystemExit;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,9 +11,19 @@ import org.junit.jupiter.api.Test;
 import sop.Ready;
 import sop.SOP;
 import sop.cli.picocli.SopCLI;
-import sop.enums.ArmorLabel;
 import sop.exception.SOPGPException;
 import sop.operation.Armor;
+
+import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ArmorCmdTest {
 
@@ -42,37 +41,9 @@ public class ArmorCmdTest {
     }
 
     @Test
-    public void assertLabelIsNotCalledByDefault() throws SOPGPException.UnsupportedOption {
-        SopCLI.main(new String[] {"armor"});
-        verify(armor, never()).label(any());
-    }
-
-    @Test
-    public void assertLabelIsCalledWhenFlaggedWithArgument() throws SOPGPException.UnsupportedOption {
-        for (ArmorLabel label : ArmorLabel.values()) {
-            SopCLI.main(new String[] {"armor", "--label", label.name()});
-            verify(armor, times(1)).label(label);
-        }
-    }
-
-    @Test
     public void assertDataIsAlwaysCalled() throws SOPGPException.BadData, IOException {
         SopCLI.main(new String[] {"armor"});
         verify(armor, times(1)).data((InputStream) any());
-    }
-
-    @Test
-    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
-    public void assertThrowsForInvalidLabel() {
-        SopCLI.main(new String[] {"armor", "--label", "Invalid"});
-    }
-
-    @Test
-    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
-    public void ifLabelsUnsupportedExit37() throws SOPGPException.UnsupportedOption {
-        when(armor.label(any())).thenThrow(new SOPGPException.UnsupportedOption("Custom Armor labels are not supported."));
-
-        SopCLI.main(new String[] {"armor", "--label", "Sig"});
     }
 
     @Test
@@ -94,7 +65,7 @@ public class ArmorCmdTest {
     private static Ready nopReady() {
         return new Ready() {
             @Override
-            public void writeTo(OutputStream outputStream) {
+            public void writeTo(@Nonnull OutputStream outputStream) {
             }
         };
     }
