@@ -7,10 +7,12 @@ SPDX-License-Identifier: Apache-2.0
 # Changelog
 
 ## 8.0.0-SNAPSHOT
-- Rewrote API in Kotlin
+- Rewrote `sop-java` in Kotlin
+- Rewrote `sop-java-picocli` in Kotlin
+- Rewrote `external-sop` in Kotlin
 - Update implementation to [SOP Specification revision 08](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-08.html).
   - Add `--no-armor` option to `revoke-key` and `change-key-password` subcommands
-  - `armor`: Deprecate `--label` option
+  - `armor`: Deprecate `--label` option in `sop-java` and remove in `sop-java-picocli`
   - `encrypt`: Add `--session-key-out` option
 - Slight API changes:
   - `sop.encrypt().plaintext()` now returns a `ReadyWithResult<EncryptionResult>` instead of `Ready`.
