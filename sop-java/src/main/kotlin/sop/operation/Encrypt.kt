@@ -6,8 +6,9 @@ package sop.operation
 
 import java.io.IOException
 import java.io.InputStream
+import sop.EncryptionResult
 import sop.Profile
-import sop.Ready
+import sop.ReadyWithResult
 import sop.enums.EncryptAs
 import sop.exception.SOPGPException.*
 import sop.util.UTF8Util
@@ -146,20 +147,22 @@ interface Encrypt {
      * Encrypt the given data yielding the ciphertext.
      *
      * @param plaintext plaintext
-     * @return input stream containing the ciphertext
+     * @return result and ciphertext
      * @throws IOException in case of an IO error
      * @throws KeyIsProtected if at least one signing key cannot be unlocked
      */
-    @Throws(IOException::class, KeyIsProtected::class) fun plaintext(plaintext: InputStream): Ready
+    @Throws(IOException::class, KeyIsProtected::class)
+    fun plaintext(plaintext: InputStream): ReadyWithResult<EncryptionResult>
 
     /**
      * Encrypt the given data yielding the ciphertext.
      *
      * @param plaintext plaintext
-     * @return input stream containing the ciphertext
+     * @return result and ciphertext
      * @throws IOException in case of an IO error
      * @throws KeyIsProtected if at least one signing key cannot be unlocked
      */
     @Throws(IOException::class, KeyIsProtected::class)
-    fun plaintext(plaintext: ByteArray): Ready = plaintext(plaintext.inputStream())
+    fun plaintext(plaintext: ByteArray): ReadyWithResult<EncryptionResult> =
+        plaintext(plaintext.inputStream())
 }

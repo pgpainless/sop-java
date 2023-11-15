@@ -6,6 +6,19 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 8.0.0-SNAPSHOT
+- Rewrote API in Kotlin
+- Update implementation to [SOP Specification revision 08](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-08.html).
+  - Add `--no-armor` option to `revoke-key` and `change-key-password` subcommands
+  - `armor`: Deprecate `--label` option
+  - `encrypt`: Add `--session-key-out` option
+- Slight API changes:
+  - `sop.encrypt().plaintext()` now returns a `ReadyWithResult<EncryptionResult>` instead of `Ready`.
+  - `EncryptionResult` is a new result type, that provides access to the session key of an encrypted message
+  - Change `ArmorLabel` values into lowercase
+  - Change `EncryptAs` values into lowercase
+  - Change `SignAs` values into lowercase
+
 ## 7.0.0
 - Update implementation to [SOP Specification revision 07](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-07.html).
   - Add support for new `revoke-key` subcommand

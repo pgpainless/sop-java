@@ -5,6 +5,7 @@
 package sop.cli.picocli.commands
 
 import java.io.IOException
+import java.io.PrintWriter
 import picocli.CommandLine.*
 import sop.cli.picocli.SopCLI
 import sop.enums.EncryptAs
@@ -32,8 +33,13 @@ class EncryptCmd : AbstractSopCmd() {
 
     @Parameters(index = "0..*", paramLabel = "CERTS") var certs: List<String> = listOf()
 
+    @Option(names = ["--session-key-out"], paramLabel = "SESSIONKEY")
+    var sessionKeyOut: String? = null
+
     override fun run() {
         val encrypt = throwIfUnsupportedSubcommand(SopCLI.getSop().encrypt(), "encrypt")
+
+        throwIfOutputExists(sessionKeyOut)
 
         profile?.let {
             try {
@@ -130,7 +136,22 @@ class EncryptCmd : AbstractSopCmd() {
 
         try {
             val ready = encrypt.plaintext(System.`in`)
-            ready.writeTo(System.out)
+            val result = ready.writeTo(System.out)
+
+            if (sessionKeyOut == null) {
+                return
+            }
+
+            getOutput(sessionKeyOut).use {
+                if (!result.sessionKey.isPresent) {
+                    val errorMsg = getMsg("sop.error.runtime.no_session_key_extracted")
+                    throw UnsupportedOption(String.format(errorMsg, "--session-key-out"))
+                }
+                val sessionKey = result.sessionKey.get() ?: return
+                val writer = PrintWriter(it)
+                writer.println(sessionKey)
+                writer.flush()
+            }
         } catch (e: IOException) {
             throw RuntimeException(e)
         }

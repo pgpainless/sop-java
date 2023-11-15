@@ -4,14 +4,19 @@
 
 package sop.external.operation;
 
-import sop.Ready;
+import sop.EncryptionResult;
+import sop.ReadyWithResult;
+import sop.SessionKey;
 import sop.enums.EncryptAs;
 import sop.exception.SOPGPException;
 import sop.external.ExternalSOP;
 import sop.operation.Encrypt;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -21,6 +26,7 @@ import java.util.Properties;
  */
 public class EncryptExternal implements Encrypt {
 
+    private final ExternalSOP.TempDirProvider tempDirProvider;
     private final List<String> commandList = new ArrayList<>();
     private final List<String> envList;
     private int SIGN_WITH_COUNTER = 0;
@@ -28,7 +34,8 @@ public class EncryptExternal implements Encrypt {
     private int PASSWORD_COUNTER = 0;
     private int CERT_COUNTER = 0;
 
-    public EncryptExternal(String binary, Properties environment) {
+    public EncryptExternal(String binary, Properties environment, ExternalSOP.TempDirProvider tempDirProvider) {
+        this.tempDirProvider = tempDirProvider;
         this.commandList.add(binary);
         this.commandList.add("encrypt");
         this.envList = ExternalSOP.propertiesToEnv(environment);
@@ -92,8 +99,53 @@ public class EncryptExternal implements Encrypt {
     }
 
     @Override
-    public Ready plaintext(InputStream plaintext)
-            throws SOPGPException.KeyIsProtected {
-        return ExternalSOP.executeTransformingOperation(Runtime.getRuntime(), commandList, envList, plaintext);
+    public ReadyWithResult<EncryptionResult> plaintext(InputStream plaintext)
+            throws SOPGPException.KeyIsProtected, IOException {
+        File tempDir = tempDirProvider.provideTempDirectory();
+
+        File sessionKeyOut = new File(tempDir, "session-key-out");
+        sessionKeyOut.delete();
+        commandList.add("--session-key-out=" + sessionKeyOut.getAbsolutePath());
+
+        String[] command = commandList.toArray(new String[0]);
+        String[] env = envList.toArray(new String[0]);
+        try {
+            Process process = Runtime.getRuntime().exec(command, env);
+            OutputStream processOut = process.getOutputStream();
+            InputStream processIn = process.getInputStream();
+
+            return new ReadyWithResult<EncryptionResult>() {
+                @Override
+                public EncryptionResult writeTo(OutputStream outputStream) throws IOException {
+                    byte[] buf = new byte[4096];
+                    int r;
+                    while ((r = plaintext.read(buf)) > 0) {
+                        processOut.write(buf, 0, r);
+                    }
+
+                    plaintext.close();
+                    processOut.close();
+
+                    while ((r = processIn.read(buf)) > 0) {
+                        outputStream.write(buf, 0 , r);
+                    }
+
+                    processIn.close();
+                    outputStream.close();
+
+                    ExternalSOP.finish(process);
+
+                    FileInputStream sessionKeyOutIn = new FileInputStream(sessionKeyOut);
+                    String line = ExternalSOP.readString(sessionKeyOutIn);
+                    SessionKey sessionKey = SessionKey.fromString(line.trim());
+                    sessionKeyOutIn.close();
+                    sessionKeyOut.delete();
+
+                    return new EncryptionResult(sessionKey);
+                }
+            };
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
