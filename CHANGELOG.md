@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 5.0.2
+- `decrypt`: Do not throw `NoSignature` exception (exit code 3) if `--verify-with` is set, but `VERIFICATIONS` is empty.
+
 ## 5.0.1
 - `external-sop`: Properly map error codes to new exception types:
   - `UNSUPPORTED_PROFILE`
