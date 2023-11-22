@@ -85,13 +85,10 @@ class DecryptCmd : AbstractSopCmd() {
     @Throws(IOException::class)
     private fun writeVerifyOut(result: DecryptionResult) {
         verifyOut?.let {
-            if (result.verifications.isEmpty()) {
-                val errorMsg = getMsg("sop.error.runtime.no_verifiable_signature_found")
-                throw NoSignature(errorMsg)
-            }
-
-            getOutput(verifyOut).use { out ->
-                PrintWriter(out).use { pw -> result.verifications.forEach { pw.println(it) } }
+            getOutput(it).use { out ->
+                PrintWriter(out).use { pw ->
+                    result.verifications.forEach { verification -> pw.println(verification) }
+                }
             }
         }
     }
