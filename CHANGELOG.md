@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 6.0.1
+- `decrypt`: Do not throw `NoSignature` exception if `--verify-with` was provided, but `VERIFICATIONS` is empty
+
 ## 6.0.0
 - Update implementation to [SOP Specification revision 06](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-06.html).
   - Add option `--profile=XYZ` to `encrypt` subcommand
