@@ -6,6 +6,10 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 4.1.2-SNAPSHOT
+- Do not throw `NoSignature` (exit code 3) if no valid signatures were found during `decrypt`, even though
+  signature verification was requested.
+
 ## 4.1.1
 - Restructure test suite to allow simultaneous testing of multiple backends
 - Fix IOException in `sop sign` due to premature stream closing
