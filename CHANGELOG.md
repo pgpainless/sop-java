@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 4.1.2-SNAPSHOT
+## 4.1.2
 - Do not throw `NoSignature` (exit code 3) if no valid signatures were found during `decrypt`, even though
   signature verification was requested.
 
