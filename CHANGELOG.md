@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 8.0.1
+- `decrypt`: Do not throw `NoSignature` exception (exit code 3) if `--verify-with` is provided, but `VERIFICATIONS` is empty.
+
 ## 8.0.0
 - Rewrote `sop-java` in Kotlin
 - Rewrote `sop-java-picocli` in Kotlin
