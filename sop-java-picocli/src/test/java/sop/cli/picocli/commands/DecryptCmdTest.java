@@ -21,6 +21,7 @@ import sop.operation.Decrypt;
 import sop.util.HexUtil;
 import sop.util.UTCUtil;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -246,15 +247,17 @@ public class DecryptCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.NoSignature.EXIT_CODE)
-    public void assertNoSignatureExceptionCausesExit3() throws SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData, IOException {
+    public void assertNoVerificationsIsOkay() throws SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData, IOException {
+        File tempFile = File.createTempFile("verify-with-", ".tmp");
+        File verifyOut = new File(tempFile.getParent(), "verifications.out");
+        verifyOut.deleteOnExit();
         when(decrypt.ciphertext((InputStream) any())).thenReturn(new ReadyWithResult<DecryptionResult>() {
             @Override
-            public DecryptionResult writeTo(OutputStream outputStream) throws SOPGPException.NoSignature {
-                throw new SOPGPException.NoSignature();
+            public DecryptionResult writeTo(@Nonnull OutputStream outputStream) throws SOPGPException.NoSignature {
+                return new DecryptionResult(null, Collections.emptyList());
             }
         });
-        SopCLI.main(new String[] {"decrypt"});
+        SopCLI.main(new String[] {"decrypt", "--verify-with", tempFile.getAbsolutePath(), "--verifications-out", verifyOut.getAbsolutePath()});
     }
 
     @Test
