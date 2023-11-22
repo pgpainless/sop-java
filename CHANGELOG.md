@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 7.0.1
+- `decrypt`: Do not throw `NoSignature` exception (exit code 3) if `--verify-with` is provided, but `VERIFICATIONS` is empty.
+
 ## 7.0.0
 - Update implementation to [SOP Specification revision 07](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-07.html).
   - Add support for new `revoke-key` subcommand
