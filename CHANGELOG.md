@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 6.1.1
+- `decrypt`: Do not throw `NoSignature` exception if `--verify-with` was provided, but `VERIFICATIONS` is empty
+
 ## 6.1.0
 - `listProfiles()`: Add shortcut methods `generateKey()` and `encrypt()`
 - Add DSL for testing `Verification` results
