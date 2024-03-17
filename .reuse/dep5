@@ -22,3 +22,8 @@ License: Apache-2.0
 Files: external-sop/src/main/resources/sop/testsuite/external/*
 Copyright: 2023 the original author or authors
 License: Apache-2.0
+
+# Github Issue Templates
+Files: .github/ISSUE_TEMPLATE/*
+Copyright: 2024 the original author or authors
+License: Apache-2.0
