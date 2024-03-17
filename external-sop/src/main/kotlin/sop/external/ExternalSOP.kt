@@ -16,7 +16,7 @@ import sop.external.operation.*
 import sop.operation.*
 
 /**
- * Implementation of the {@link SOP} API using an external SOP binary.
+ * Implementation of the [SOP] API using an external SOP binary.
  *
  * Instantiate an [ExternalSOP] object for the given binary and the given [TempDirProvider] using
  * empty environment variables.
