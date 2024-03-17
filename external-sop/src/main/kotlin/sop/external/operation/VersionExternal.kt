@@ -68,6 +68,10 @@ class VersionExternal(binary: String, environment: Properties) : Version {
         return null
     }
 
+    override fun getSopVVersion(): String {
+        return executeForLines(commandList.plus("--sopv"))
+    }
+
     override fun getSopSpecVersion(): String {
         return executeForLines(commandList.plus("--sop-spec"))
     }

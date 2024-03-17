@@ -9,16 +9,13 @@ import sop.operation.ChangeKeyPassword
 import sop.operation.Dearmor
 import sop.operation.Decrypt
 import sop.operation.DetachedSign
-import sop.operation.DetachedVerify
 import sop.operation.Encrypt
 import sop.operation.ExtractCert
 import sop.operation.GenerateKey
 import sop.operation.InlineDetach
 import sop.operation.InlineSign
-import sop.operation.InlineVerify
 import sop.operation.ListProfiles
 import sop.operation.RevokeKey
-import sop.operation.Version
 
 /**
  * Stateless OpenPGP Interface. This class provides a stateless interface to various OpenPGP related
@@ -26,10 +23,7 @@ import sop.operation.Version
  * intended for reuse. If you for example need to generate multiple keys, make a dedicated call to
  * [generateKey] once per key generation.
  */
-interface SOP {
-
-    /** Get information about the implementations name and version. */
-    fun version(): Version
+interface SOP : SOPV {
 
     /** Generate a secret key. */
     fun generateKey(): GenerateKey
@@ -52,24 +46,6 @@ interface SOP {
      * [detachedSign] instead.
      */
     fun inlineSign(): InlineSign
-
-    /**
-     * Verify detached signatures. If you need to verify an inline-signed message, use
-     * [inlineVerify] instead.
-     */
-    fun verify(): DetachedVerify = detachedVerify()
-
-    /**
-     * Verify detached signatures. If you need to verify an inline-signed message, use
-     * [inlineVerify] instead.
-     */
-    fun detachedVerify(): DetachedVerify
-
-    /**
-     * Verify signatures of an inline-signed message. If you need to verify detached signatures over
-     * a message, use [detachedVerify] instead.
-     */
-    fun inlineVerify(): InlineVerify
 
     /** Detach signatures from an inline signed message. */
     fun inlineDetach(): InlineDetach
