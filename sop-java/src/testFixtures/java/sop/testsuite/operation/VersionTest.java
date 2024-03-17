@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.opentest4j.TestAbortedException;
 import sop.SOP;
+import sop.exception.SOPGPException;
 
 import java.util.stream.Stream;
 
@@ -71,5 +72,18 @@ public class VersionTest extends AbstractSOPTest {
 
         int sopRevision = sop.version().getSopSpecRevisionNumber();
         assertTrue(sop.version().getSopSpecRevisionName().endsWith("" + sopRevision));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void sopVVersionTest(SOP sop) {
+        try {
+            sop.version().getSopVVersion();
+        } catch (SOPGPException.UnsupportedOption e) {
+            throw new TestAbortedException(
+                    "Implementation does (gracefully) not provide coverage for any sopv interface version.");
+        } catch (RuntimeException e) {
+            throw new TestAbortedException("Implementation does not provide coverage for any sopv interface version.");
+        }
     }
 }

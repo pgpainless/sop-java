@@ -22,6 +22,7 @@ class VersionCmd : AbstractSopCmd() {
         @Option(names = ["--extended"]) var extended: Boolean = false
         @Option(names = ["--backend"]) var backend: Boolean = false
         @Option(names = ["--sop-spec"]) var sopSpec: Boolean = false
+        @Option(names = ["--sopv"]) var sopv: Boolean = false
     }
 
     override fun run() {
@@ -45,6 +46,11 @@ class VersionCmd : AbstractSopCmd() {
 
         if (exclusive!!.sopSpec) {
             println(version.getSopSpecVersion())
+            return
+        }
+
+        if (exclusive!!.sopv) {
+            println(version.getSopVVersion())
             return
         }
     }

@@ -4,6 +4,9 @@
 
 package sop.operation
 
+import kotlin.jvm.Throws
+import sop.exception.SOPGPException
+
 interface Version {
 
     /**
@@ -97,4 +100,11 @@ interface Version {
      * @return remarks or null
      */
     fun getSopSpecImplementationRemarks(): String?
+
+    /**
+     * Return the single-line SEMVER version of the sopv interface subset it provides complete
+     * coverage of. If the implementation does not provide complete coverage for any sopv interface,
+     * this method throws an [SOPGPException.UnsupportedOption] instead.
+     */
+    @Throws(SOPGPException.UnsupportedOption::class) fun getSopVVersion(): String
 }
