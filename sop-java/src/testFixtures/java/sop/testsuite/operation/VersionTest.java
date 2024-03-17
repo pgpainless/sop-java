@@ -8,6 +8,7 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.opentest4j.TestAbortedException;
 import sop.SOP;
 
 import java.util.stream.Stream;
@@ -15,7 +16,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class VersionTest extends AbstractSOPTest {
@@ -59,7 +59,7 @@ public class VersionTest extends AbstractSOPTest {
         try {
             sop.version().getSopSpecVersion();
         } catch (RuntimeException e) {
-            assumeTrue(false); // SOP backend does not support this operation yet
+            throw new TestAbortedException("SOP backend does not support 'version --sop-spec' yet.");
         }
 
         String sopSpec = sop.version().getSopSpecVersion();
