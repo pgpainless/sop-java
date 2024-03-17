@@ -327,4 +327,15 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                 .toByteArrayAndResult()
                 .getBytes());
     }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void passingSecretKeysForPublicKeysFails(SOP sop) {
+        assertThrows(SOPGPException.BadData.class, () ->
+                sop.encrypt()
+                        .withCert(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
+                        .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8))
+                        .toByteArrayAndResult()
+                        .getBytes());
+    }
 }
