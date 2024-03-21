@@ -6,6 +6,12 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 10.0.0
+- Update implementation to [SOP Specification revision 10](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-10.html).
+  - Throw `BadData` when passing KEYS where CERTS are expected
+  - Introduce `sopv` interface subset with revision `1.0`
+  - Add `sop version --sopv`
+
 ## 8.0.1
 - `decrypt`: Do not throw `NoSignature` exception (exit code 3) if `--verify-with` is provided, but `VERIFICATIONS` is empty.
 
