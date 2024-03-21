@@ -25,6 +25,8 @@ The repository contains the following modules:
 * [sop-java](/sop-java) defines a set of Java interfaces describing the Stateless OpenPGP Protocol.
 * [sop-java-picocli](/sop-java-picocli) contains a wrapper application that transforms the `sop-java` API into a command line application
 compatible with the SOP-CLI specification.
+* [external-sop](/external-sop) contains an API implementation that can be used to forward API calls to a SOP executable,
+allowing to delegate the implementation logic to an arbitrary SOP CLI implementation.
 
 ## Known Implementations
 (Please expand!)
