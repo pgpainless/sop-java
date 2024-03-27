@@ -10,11 +10,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertGenericError;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertMissingArg;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertSuccess;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertUnsupportedAsymmetricAlgo;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -47,19 +50,22 @@ public class GenerateKeyCmdTest {
 
     @Test
     public void noArmor_notCalledByDefault() {
-        SopCLI.main(new String[] {"generate-key", "Alice"});
+        assertSuccess(() ->
+                SopCLI.execute("generate-key", "Alice"));
         verify(generateKey, never()).noArmor();
     }
 
     @Test
     public void noArmor_passedDown() {
-        SopCLI.main(new String[] {"generate-key", "--no-armor", "Alice"});
+        assertSuccess(() ->
+                SopCLI.execute("generate-key", "--no-armor", "Alice"));
         verify(generateKey, times(1)).noArmor();
     }
 
     @Test
     public void userId_multipleUserIdsPassedDownInProperOrder() {
-        SopCLI.main(new String[] {"generate-key", "Alice <alice@pgpainless.org>", "Bob <bob@pgpainless.org>"});
+        assertSuccess(() ->
+                SopCLI.execute("generate-key", "Alice <alice@pgpainless.org>", "Bob <bob@pgpainless.org>"));
 
         InOrder inOrder = Mockito.inOrder(generateKey);
         inOrder.verify(generateKey).userId("Alice <alice@pgpainless.org>");
@@ -69,30 +75,32 @@ public class GenerateKeyCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.MissingArg.EXIT_CODE)
     public void missingArgumentCausesExit19() throws SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.MissingArg, IOException {
         // TODO: RFC4880-bis and the current Stateless OpenPGP CLI spec allow keys to have no user-ids,
         //  so we might want to change this test in the future.
         when(generateKey.generate()).thenThrow(new SOPGPException.MissingArg("Missing user-id."));
-        SopCLI.main(new String[] {"generate-key"});
+        assertMissingArg(() ->
+                SopCLI.execute("generate-key"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedAsymmetricAlgo.EXIT_CODE)
     public void unsupportedAsymmetricAlgorithmCausesExit13() throws SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.MissingArg, IOException {
         when(generateKey.generate()).thenThrow(new SOPGPException.UnsupportedAsymmetricAlgo("Unsupported asymmetric algorithm.", new Exception()));
-        SopCLI.main(new String[] {"generate-key", "Alice"});
+        assertUnsupportedAsymmetricAlgo(() ->
+                SopCLI.execute("generate-key", "Alice"));
+
     }
 
     @Test
-    @ExpectSystemExitWithStatus(1)
-    public void ioExceptionCausesExit1() throws SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.MissingArg, IOException {
+    public void ioExceptionCausesGenericError() throws SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.MissingArg, IOException {
         when(generateKey.generate()).thenReturn(new Ready() {
             @Override
             public void writeTo(OutputStream outputStream) throws IOException {
                 throw new IOException();
             }
         });
-        SopCLI.main(new String[] {"generate-key", "Alice"});
+
+        assertGenericError(() ->
+                SopCLI.execute("generate-key", "Alice"));
     }
 }
