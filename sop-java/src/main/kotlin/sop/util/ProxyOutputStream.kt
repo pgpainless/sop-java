@@ -15,6 +15,7 @@ import java.io.OutputStream
  * class is useful if we need to provide an [OutputStream] at one point in time when the final
  * target output stream is not yet known.
  */
+@Deprecated("Marked for removal.")
 class ProxyOutputStream : OutputStream() {
     private val buffer = ByteArrayOutputStream()
     private var swapped: OutputStream? = null
