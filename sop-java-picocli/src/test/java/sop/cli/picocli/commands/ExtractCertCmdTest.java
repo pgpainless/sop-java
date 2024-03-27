@@ -10,12 +10,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertBadData;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertGenericError;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertSuccess;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sop.Ready;
@@ -45,32 +47,34 @@ public class ExtractCertCmdTest {
 
     @Test
     public void noArmor_notCalledByDefault() {
-        SopCLI.main(new String[] {"extract-cert"});
+        assertSuccess(() ->
+                SopCLI.execute("extract-cert"));
         verify(extractCert, never()).noArmor();
     }
 
     @Test
     public void noArmor_passedDown() {
-        SopCLI.main(new String[] {"extract-cert", "--no-armor"});
+        assertSuccess(() ->
+                SopCLI.execute("extract-cert", "--no-armor"));
         verify(extractCert, times(1)).noArmor();
     }
 
     @Test
-    @ExpectSystemExitWithStatus(1)
-    public void key_ioExceptionCausesExit1() throws IOException, SOPGPException.BadData {
+    public void key_ioExceptionCausesGenericError() throws IOException, SOPGPException.BadData {
         when(extractCert.key((InputStream) any())).thenReturn(new Ready() {
             @Override
             public void writeTo(OutputStream outputStream) throws IOException {
                 throw new IOException();
             }
         });
-        SopCLI.main(new String[] {"extract-cert"});
+        assertGenericError(() ->
+                SopCLI.execute("extract-cert"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
-    public void key_badDataCausesExit41() throws IOException, SOPGPException.BadData {
+    public void key_badDataCausesBadData() throws IOException, SOPGPException.BadData {
         when(extractCert.key((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
-        SopCLI.main(new String[] {"extract-cert"});
+        assertBadData(() ->
+                SopCLI.execute("extract-cert"));
     }
 }

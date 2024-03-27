@@ -12,15 +12,12 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 
-    // Testing Exit Codes in JUnit
-    // https://todd.ginsberg.com/post/testing-system-exit/
-    testImplementation "com.ginsberg:junit5-system-exit:$junitSysExitVersion"
-
     // Mocking Components
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
 
     // SOP
     implementation(project(":sop-java"))
+    testImplementation(testFixtures(project(":sop-java")))
 
     // CLI
     implementation "info.picocli:picocli:$picocliVersion"
