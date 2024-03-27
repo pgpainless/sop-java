@@ -4,7 +4,6 @@
 
 package sop.cli.picocli.commands;
 
-import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sop.ReadyWithResult;
@@ -26,6 +25,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertMissingArg;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertSuccess;
 
 public class InlineDetachCmdTest {
 
@@ -41,9 +42,9 @@ public class InlineDetachCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.MissingArg.EXIT_CODE)
-    public void testMissingSignaturesOutResultsInExit19() {
-        SopCLI.main(new String[] {"inline-detach"});
+    public void testMissingSignaturesOutResultsInMissingArg() {
+        assertMissingArg(() ->
+                SopCLI.execute("inline-detach"));
     }
 
     @Test
@@ -67,7 +68,8 @@ public class InlineDetachCmdTest {
                     }
                 });
 
-        SopCLI.main(new String[] {"inline-detach", "--signatures-out", tempFile.getAbsolutePath(), "--no-armor"});
+        assertSuccess(() ->
+                SopCLI.execute("inline-detach", "--signatures-out", tempFile.getAbsolutePath(), "--no-armor"));
         verify(inlineDetach, times(1)).noArmor();
         verify(inlineDetach, times(1)).message((InputStream) any());
     }

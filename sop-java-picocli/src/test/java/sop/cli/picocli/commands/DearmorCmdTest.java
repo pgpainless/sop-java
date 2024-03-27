@@ -9,12 +9,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertBadData;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertSuccess;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sop.Ready;
@@ -48,14 +49,13 @@ public class DearmorCmdTest {
 
     @Test
     public void assertDataIsCalled() throws IOException, SOPGPException.BadData {
-        SopCLI.main(new String[] {"dearmor"});
+        assertSuccess(() -> SopCLI.execute("dearmor"));
         verify(dearmor, times(1)).data((InputStream) any());
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
     public void assertBadDataCausesExit41() throws IOException, SOPGPException.BadData {
         when(dearmor.data((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException("invalid armor")));
-        SopCLI.main(new String[] {"dearmor"});
+        assertBadData(() -> SopCLI.execute("dearmor"));
     }
 }

@@ -6,12 +6,13 @@ package sop.cli.picocli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertGenericError;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertUnsupportedSubcommand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import org.junit.jupiter.api.Test;
 import sop.SOP;
 import sop.exception.SOPGPException;
@@ -34,20 +35,18 @@ import sop.operation.Version;
 public class SOPTest {
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedSubcommand.EXIT_CODE)
     public void assertExitOnInvalidSubcommand() {
         SOP sop = mock(SOP.class);
         SopCLI.setSopInstance(sop);
 
-        SopCLI.main(new String[] {"invalid"});
+        assertUnsupportedSubcommand(() -> SopCLI.execute("invalid"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(1)
     public void assertThrowsIfNoSOPBackendSet() {
         SopCLI.setSopInstance(null);
-        // At this point, no SOP backend is set, so an InvalidStateException triggers exit(1)
-        SopCLI.main(new String[] {"armor"});
+        // At this point, no SOP backend is set, so an InvalidStateException triggers error code 1
+        assertGenericError(() -> SopCLI.execute("armor"));
     }
 
     @Test

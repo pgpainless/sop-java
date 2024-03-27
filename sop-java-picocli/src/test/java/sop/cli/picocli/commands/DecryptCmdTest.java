@@ -4,7 +4,6 @@
 
 package sop.cli.picocli.commands;
 
-import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
@@ -42,6 +41,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertBadData;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertCannotDecrypt;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertGenericError;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertIncompleteVerification;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertKeyIsProtected;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertMissingArg;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertMissingInput;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertOutputExists;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertPasswordNotHumanReadable;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertSuccess;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertUnsupportedAsymmetricAlgo;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertUnsupportedOption;
 
 public class DecryptCmdTest {
 
@@ -74,47 +85,47 @@ public class DecryptCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.MissingArg.EXIT_CODE)
     public void missingArgumentsExceptionCausesExit19() throws SOPGPException.MissingArg, SOPGPException.BadData, SOPGPException.CannotDecrypt, IOException {
         when(decrypt.ciphertext((InputStream) any())).thenThrow(new SOPGPException.MissingArg("Missing arguments."));
-        SopCLI.main(new String[] {"decrypt"});
+        assertMissingArg(() -> SopCLI.execute("decrypt"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
     public void badDataExceptionCausesExit41() throws SOPGPException.MissingArg, SOPGPException.BadData, SOPGPException.CannotDecrypt, IOException {
         when(decrypt.ciphertext((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
-        SopCLI.main(new String[] {"decrypt"});
+        assertBadData(() -> SopCLI.execute("decrypt"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.PasswordNotHumanReadable.EXIT_CODE)
     public void assertNotHumanReadablePasswordCausesExit31() throws SOPGPException.PasswordNotHumanReadable,
             SOPGPException.UnsupportedOption, IOException {
         File passwordFile = TestFileUtil.writeTempStringFile("pretendThisIsNotReadable");
         when(decrypt.withPassword(any())).thenThrow(new SOPGPException.PasswordNotHumanReadable());
-        SopCLI.main(new String[] {"decrypt", "--with-password", passwordFile.getAbsolutePath()});
+        assertPasswordNotHumanReadable(() ->
+                SopCLI.execute("decrypt", "--with-password", passwordFile.getAbsolutePath())
+        );
     }
 
     @Test
     public void assertWithPasswordPassesPasswordDown() throws SOPGPException.PasswordNotHumanReadable, SOPGPException.UnsupportedOption, IOException {
         File passwordFile = TestFileUtil.writeTempStringFile("orange");
-        SopCLI.main(new String[] {"decrypt", "--with-password", passwordFile.getAbsolutePath()});
+        assertSuccess(() -> SopCLI.execute("decrypt", "--with-password", passwordFile.getAbsolutePath()));
         verify(decrypt, times(1)).withPassword("orange");
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void assertUnsupportedWithPasswordCausesExit37() throws SOPGPException.PasswordNotHumanReadable, SOPGPException.UnsupportedOption, IOException {
         File passwordFile = TestFileUtil.writeTempStringFile("swordfish");
         when(decrypt.withPassword(any())).thenThrow(new SOPGPException.UnsupportedOption("Decrypting with password not supported."));
-        SopCLI.main(new String[] {"decrypt", "--with-password", passwordFile.getAbsolutePath()});
+        assertUnsupportedOption(() ->
+                SopCLI.execute("decrypt", "--with-password", passwordFile.getAbsolutePath())
+        );
     }
 
     @Test
     public void assertDefaultTimeRangesAreUsedIfNotOverwritten() throws SOPGPException.UnsupportedOption {
         Date now = new Date();
-        SopCLI.main(new String[] {"decrypt"});
+        assertSuccess(() -> SopCLI.execute("decrypt"));
         verify(decrypt, times(1)).verifyNotBefore(AbstractSopCmd.BEGINNING_OF_TIME);
         verify(decrypt, times(1)).verifyNotAfter(
                 ArgumentMatchers.argThat(argument -> {
@@ -125,7 +136,8 @@ public class DecryptCmdTest {
 
     @Test
     public void assertVerifyNotAfterAndBeforeDashResultsInMaxTimeRange() throws SOPGPException.UnsupportedOption {
-        SopCLI.main(new String[] {"decrypt", "--verify-not-before", "-", "--verify-not-after", "-"});
+        assertSuccess(() ->
+                SopCLI.execute("decrypt", "--verify-not-before", "-", "--verify-not-after", "-"));
         verify(decrypt, times(1)).verifyNotBefore(AbstractSopCmd.BEGINNING_OF_TIME);
         verify(decrypt, times(1)).verifyNotAfter(AbstractSopCmd.END_OF_TIME);
     }
@@ -138,54 +150,57 @@ public class DecryptCmdTest {
             return Math.abs(now.getTime() - argument.getTime()) <= 1000;
         };
 
-        SopCLI.main(new String[] {"decrypt", "--verify-not-before", "now", "--verify-not-after", "now"});
+        assertSuccess(() ->
+                SopCLI.execute("decrypt", "--verify-not-before", "now", "--verify-not-after", "now"));
         verify(decrypt, times(1)).verifyNotAfter(ArgumentMatchers.argThat(isMaxOneSecOff));
         verify(decrypt, times(1)).verifyNotBefore(ArgumentMatchers.argThat(isMaxOneSecOff));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(1)
     public void assertMalformedDateInNotBeforeCausesExit1() {
         // ParserException causes exit(1)
-        SopCLI.main(new String[] {"decrypt", "--verify-not-before", "invalid"});
+        assertGenericError(() ->
+                SopCLI.execute("decrypt", "--verify-not-before", "invalid"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(1)
     public void assertMalformedDateInNotAfterCausesExit1() {
         // ParserException causes exit(1)
-        SopCLI.main(new String[] {"decrypt", "--verify-not-after", "invalid"});
+        assertGenericError(() ->
+                SopCLI.execute("decrypt", "--verify-not-after", "invalid"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void assertUnsupportedNotAfterCausesExit37() throws SOPGPException.UnsupportedOption {
-        when(decrypt.verifyNotAfter(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting upper signature date boundary not supported."));
-        SopCLI.main(new String[] {"decrypt", "--verify-not-after", "now"});
+        when(decrypt.verifyNotAfter(any())).thenThrow(
+                new SOPGPException.UnsupportedOption("Setting upper signature date boundary not supported."));
+        assertUnsupportedOption(() ->
+                SopCLI.execute("decrypt", "--verify-not-after", "now"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void assertUnsupportedNotBeforeCausesExit37() throws SOPGPException.UnsupportedOption {
-        when(decrypt.verifyNotBefore(any())).thenThrow(new SOPGPException.UnsupportedOption("Setting lower signature date boundary not supported."));
-        SopCLI.main(new String[] {"decrypt", "--verify-not-before", "now"});
+        when(decrypt.verifyNotBefore(any())).thenThrow(
+                new SOPGPException.UnsupportedOption("Setting lower signature date boundary not supported."));
+        assertUnsupportedOption(() ->
+                SopCLI.execute("decrypt", "--verify-not-before", "now"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.OutputExists.EXIT_CODE)
     public void assertExistingSessionKeyOutFileCausesExit59() throws IOException {
         File tempFile = File.createTempFile("existing-session-key-", ".tmp");
         tempFile.deleteOnExit();
-        SopCLI.main(new String[] {"decrypt", "--session-key-out", tempFile.getAbsolutePath()});
+        assertOutputExists(() ->
+                SopCLI.execute("decrypt", "--session-key-out", tempFile.getAbsolutePath()));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedOption.EXIT_CODE)
     public void assertWhenSessionKeyCannotBeExtractedExit37() throws IOException {
         Path tempDir = Files.createTempDirectory("session-key-out-dir");
         File tempFile = new File(tempDir.toFile(), "session-key");
         tempFile.deleteOnExit();
-        SopCLI.main(new String[] {"decrypt", "--session-key-out", tempFile.getAbsolutePath()});
+        assertUnsupportedOption(() ->
+                SopCLI.execute("decrypt", "--session-key-out", tempFile.getAbsolutePath()));
     }
 
     @Test
@@ -210,8 +225,10 @@ public class DecryptCmdTest {
         File verificationsFile = new File(tempDir.toFile(), "verifications");
         File keyFile = new File(tempDir.toFile(), "key.asc");
         keyFile.createNewFile();
-        SopCLI.main(new String[] {"decrypt", "--session-key-out", sessionKeyFile.getAbsolutePath(),
-        "--verifications-out", verificationsFile.getAbsolutePath(), "--verify-with", keyFile.getAbsolutePath()});
+        assertSuccess(() ->
+                SopCLI.execute("decrypt", "--session-key-out", sessionKeyFile.getAbsolutePath(),
+                        "--verifications-out", verificationsFile.getAbsolutePath(), "--verify-with",
+                        keyFile.getAbsolutePath()));
 
         ByteArrayOutputStream bytesInFile = new ByteArrayOutputStream();
         try (FileInputStream fileIn = new FileInputStream(sessionKeyFile)) {
@@ -241,10 +258,10 @@ public class DecryptCmdTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.CannotDecrypt.EXIT_CODE)
     public void assertUnableToDecryptExceptionResultsInExit29() throws SOPGPException.CannotDecrypt, SOPGPException.MissingArg, SOPGPException.BadData, IOException {
         when(decrypt.ciphertext((InputStream) any())).thenThrow(new SOPGPException.CannotDecrypt());
-        SopCLI.main(new String[] {"decrypt"});
+        assertCannotDecrypt(() ->
+                SopCLI.execute("decrypt"));
     }
 
     @Test
@@ -258,30 +275,32 @@ public class DecryptCmdTest {
                 return new DecryptionResult(null, Collections.emptyList());
             }
         });
-        SopCLI.main(new String[] {"decrypt", "--verify-with", tempFile.getAbsolutePath(), "--verifications-out", verifyOut.getAbsolutePath()});
+        assertSuccess(() ->
+                SopCLI.execute("decrypt", "--verify-with", tempFile.getAbsolutePath(), "--verifications-out",
+                        verifyOut.getAbsolutePath()));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
     public void badDataInVerifyWithCausesExit41() throws IOException, SOPGPException.BadData {
         when(decrypt.verifyWithCert((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         File tempFile = File.createTempFile("verify-with-", ".tmp");
-        SopCLI.main(new String[] {"decrypt", "--verify-with", tempFile.getAbsolutePath()});
+        assertBadData(() ->
+                SopCLI.execute("decrypt", "--verify-with", tempFile.getAbsolutePath()));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.MissingInput.EXIT_CODE)
     public void unexistentCertFileCausesExit61() {
-        SopCLI.main(new String[] {"decrypt", "--verify-with", "invalid"});
+        assertMissingInput(() ->
+                SopCLI.execute("decrypt", "--verify-with", "invalid"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.OutputExists.EXIT_CODE)
     public void existingVerifyOutCausesExit59() throws IOException {
         File certFile = File.createTempFile("existing-verify-out-cert", ".asc");
         File existingVerifyOut = File.createTempFile("existing-verify-out", ".tmp");
 
-        SopCLI.main(new String[] {"decrypt", "--verifications-out", existingVerifyOut.getAbsolutePath(), "--verify-with", certFile.getAbsolutePath()});
+        assertOutputExists(() -> SopCLI.execute("decrypt", "--verifications-out",
+                existingVerifyOut.getAbsolutePath(), "--verify-with", certFile.getAbsolutePath()));
     }
 
     @Test
@@ -305,7 +324,9 @@ public class DecryptCmdTest {
             }
         });
 
-        SopCLI.main(new String[] {"decrypt", "--verifications-out", verifyOut.getAbsolutePath(), "--verify-with", certFile.getAbsolutePath()});
+        assertSuccess(() ->
+                SopCLI.execute("decrypt", "--verifications-out", verifyOut.getAbsolutePath(),
+                        "--verify-with", certFile.getAbsolutePath()));
         try (BufferedReader reader = new BufferedReader(new FileReader(verifyOut))) {
             String line = reader.readLine();
             assertEquals("2021-07-11T20:58:23Z 1B66A707819A920925BC6777C3E0AFC0B2DFF862 C8CD564EBF8D7BBA90611D8D071773658BF6BF86", line);
@@ -320,66 +341,64 @@ public class DecryptCmdTest {
         File sessionKeyFile1 = TestFileUtil.writeTempStringFile(key1.toString());
         File sessionKeyFile2 = TestFileUtil.writeTempStringFile(key2.toString());
 
-        SopCLI.main(new String[] {"decrypt",
-                "--with-session-key", sessionKeyFile1.getAbsolutePath(),
-                "--with-session-key", sessionKeyFile2.getAbsolutePath()});
+        assertSuccess(() ->
+                SopCLI.execute("decrypt",
+                        "--with-session-key", sessionKeyFile1.getAbsolutePath(),
+                        "--with-session-key", sessionKeyFile2.getAbsolutePath()));
         verify(decrypt).withSessionKey(key1);
         verify(decrypt).withSessionKey(key2);
     }
 
     @Test
-    @ExpectSystemExitWithStatus(1)
     public void assertMalformedSessionKeysResultInExit1() throws IOException {
         File sessionKeyFile = TestFileUtil.writeTempStringFile("C7CBDAF42537776F12509B5168793C26B93294E5ABDFA73224FB0177123E9137");
-        SopCLI.main(new String[] {"decrypt",
-                "--with-session-key", sessionKeyFile.getAbsolutePath()});
+        assertGenericError(() ->
+                SopCLI.execute("decrypt",
+                "--with-session-key", sessionKeyFile.getAbsolutePath()));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
     public void assertBadDataInKeysResultsInExit41() throws SOPGPException.KeyIsProtected, SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.BadData, IOException {
         when(decrypt.withKey((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
         File tempKeyFile = File.createTempFile("key-", ".tmp");
-        SopCLI.main(new String[] {"decrypt", tempKeyFile.getAbsolutePath()});
+        assertBadData(() -> SopCLI.execute("decrypt", tempKeyFile.getAbsolutePath()));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.MissingInput.EXIT_CODE)
     public void assertKeyFileNotFoundCausesExit61() {
-        SopCLI.main(new String[] {"decrypt", "nonexistent-key"});
+        assertMissingInput(() -> SopCLI.execute("decrypt", "nonexistent-key"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.KeyIsProtected.EXIT_CODE)
     public void assertProtectedKeyCausesExit67() throws IOException, SOPGPException.KeyIsProtected, SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.BadData {
         when(decrypt.withKey((InputStream) any())).thenThrow(new SOPGPException.KeyIsProtected());
         File tempKeyFile = File.createTempFile("key-", ".tmp");
-        SopCLI.main(new String[] {"decrypt", tempKeyFile.getAbsolutePath()});
+        assertKeyIsProtected(() -> SopCLI.execute("decrypt", tempKeyFile.getAbsolutePath()));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.UnsupportedAsymmetricAlgo.EXIT_CODE)
     public void assertUnsupportedAlgorithmExceptionCausesExit13() throws SOPGPException.KeyIsProtected, SOPGPException.UnsupportedAsymmetricAlgo, SOPGPException.BadData, IOException {
         when(decrypt.withKey((InputStream) any())).thenThrow(new SOPGPException.UnsupportedAsymmetricAlgo("Unsupported asymmetric algorithm.", new IOException()));
         File tempKeyFile = File.createTempFile("key-", ".tmp");
-        SopCLI.main(new String[] {"decrypt", tempKeyFile.getAbsolutePath()});
+        assertUnsupportedAsymmetricAlgo(() ->
+                SopCLI.execute("decrypt", tempKeyFile.getAbsolutePath()));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.MissingInput.EXIT_CODE)
     public void assertMissingPassphraseFileCausesExit61() {
-        SopCLI.main(new String[] {"decrypt", "--with-password", "missing"});
+        assertMissingInput(() ->
+                SopCLI.execute("decrypt", "--with-password", "missing"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.MissingInput.EXIT_CODE)
     public void assertMissingSessionKeyFileCausesExit61() {
-        SopCLI.main(new String[] {"decrypt", "--with-session-key", "missing"});
+        assertMissingInput(() ->
+                SopCLI.execute("decrypt", "--with-session-key", "missing"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.IncompleteVerification.EXIT_CODE)
     public void verifyOutWithoutVerifyWithCausesExit23() {
-        SopCLI.main(new String[] {"decrypt", "--verifications-out", "out.file"});
+        assertIncompleteVerification(() ->
+                SopCLI.execute("decrypt", "--verifications-out", "out.file"));
     }
 }

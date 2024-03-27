@@ -4,8 +4,6 @@
 
 package sop.cli.picocli.commands;
 
-import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
-import com.ginsberg.junit.exit.FailOnSystemExit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sop.Ready;
@@ -24,6 +22,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertBadData;
+import static sop.testsuite.assertions.SopExecutionAssertions.assertSuccess;
 
 public class ArmorCmdTest {
 
@@ -42,24 +42,22 @@ public class ArmorCmdTest {
 
     @Test
     public void assertDataIsAlwaysCalled() throws SOPGPException.BadData, IOException {
-        SopCLI.main(new String[] {"armor"});
+        assertSuccess(() -> SopCLI.execute("armor"));
         verify(armor, times(1)).data((InputStream) any());
     }
 
     @Test
-    @ExpectSystemExitWithStatus(SOPGPException.BadData.EXIT_CODE)
     public void ifBadDataExit41() throws SOPGPException.BadData, IOException {
         when(armor.data((InputStream) any())).thenThrow(new SOPGPException.BadData(new IOException()));
 
-        SopCLI.main(new String[] {"armor"});
+        assertBadData(() -> SopCLI.execute("armor"));
     }
 
     @Test
-    @FailOnSystemExit
     public void ifNoErrorsNoExit() {
         when(sop.armor()).thenReturn(armor);
 
-        SopCLI.main(new String[] {"armor"});
+        assertSuccess(() -> SopCLI.execute("armor"));
     }
 
     private static Ready nopReady() {
