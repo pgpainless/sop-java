@@ -7,7 +7,6 @@ package sop.external.operation
 import java.io.InputStream
 import java.util.Properties
 import sop.Ready
-import sop.enums.ArmorLabel
 import sop.exception.SOPGPException
 import sop.external.ExternalSOP
 import sop.operation.Armor
@@ -17,8 +16,6 @@ class ArmorExternal(binary: String, environment: Properties) : Armor {
 
     private val commandList: MutableList<String> = mutableListOf(binary, "armor")
     private val envList: List<String> = ExternalSOP.propertiesToEnv(environment)
-
-    override fun label(label: ArmorLabel): Armor = apply { commandList.add("--label=$label") }
 
     @Throws(SOPGPException.BadData::class)
     override fun data(data: InputStream): Ready =

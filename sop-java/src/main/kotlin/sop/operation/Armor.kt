@@ -7,21 +7,9 @@ package sop.operation
 import java.io.IOException
 import java.io.InputStream
 import sop.Ready
-import sop.enums.ArmorLabel
 import sop.exception.SOPGPException.BadData
-import sop.exception.SOPGPException.UnsupportedOption
 
 interface Armor {
-
-    /**
-     * Overrides automatic detection of label.
-     *
-     * @param label armor label
-     * @return builder instance
-     */
-    @Deprecated("Use of armor labels is deprecated and will be removed in a future release.")
-    @Throws(UnsupportedOption::class)
-    fun label(label: ArmorLabel): Armor
 
     /**
      * Armor the provided data.
