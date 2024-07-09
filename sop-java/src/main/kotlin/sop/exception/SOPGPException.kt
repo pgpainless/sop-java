@@ -305,4 +305,36 @@ abstract class SOPGPException : RuntimeException {
             const val EXIT_CODE = 89
         }
     }
+
+    /**
+     * The sop implementation supports some form of hardware-backed secret keys, but could not
+     * identify the hardware device.
+     */
+    class NoHardwareKeyFound : SOPGPException {
+        constructor() : super()
+
+        constructor(errorMsg: String) : super(errorMsg)
+
+        override fun getExitCode(): Int = EXIT_CODE
+
+        companion object {
+            const val EXIT_CODE = 97
+        }
+    }
+
+    /**
+     * The sop implementation tried to use a hardware-backed secret key, but the cryptographic
+     * hardware refused the operation for some reason other than a bad PIN or password.
+     */
+    class HardwareKeyFailure : SOPGPException {
+        constructor() : super()
+
+        constructor(errorMsg: String) : super(errorMsg)
+
+        override fun getExitCode(): Int = EXIT_CODE
+
+        companion object {
+            const val EXIT_CODE = 101
+        }
+    }
 }
