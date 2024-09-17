@@ -337,4 +337,34 @@ abstract class SOPGPException : RuntimeException {
             const val EXIT_CODE = 101
         }
     }
+
+    /**
+     * The primary key of a KEYS object is too weak or revoked.
+     */
+    class PrimaryKeyBad : SOPGPException {
+        constructor() : super()
+
+        constructor(errorMsg: String) : super(errorMsg)
+
+        override fun getExitCode(): Int = EXIT_CODE
+
+        companion object {
+            const val EXIT_CODE = 103
+        }
+    }
+
+    /**
+     * The CERTS object has no matching User ID.
+     */
+    class CertUserIdNoMatch : SOPGPException {
+        constructor() : super()
+
+        constructor(errorMsg: String) : super(errorMsg)
+
+        override fun getExitCode(): Int = EXIT_CODE
+
+        companion object {
+            const val EXIT_CODE = 107
+        }
+    }
 }
