@@ -64,4 +64,9 @@ interface SOP : SOPV {
      * Keep a secret key up-to-date.
      */
     fun updateKey(): UpdateKey
+
+    /**
+     * Merge OpenPGP certificates.
+     */
+    fun mergeCerts(): MergeCerts
 }
