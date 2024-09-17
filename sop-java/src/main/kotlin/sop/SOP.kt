@@ -4,18 +4,7 @@
 
 package sop
 
-import sop.operation.Armor
-import sop.operation.ChangeKeyPassword
-import sop.operation.Dearmor
-import sop.operation.Decrypt
-import sop.operation.DetachedSign
-import sop.operation.Encrypt
-import sop.operation.ExtractCert
-import sop.operation.GenerateKey
-import sop.operation.InlineDetach
-import sop.operation.InlineSign
-import sop.operation.ListProfiles
-import sop.operation.RevokeKey
+import sop.operation.*
 
 /**
  * Stateless OpenPGP Interface. This class provides a stateless interface to various OpenPGP related
@@ -70,4 +59,9 @@ interface SOP : SOPV {
 
     /** Update a key's password. */
     fun changeKeyPassword(): ChangeKeyPassword
+
+    /**
+     * Keep a secret key up-to-date.
+     */
+    fun updateKey(): UpdateKey
 }
