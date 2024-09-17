@@ -27,6 +27,7 @@ import sop.exception.SOPGPException
             ChangeKeyPasswordCmd::class,
             RevokeKeyCmd::class,
             ExtractCertCmd::class,
+            UpdateKeyCmd::class,
             // Messaging subcommands
             SignCmd::class,
             VerifyCmd::class,
