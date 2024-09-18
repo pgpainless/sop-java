@@ -81,8 +81,8 @@ class SopCLI {
             // Re-set bundle with updated locale
             cliMsg = ResourceBundle.getBundle("msg_sop")
 
-            return CommandLine(SopCLI::class.java)
-                .apply {
+            val cmd =
+                CommandLine(SopCLI::class.java).apply {
                     // explicitly set help command resource bundle
                     subcommands["help"]?.setResourceBundle(ResourceBundle.getBundle("msg_help"))
                     // Hide generate-completion command
@@ -94,7 +94,15 @@ class SopCLI {
                     exitCodeExceptionMapper = SOPExceptionExitCodeMapper()
                     isCaseInsensitiveEnumValuesAllowed = true
                 }
-                .execute(*args)
+
+            // render Input/Output sections in help command
+            cmd.subcommands.values
+                .filter {
+                    (it.getCommand() as Any) is AbstractSopCmd
+                } // Only for AbstractSopCmd objects
+                .forEach { (it.getCommand() as AbstractSopCmd).installIORenderer(it) }
+
+            return cmd.execute(*args)
         }
     }
 
