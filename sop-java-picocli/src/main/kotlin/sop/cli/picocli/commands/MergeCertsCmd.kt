@@ -4,11 +4,11 @@
 
 package sop.cli.picocli.commands
 
+import java.io.IOException
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import sop.cli.picocli.SopCLI
 import sop.exception.SOPGPException
-import java.io.IOException
 
 @Command(
     name = "merge-certs",
@@ -16,11 +16,9 @@ import java.io.IOException
     exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 class MergeCertsCmd : AbstractSopCmd() {
 
-    @CommandLine.Option(names = ["--no-armor"], negatable = true)
-    var armor = false
+    @CommandLine.Option(names = ["--no-armor"], negatable = true) var armor = false
 
-    @CommandLine.Parameters(paramLabel = "CERTS")
-    var updates: List<String> = listOf()
+    @CommandLine.Parameters(paramLabel = "CERTS") var updates: List<String> = listOf()
 
     override fun run() {
         val mergeCerts = throwIfUnsupportedSubcommand(SopCLI.getSop().mergeCerts(), "merge-certs")
