@@ -83,16 +83,20 @@ class SopCLI {
 
             return CommandLine(SopCLI::class.java)
                 .apply {
+                    // explicitly set help command resource bundle
+                    subcommands["help"]?.setResourceBundle(ResourceBundle.getBundle("msg_help"))
                     // Hide generate-completion command
                     subcommands["generate-completion"]?.commandSpec?.usageMessage()?.hidden(true)
+                    // render Input/Output sections in help command
+                    subcommands.values.filter { (it.getCommand() as Any) is AbstractSopCmd } // Only for AbstractSopCmd objects
+                        .forEach { (it.getCommand() as AbstractSopCmd).installIORenderer(it) }
                     // overwrite executable name
                     commandName = EXECUTABLE_NAME
                     // setup exception handling
                     executionExceptionHandler = SOPExecutionExceptionHandler()
                     exitCodeExceptionMapper = SOPExceptionExitCodeMapper()
                     isCaseInsensitiveEnumValuesAllowed = true
-                }
-                .execute(*args)
+                }.execute(*args)
         }
     }
 
