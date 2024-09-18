@@ -69,4 +69,9 @@ interface SOP : SOPV {
      * Merge OpenPGP certificates.
      */
     fun mergeCerts(): MergeCerts
+
+    /**
+     * Certify OpenPGP Certificate User-IDs.
+     */
+    fun certifyUserId(): CertifyUserId
 }
