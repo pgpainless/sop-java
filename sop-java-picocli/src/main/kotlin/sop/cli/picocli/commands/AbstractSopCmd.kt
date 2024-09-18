@@ -7,6 +7,11 @@ package sop.cli.picocli.commands
 import java.io.*
 import java.text.ParseException
 import java.util.*
+import picocli.CommandLine
+import picocli.CommandLine.Help
+import picocli.CommandLine.Help.Column
+import picocli.CommandLine.Help.TextTable
+import picocli.CommandLine.IHelpSectionRenderer
 import sop.cli.picocli.commands.AbstractSopCmd.EnvironmentVariableResolver
 import sop.exception.SOPGPException.*
 import sop.util.UTCUtil.Companion.parseUTCDate
@@ -215,10 +220,105 @@ abstract class AbstractSopCmd(locale: Locale = Locale.getDefault()) : Runnable {
         }
     }
 
+    /**
+     * See
+     * [Example](https://github.com/remkop/picocli/blob/main/picocli-examples/src/main/java/picocli/examples/customhelp/EnvironmentVariablesSection.java)
+     */
+    class InputOutputHelpSectionRenderer(private val argument: Pair<String?, String?>) :
+        IHelpSectionRenderer {
+
+        override fun render(help: Help): String {
+            return argument.let {
+                val calcLen =
+                    help.calcLongOptionColumnWidth(
+                        help.commandSpec().options(),
+                        help.commandSpec().positionalParameters(),
+                        help.colorScheme())
+                val keyLength =
+                    help
+                        .commandSpec()
+                        .usageMessage()
+                        .longOptionsMaxWidth()
+                        .coerceAtMost(calcLen - 1)
+                val table =
+                    TextTable.forColumns(
+                        help.colorScheme(),
+                        Column(keyLength + 7, 6, Column.Overflow.SPAN),
+                        Column(width(help) - (keyLength + 7), 0, Column.Overflow.WRAP))
+                table.setAdjustLineBreaksForWideCJKCharacters(adjustCJK(help))
+                table.addRowValues("@|yellow ${argument.first}|@", argument.second ?: "")
+                table.toString()
+            }
+        }
+
+        private fun adjustCJK(help: Help) =
+            help.commandSpec().usageMessage().adjustLineBreaksForWideCJKCharacters()
+
+        private fun width(help: Help) = help.commandSpec().usageMessage().width()
+    }
+
+    fun installIORenderer(cmd: CommandLine) {
+        val inputName = getResString(cmd, "standardInput")
+        if (inputName != null) {
+            cmd.helpSectionMap[SECTION_KEY_STANDARD_INPUT_HEADING] = IHelpSectionRenderer {
+                getResString(cmd, "standardInputHeading")
+            }
+            cmd.helpSectionMap[SECTION_KEY_STANDARD_INPUT_DETAILS] =
+                InputOutputHelpSectionRenderer(
+                    inputName to getResString(cmd, "standardInputDescription"))
+            cmd.helpSectionKeys =
+                insertKey(
+                    cmd.helpSectionKeys,
+                    SECTION_KEY_STANDARD_INPUT_HEADING,
+                    SECTION_KEY_STANDARD_INPUT_DETAILS)
+        }
+
+        val outputName = getResString(cmd, "standardOutput")
+        if (outputName != null) {
+            cmd.helpSectionMap[SECTION_KEY_STANDARD_OUTPUT_HEADING] = IHelpSectionRenderer {
+                getResString(cmd, "standardOutputHeading")
+            }
+            cmd.helpSectionMap[SECTION_KEY_STANDARD_OUTPUT_DETAILS] =
+                InputOutputHelpSectionRenderer(
+                    outputName to getResString(cmd, "standardOutputDescription"))
+            cmd.helpSectionKeys =
+                insertKey(
+                    cmd.helpSectionKeys,
+                    SECTION_KEY_STANDARD_OUTPUT_HEADING,
+                    SECTION_KEY_STANDARD_OUTPUT_DETAILS)
+        }
+    }
+
+    private fun insertKey(keys: List<String>, header: String, details: String): List<String> {
+        val index =
+            keys.indexOf(CommandLine.Model.UsageMessageSpec.SECTION_KEY_EXIT_CODE_LIST_HEADING)
+        val result = keys.toMutableList()
+        result.add(index, header)
+        result.add(index + 1, details)
+        return result
+    }
+
+    private fun getResString(cmd: CommandLine, key: String): String? =
+        try {
+                cmd.resourceBundle.getString(key)
+            } catch (m: MissingResourceException) {
+                try {
+                    cmd.parent.resourceBundle.getString(key)
+                } catch (m: MissingResourceException) {
+                    null
+                }
+            }
+            ?.let { String.format(it) }
+
     companion object {
         const val PRFX_ENV = "@ENV:"
 
         const val PRFX_FD = "@FD:"
+
+        const val SECTION_KEY_STANDARD_INPUT_HEADING = "standardInputHeading"
+        const val SECTION_KEY_STANDARD_INPUT_DETAILS = "standardInput"
+        const val SECTION_KEY_STANDARD_OUTPUT_HEADING = "standardOutputHeading"
+        const val SECTION_KEY_STANDARD_OUTPUT_DETAILS = "standardOutput"
 
         @JvmField val DAWN_OF_TIME = Date(0)
 
