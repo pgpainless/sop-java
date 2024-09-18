@@ -4,11 +4,11 @@
 
 package sop.cli.picocli.commands
 
+import java.io.IOException
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
 import sop.cli.picocli.SopCLI
 import sop.exception.SOPGPException.*
-import java.io.IOException
 
 @Command(
     name = "update-key",
@@ -25,8 +25,7 @@ class UpdateKeyCmd : AbstractSopCmd() {
     @Option(names = ["--with-key-password"], paramLabel = "PASSWORD")
     var withKeyPassword: List<String> = listOf()
 
-    @Option(names = ["--merge-certs"], paramLabel = "CERTS")
-    var mergeCerts: List<String> = listOf()
+    @Option(names = ["--merge-certs"], paramLabel = "CERTS") var mergeCerts: List<String> = listOf()
 
     override fun run() {
         val updateKey = throwIfUnsupportedSubcommand(SopCLI.getSop().updateKey(), "update-key")
@@ -48,7 +47,8 @@ class UpdateKeyCmd : AbstractSopCmd() {
                 val password = stringFromInputStream(getInput(passwordFileName))
                 updateKey.withKeyPassword(password)
             } catch (unsupportedOption: UnsupportedOption) {
-                val errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--with-key-password")
+                val errorMsg =
+                    getMsg("sop.error.feature_support.option_not_supported", "--with-key-password")
                 throw UnsupportedOption(errorMsg, unsupportedOption)
             } catch (e: IOException) {
                 throw RuntimeException(e)
@@ -57,7 +57,7 @@ class UpdateKeyCmd : AbstractSopCmd() {
 
         for (certInput in mergeCerts) {
             try {
-                getInput(certInput).use { certIn -> updateKey.mergeCerts(certIn) }
+                getInput(certInput).use { updateKey.mergeCerts(it) }
             } catch (e: IOException) {
                 throw RuntimeException(e)
             } catch (badData: BadData) {
@@ -71,6 +71,9 @@ class UpdateKeyCmd : AbstractSopCmd() {
             ready.writeTo(System.out)
         } catch (e: IOException) {
             throw RuntimeException(e)
+        } catch (badData: BadData) {
+            val errorMsg = getMsg("sop.error.input.not_a_private_key", "STDIN")
+            throw BadData(errorMsg, badData)
         }
     }
 }
