@@ -6,10 +6,8 @@ package sop.cli.picocli.commands
 
 import java.io.IOException
 import picocli.CommandLine.Command
-import picocli.CommandLine.Model.CommandSpec
 import picocli.CommandLine.Option
 import picocli.CommandLine.Parameters
-import picocli.CommandLine.Spec
 import sop.cli.picocli.SopCLI
 import sop.exception.SOPGPException.BadData
 import sop.exception.SOPGPException.UnsupportedOption
@@ -17,10 +15,9 @@ import sop.exception.SOPGPException.UnsupportedOption
 @Command(
     name = "certify-userid",
     resourceBundle = "msg_certify-userid",
-    exitCodeOnInvalidInput = UnsupportedOption.EXIT_CODE)
+    exitCodeOnInvalidInput = UnsupportedOption.EXIT_CODE,
+    showEndOfOptionsDelimiterInUsageHelp = true)
 class CertifyUserIdCmd : AbstractSopCmd() {
-
-    @Spec var spec: CommandSpec? = null
 
     @Option(names = ["--no-armor"], negatable = true) var armor = true
 
