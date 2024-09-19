@@ -36,7 +36,7 @@ class EncryptExternal(
     override fun mode(mode: EncryptAs): Encrypt = apply { commandList.add("--as=$mode") }
 
     override fun signWith(key: InputStream): Encrypt = apply {
-        commandList.add("--sign-with@ENV:SIGN_WITH_$argCounter")
+        commandList.add("--sign-with=@ENV:SIGN_WITH_$argCounter")
         envList.add("SIGN_WITH_$argCounter=${ExternalSOP.readString(key)}")
         argCounter += 1
     }
