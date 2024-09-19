@@ -4,15 +4,14 @@
 
 package sop.operation
 
-import sop.Ready
-import sop.exception.SOPGPException
 import java.io.IOException
 import java.io.InputStream
+import sop.Ready
+import sop.exception.SOPGPException
 
 interface MergeCerts {
 
-    @Throws(SOPGPException.UnsupportedOption::class)
-    fun noArmor(): MergeCerts
+    @Throws(SOPGPException.UnsupportedOption::class) fun noArmor(): MergeCerts
 
     @Throws(SOPGPException.BadData::class, IOException::class)
     fun updates(updateCerts: InputStream): MergeCerts
