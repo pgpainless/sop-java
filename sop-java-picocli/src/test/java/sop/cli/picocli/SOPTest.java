@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import sop.SOP;
 import sop.exception.SOPGPException;
@@ -57,25 +56,21 @@ public class SOPTest {
     @Test
     public void UnsupportedSubcommandsTest() {
         SOP nullCommandSOP = new SOP() {
-            @NotNull
             @Override
             public ValidateUserId validateUserId() {
                 return null;
             }
 
-            @NotNull
             @Override
             public CertifyUserId certifyUserId() {
                 return null;
             }
 
-            @NotNull
             @Override
             public MergeCerts mergeCerts() {
                 return null;
             }
 
-            @NotNull
             @Override
             public UpdateKey updateKey() {
                 return null;
