@@ -60,18 +60,15 @@ interface SOP : SOPV {
     /** Update a key's password. */
     fun changeKeyPassword(): ChangeKeyPassword
 
-    /**
-     * Keep a secret key up-to-date.
-     */
+    /** Keep a secret key up-to-date. */
     fun updateKey(): UpdateKey
 
-    /**
-     * Merge OpenPGP certificates.
-     */
+    /** Merge OpenPGP certificates. */
     fun mergeCerts(): MergeCerts
 
-    /**
-     * Certify OpenPGP Certificate User-IDs.
-     */
+    /** Certify OpenPGP Certificate User-IDs. */
     fun certifyUserId(): CertifyUserId
+
+    /** Validate a UserID in an OpenPGP certificate. */
+    fun validateUserId(): ValidateUserId
 }

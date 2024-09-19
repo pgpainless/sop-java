@@ -338,9 +338,7 @@ abstract class SOPGPException : RuntimeException {
         }
     }
 
-    /**
-     * The primary key of a KEYS object is too weak or revoked.
-     */
+    /** The primary key of a KEYS object is too weak or revoked. */
     class PrimaryKeyBad : SOPGPException {
         constructor() : super()
 
@@ -353,13 +351,26 @@ abstract class SOPGPException : RuntimeException {
         }
     }
 
-    /**
-     * The CERTS object has no matching User ID.
-     */
+    /** The CERTS object has no matching User ID. */
     class CertUserIdNoMatch : SOPGPException {
-        constructor() : super()
 
-        constructor(errorMsg: String) : super(errorMsg)
+        val fingerprint: ByteArray?
+
+        constructor() : super() {
+            fingerprint = null
+        }
+
+        constructor(fingerprint: ByteArray) : super() {
+            this.fingerprint = fingerprint
+        }
+
+        constructor(errorMsg: String) : super(errorMsg) {
+            fingerprint = null
+        }
+
+        constructor(errorMsg: String, cause: Throwable) : super(errorMsg, cause) {
+            fingerprint = null
+        }
 
         override fun getExitCode(): Int = EXIT_CODE
 
