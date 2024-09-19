@@ -15,7 +15,8 @@ import sop.util.HexUtil.Companion.bytesToHex
 @Command(
     name = "validate-userid",
     resourceBundle = "msg_validate-userid",
-    exitCodeOnInvalidInput = SOPGPException.MissingArg.EXIT_CODE)
+    exitCodeOnInvalidInput = SOPGPException.MissingArg.EXIT_CODE,
+    showEndOfOptionsDelimiterInUsageHelp = true)
 class ValidateUserIdCmd : AbstractSopCmd() {
 
     @Option(names = ["--addr-spec-only"]) var addrSpecOnly: Boolean = false
