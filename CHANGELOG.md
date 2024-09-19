@@ -8,6 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 
 ## 10.0.1-SNAPSHOT
 - Remove `label()` option from `Armor` operation
+- Fix exit code for 'Missing required option/parameter' error
 
 ## 10.0.0
 - Update implementation to [SOP Specification revision 10](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-10.html).
