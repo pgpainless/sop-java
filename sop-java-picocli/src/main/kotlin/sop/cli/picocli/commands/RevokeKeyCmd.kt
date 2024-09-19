@@ -19,8 +19,8 @@ class RevokeKeyCmd : AbstractSopCmd() {
 
     @Option(names = ["--no-armor"], negatable = true) var armor = true
 
-    @Option(names = ["--with-key-password"], paramLabel = "PASSWORD")
-    var withKeyPassword: String? = null
+    @Option(names = ["--with-key-password"], paramLabel = "PASSWORD", arity = "0..*")
+    var withKeyPassword: List<String> = listOf()
 
     override fun run() {
         val revokeKey = throwIfUnsupportedSubcommand(SopCLI.getSop().revokeKey(), "revoke-key")
@@ -29,9 +29,9 @@ class RevokeKeyCmd : AbstractSopCmd() {
             revokeKey.noArmor()
         }
 
-        withKeyPassword?.let {
+        for (passwordIn in withKeyPassword) {
             try {
-                val password = stringFromInputStream(getInput(it))
+                val password = stringFromInputStream(getInput(passwordIn))
                 revokeKey.withKeyPassword(password)
             } catch (e: SOPGPException.UnsupportedOption) {
                 val errorMsg =
