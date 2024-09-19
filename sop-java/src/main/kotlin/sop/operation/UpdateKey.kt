@@ -4,11 +4,11 @@
 
 package sop.operation
 
+import java.io.IOException
+import java.io.InputStream
 import sop.Ready
 import sop.exception.SOPGPException
 import sop.util.UTF8Util
-import java.io.IOException
-import java.io.InputStream
 
 interface UpdateKey {
 
@@ -24,20 +24,31 @@ interface UpdateKey {
     @Throws(SOPGPException.UnsupportedOption::class) fun noNewMechanisms(): UpdateKey
 
     @Throws(SOPGPException.PasswordNotHumanReadable::class, SOPGPException.UnsupportedOption::class)
-    fun withKeyPassword(password: String): UpdateKey = withKeyPassword(password.toByteArray(UTF8Util.UTF8))
+    fun withKeyPassword(password: String): UpdateKey =
+        withKeyPassword(password.toByteArray(UTF8Util.UTF8))
 
     @Throws(SOPGPException.PasswordNotHumanReadable::class, SOPGPException.UnsupportedOption::class)
     fun withKeyPassword(password: ByteArray): UpdateKey
 
-    @Throws(SOPGPException.UnsupportedOption::class, SOPGPException.BadData::class, IOException::class)
+    @Throws(
+        SOPGPException.UnsupportedOption::class, SOPGPException.BadData::class, IOException::class)
     fun mergeCerts(certs: InputStream): UpdateKey
 
-    @Throws(SOPGPException.UnsupportedOption::class, SOPGPException.BadData::class, IOException::class)
+    @Throws(
+        SOPGPException.UnsupportedOption::class, SOPGPException.BadData::class, IOException::class)
     fun mergeCerts(certs: ByteArray): UpdateKey = mergeCerts(certs.inputStream())
 
-    @Throws(SOPGPException.BadData::class, IOException::class, SOPGPException.KeyIsProtected::class, SOPGPException.PrimaryKeyBad::class)
+    @Throws(
+        SOPGPException.BadData::class,
+        IOException::class,
+        SOPGPException.KeyIsProtected::class,
+        SOPGPException.PrimaryKeyBad::class)
     fun key(key: InputStream): Ready
 
-    @Throws(SOPGPException.BadData::class, IOException::class, SOPGPException.KeyIsProtected::class, SOPGPException.PrimaryKeyBad::class)
+    @Throws(
+        SOPGPException.BadData::class,
+        IOException::class,
+        SOPGPException.KeyIsProtected::class,
+        SOPGPException.PrimaryKeyBad::class)
     fun key(key: ByteArray): Ready = key(key.inputStream())
 }
