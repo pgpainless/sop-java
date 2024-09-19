@@ -21,6 +21,8 @@ class SOPExceptionExitCodeMapper : IExitCodeExceptionMapper {
                 // Unmatched subcommand
                 SOPGPException.UnsupportedSubcommand.EXIT_CODE
             }
+        } else if (exception is MissingParameterException) {
+            SOPGPException.MissingArg.EXIT_CODE
         } else if (exception is ParameterException) {
             // Invalid option (e.g. `--as invalid`)
             SOPGPException.UnsupportedOption.EXIT_CODE
