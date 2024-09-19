@@ -1,5 +1,7 @@
 steps:
   run:
+    when:
+      event: push
     image: gradle:7.6-jdk11-jammy
     commands:
       # Install Sequoia-SOP
