@@ -30,6 +30,7 @@ import sop.exception.SOPGPException
             UpdateKeyCmd::class,
             MergeCertsCmd::class,
             CertifyUserIdCmd::class,
+            ValidateUserIdCmd::class,
             // Messaging subcommands
             SignCmd::class,
             VerifyCmd::class,
