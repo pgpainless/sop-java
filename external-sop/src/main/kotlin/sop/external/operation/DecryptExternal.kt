@@ -108,8 +108,8 @@ class DecryptExternal(
                     finish(process)
 
                     val sessionKeyOutIn = FileInputStream(sessionKeyOut)
-                    var line = readString(sessionKeyOutIn)
-                    val sessionKey = SessionKey.fromString(line.trim { it <= ' ' })
+                    var line: String? = readString(sessionKeyOutIn)
+                    val sessionKey = line?.let { l -> SessionKey.fromString(l.trim { it <= ' ' }) }
                     sessionKeyOutIn.close()
                     sessionKeyOut.delete()
 
@@ -118,7 +118,7 @@ class DecryptExternal(
                         val verifyOutIn = FileInputStream(verifyOut)
                         val reader = BufferedReader(InputStreamReader(verifyOutIn))
                         while (reader.readLine().also { line = it } != null) {
-                            verifications.add(Verification.fromString(line.trim()))
+                            line?.let { verifications.add(Verification.fromString(it.trim())) }
                         }
                         reader.close()
                     }
