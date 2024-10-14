@@ -5,8 +5,11 @@
 package sop.testsuite.operation;
 
 import org.junit.jupiter.api.Named;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.provider.Arguments;
 import sop.SOP;
+import sop.testsuite.AbortOnUnsupportedOption;
+import sop.testsuite.AbortOnUnsupportedOptionExtension;
 import sop.testsuite.SOPInstanceFactory;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+@ExtendWith(AbortOnUnsupportedOptionExtension.class)
+@AbortOnUnsupportedOption
 public abstract class AbstractSOPTest {
 
     private static final List<Arguments> backends = new ArrayList<>();
