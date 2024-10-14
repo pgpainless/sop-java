@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 10.0.1-SNAPSHOT
+## 10.0.1
 - Remove `label()` option from `Armor` operation
 - Fix exit code for 'Missing required option/parameter' error
 - Fix `revoke-key`: Allow for multiple invocations of `--with-key-password` option
