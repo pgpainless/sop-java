@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 10.0.2-SNAPSHOT
+## 10.0.2
 - Downgrade `logback-core` to `1.2.13`
 
 ## 10.0.1
