@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 10.0.2-SNAPSHOT
+- Downgrade `logback-core` to `1.2.13`
+
 ## 10.0.1
 - Remove `label()` option from `Armor` operation
 - Fix exit code for 'Missing required option/parameter' error
