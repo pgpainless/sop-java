@@ -14,6 +14,7 @@ SPDX-License-Identifier: Apache-2.0
 - Fix `NullPointerException` in `DecryptExternal` when reading lines
 - Fix `DecryptExternal` use of `verifications-out`
 - Test suite: Ignore tests if `UnsupportedOption` is thrown
+- Bump `logback-core` to `1.4.14`
 
 ## 10.0.0
 - Update implementation to [SOP Specification revision 10](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-10.html).
