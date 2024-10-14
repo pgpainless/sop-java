@@ -78,7 +78,7 @@ class DecryptExternal(
         val verifyOut = File(tempDir, "verifications-out")
         verifyOut.delete()
         if (requireVerification) {
-            commandList.add("--verify-out=${verifyOut.absolutePath}")
+            commandList.add("--verifications-out=${verifyOut.absolutePath}")
         }
 
         try {
