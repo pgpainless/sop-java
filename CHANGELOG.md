@@ -8,6 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 
 ## 8.0.2-SNAPSHOT
 - CLI `change-key-password`: Fix indirect parameter passing for new and old passwords (thanks to @dkg for the report)
+- Backport: `revoke-key`: Allow for multiple password options
 
 ## 8.0.1
 - `decrypt`: Do not throw `NoSignature` exception (exit code 3) if `--verify-with` is provided, but `VERIFICATIONS` is empty.
