@@ -39,15 +39,17 @@ public class ChangeKeyPasswordCmd extends AbstractSopCmd {
             changeKeyPassword.noArmor();
         }
 
-        for (String oldKeyPassword : oldKeyPasswords) {
-            changeKeyPassword.oldKeyPassphrase(oldKeyPassword);
-        }
-
-        if (newKeyPassword != null) {
-            changeKeyPassword.newKeyPassphrase(newKeyPassword);
-        }
-
         try {
+            for (String oldKeyPassword : oldKeyPasswords) {
+                String password = stringFromInputStream(getInput(oldKeyPassword));
+                changeKeyPassword.oldKeyPassphrase(password);
+            }
+
+            if (newKeyPassword != null) {
+                String password = stringFromInputStream(getInput(newKeyPassword));
+                changeKeyPassword.newKeyPassphrase(password);
+            }
+
             changeKeyPassword.keys(System.in).writeTo(System.out);
         } catch (IOException e) {
             throw new RuntimeException(e);
