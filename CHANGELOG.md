@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 7.0.2-SNAPSHOT
+## 7.0.2
 - CLI `change-key-password`: Fix indirect parameter passing for new and old passwords (thanks to @dkg for the report)
 - Backport: revoke-key command: Allow for multiple '--with-key-password' options
 
