@@ -33,9 +33,15 @@ class ChangeKeyPasswordCmd : AbstractSopCmd() {
             changeKeyPassword.noArmor()
         }
 
-        oldKeyPasswords.forEach { changeKeyPassword.oldKeyPassphrase(it) }
+        oldKeyPasswords.forEach {
+            val password = stringFromInputStream(getInput(it))
+            changeKeyPassword.oldKeyPassphrase(password)
+        }
 
-        newKeyPassword?.let { changeKeyPassword.newKeyPassphrase(it) }
+        newKeyPassword?.let {
+            val password = stringFromInputStream(getInput(it))
+            changeKeyPassword.newKeyPassphrase(password)
+        }
 
         try {
             changeKeyPassword.keys(System.`in`).writeTo(System.out)
