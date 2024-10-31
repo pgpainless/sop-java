@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 8.0.2-SNAPSHOT
+- CLI `change-key-password`: Fix indirect parameter passing for new and old passwords (thanks to @dkg for the report)
+
 ## 8.0.1
 - `decrypt`: Do not throw `NoSignature` exception (exit code 3) if `--verify-with` is provided, but `VERIFICATIONS` is empty.
 
@@ -23,6 +26,13 @@ SPDX-License-Identifier: Apache-2.0
   - Change `ArmorLabel` values into lowercase
   - Change `EncryptAs` values into lowercase
   - Change `SignAs` values into lowercase
+
+## 7.0.2
+- CLI `change-key-password`: Fix indirect parameter passing for new and old passwords (thanks to @dkg for the report)
+- Backport: revoke-key command: Allow for multiple '--with-key-password' options
+
+## 7.0.1
+- `decrypt`: Do not throw `NoSignature` exception (exit code 3) if `--verify-with` is provided, but `VERIFICATIONS` is empty.
 
 ## 7.0.0
 - Update implementation to [SOP Specification revision 07](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-07.html).
