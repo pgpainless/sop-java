@@ -11,6 +11,8 @@ import sop.exception.SOPGPException;
 import sop.operation.RevokeKey;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @CommandLine.Command(name = "revoke-key",
         resourceBundle = "msg_revoke-key",
@@ -23,7 +25,7 @@ public class RevokeKeyCmd extends AbstractSopCmd {
 
     @CommandLine.Option(names = "--with-key-password",
             paramLabel = "PASSWORD")
-    String withKeyPassword;
+    List<String> withKeyPassword = new ArrayList<>();
 
     @Override
     public void run() {
@@ -36,8 +38,10 @@ public class RevokeKeyCmd extends AbstractSopCmd {
 
         if (withKeyPassword != null) {
             try {
-                String password = stringFromInputStream(getInput(withKeyPassword));
-                revokeKey.withKeyPassword(password);
+                for (String passwordFile : withKeyPassword) {
+                    String password = stringFromInputStream(getInput(passwordFile));
+                    revokeKey.withKeyPassword(password);
+                }
             } catch (SOPGPException.UnsupportedOption e) {
                 String errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--with-key-password");
                 throw new SOPGPException.UnsupportedOption(errorMsg, e);
