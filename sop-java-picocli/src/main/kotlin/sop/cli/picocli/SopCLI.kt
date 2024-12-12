@@ -74,7 +74,9 @@ class SopCLI {
         @JvmStatic
         fun execute(vararg args: String): Int {
             // Set locale
-            CommandLine(InitLocale()).parseArgs(*args)
+            CommandLine(InitLocale())
+                .setUnmatchedArgumentsAllowed(true)
+                .parseArgs(*args)
 
             // Re-set bundle with updated locale
             cliMsg = ResourceBundle.getBundle("msg_sop")
