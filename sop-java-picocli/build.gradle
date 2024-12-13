@@ -17,7 +17,7 @@ dependencies {
 
     // SOP
     implementation(project(":sop-java"))
-    testImplementation(testFixtures(project(":sop-java")))
+    testImplementation(project(":sop-java-testfixtures"))
 
     // CLI
     implementation "info.picocli:picocli:$picocliVersion"
