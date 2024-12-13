@@ -27,7 +27,7 @@ dependencies {
     // The ExternalTestSubjectFactory reads json config file to find configured SOP binaries...
     testImplementation "com.google.code.gson:gson:$gsonVersion"
     // ...and extends TestSubjectFactory
-    testImplementation(testFixtures(project(":sop-java")))
+    testImplementation(project(":sop-java-testfixtures"))
 }
 
 test {

@@ -4,7 +4,6 @@
 
 plugins {
     id 'java-library'
-    id 'java-test-fixtures'
 }
 
 group 'org.pgpainless'
@@ -17,8 +16,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-    testFixturesImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-    testFixturesImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+    testImplementation(project(":sop-java-testfixtures"))
 
     // @Nullable, @Nonnull annotations
     implementation "com.google.code.findbugs:jsr305:3.0.2"
