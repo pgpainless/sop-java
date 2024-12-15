@@ -6,6 +6,19 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 10.1.0-SNAPSHOT
+- `sop-java`:
+  - Remove `label()` option from `armor()` subcommand
+  - Move test-fixtures artifact built with the `testFixtures` plugin into
+  its own module `sop-java-testfixtures`, which can be consumed by maven builds.
+- `sop-java-picocli`:
+  - Properly map `MissingParameterException` to `MissingArg` exit code
+  - `revokeKey` command: Allow mutliple 
+  - As a workaround for native builds using graalvm:
+    - Do not re-set message bundles dynamically (fails in native builds)
+    - Prevent an unmatched argument error
+  - `change-key-password`: Properly pass key passwords as indirect parameters
+
 ## 10.0.2
 - Downgrade `logback-core` to `1.2.13`
 
