@@ -29,7 +29,7 @@ class DecryptCmd : AbstractSopCmd() {
     @Option(names = [OPT_WITH_PASSWORD], paramLabel = "PASSWORD")
     var withPassword: List<String> = listOf()
 
-    @Option(names = [OPT_VERIFICATIONS_OUT], paramLabel = "VERIFICATIONS")
+    @Option(names = [OPT_VERIFICATIONS_OUT, "--verify-out"], paramLabel = "VERIFICATIONS")
     var verifyOut: String? = null
 
     @Option(names = [OPT_VERIFY_WITH], paramLabel = "CERT") var certs: List<String> = listOf()
