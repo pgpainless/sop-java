@@ -16,4 +16,6 @@ steps:
       - gradle check javadocAll
       # Code has coverage
       - gradle jacocoRootReport coveralls
-    secrets: [coveralls_repo_token]
+    environment:
+      coveralls_repo_token:
+        from_secret: coveralls_repo_token
