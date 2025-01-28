@@ -35,6 +35,7 @@ allowing to delegate the implementation logic to an arbitrary SOP CLI implementa
 |-------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
 | [pgpainless-sop](https://github.com/pgpainless/pgpainless/tree/main/pgpainless-sop) | Implementation of `sop-java` using PGPainless                                            |
 | [external-sop](https://github.com/pgpainless/sop-java/tree/main/external-sop)       | Implementation of `sop-java` that allows binding to external SOP binaries such as `sqop` |
+| [bcsop](https://codeberg.org/PGPainless/bc-sop)                                     | Implementation of `sop-java` using vanilla Bouncy Castle                                 |
 
 ### Implementations in other languages
 | Project                                         | Language |
