@@ -38,7 +38,8 @@ allowing to delegate the implementation logic to an arbitrary SOP CLI implementa
 | [bcsop](https://codeberg.org/PGPainless/bc-sop)                                     | Implementation of `sop-java` using vanilla Bouncy Castle                                 |
 
 ### Implementations in other languages
-| Project                                         | Language |
-|-------------------------------------------------|----------|
-| [sop-rs](https://sequoia-pgp.gitlab.io/sop-rs/) | Rust     |
-| [SOP for python](https://pypi.org/project/sop/) | Python   |
+| Project                                           | Language |
+|---------------------------------------------------|----------|
+| [sop-rs](https://sequoia-pgp.gitlab.io/sop-rs/)   | Rust     |
+| [SOP for python](https://pypi.org/project/sop/)   | Python   |
+| [rpgpie-sop](https://crates.io/crates/rpgpie-sop) | Rust     |
