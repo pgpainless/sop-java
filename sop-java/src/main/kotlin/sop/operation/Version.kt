@@ -4,6 +4,9 @@
 
 package sop.operation
 
+import java.io.IOException
+import java.io.InputStream
+import java.util.*
 import kotlin.jvm.Throws
 import sop.exception.SOPGPException
 
@@ -107,4 +110,17 @@ interface Version {
      * this method throws an [SOPGPException.UnsupportedOption] instead.
      */
     @Throws(SOPGPException.UnsupportedOption::class) fun getSopVVersion(): String
+
+    /** Return the current version of the SOP-Java library. */
+    fun getSopJavaVersion(): String? {
+        return try {
+            val resourceIn: InputStream =
+                javaClass.getResourceAsStream("/sop-java-version.properties")
+                    ?: throw IOException("File sop-java-version.properties not found.")
+            val properties = Properties().apply { load(resourceIn) }
+            properties.getProperty("sop-java-version")
+        } catch (e: IOException) {
+            null
+        }
+    }
 }
