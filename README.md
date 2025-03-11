@@ -27,6 +27,8 @@ The repository contains the following modules:
 compatible with the SOP-CLI specification.
 * [external-sop](/external-sop) contains an API implementation that can be used to forward API calls to a SOP executable,
 allowing to delegate the implementation logic to an arbitrary SOP CLI implementation.
+* [sop-java-testfixtures](/sop-java-testfixtures) contains a test suite that can be shared by downstream implementations
+  of `sop-java`.
 
 ## Known Implementations
 (Please expand!)
