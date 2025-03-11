@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 10.1.0-SNAPSHOT
+## 10.1.0
 - `sop-java`:
   - Remove `label()` option from `armor()` subcommand
   - Move test-fixtures artifact built with the `testFixtures` plugin into
