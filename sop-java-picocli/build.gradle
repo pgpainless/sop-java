@@ -21,7 +21,7 @@ dependencies {
 
     // CLI
     implementation "info.picocli:picocli:$picocliVersion"
-    annotationProcessor "info.picocli:picocli-codegen:$picocliVersion"
+    kapt "info.picocli:picocli-codegen:$picocliVersion"
 
     // @Nonnull, @Nullable...
     implementation "com.google.code.findbugs:jsr305:$jsrVersion"
@@ -31,6 +31,10 @@ mainClassName = 'sop.cli.picocli.SopCLI'
 
 application {
     mainClass = mainClassName
+}
+
+compileJava {
+    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
 }
 
 jar {
