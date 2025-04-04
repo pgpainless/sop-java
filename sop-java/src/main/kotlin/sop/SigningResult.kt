@@ -9,8 +9,9 @@ package sop
  *
  * @param micAlg string identifying the digest mechanism used to create the signed message. This is
  *   useful for setting the `micalg=` parameter for the multipart/signed content-type of a PGP/MIME
- *   object as described in section 5 of [RFC3156]. If more than one signature was generated and
- *   different digest mechanisms were used, the value of the micalg object is an empty string.
+ *   object as described in section 5 of [RFC3156](https://www.rfc-editor.org/rfc/rfc3156#section-5).
+ *   If more than one signature was generated and different digest mechanisms were used, the value
+ *   of the micalg object is an empty string.
  */
 data class SigningResult(val micAlg: MicAlg) {
 

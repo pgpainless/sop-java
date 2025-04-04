@@ -78,7 +78,7 @@ interface GenerateKey {
     fun signingOnly(): GenerateKey
 
     /**
-     * Generate the OpenPGP key and return it encoded as an [InputStream].
+     * Generate the OpenPGP key and return it encoded as an [java.io.InputStream].
      *
      * @return key
      * @throws MissingArg if no user-id was provided

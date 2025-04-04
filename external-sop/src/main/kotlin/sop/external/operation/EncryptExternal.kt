@@ -37,7 +37,7 @@ class EncryptExternal(
 
     override fun signWith(key: InputStream): Encrypt = apply {
         commandList.add("--sign-with=@ENV:SIGN_WITH_$argCounter")
-        envList.add("SIGN_WITH_$argCounter=${ExternalSOP.readString(key)}")
+        envList.add("SIGN_WITH_$argCounter=${readString(key)}")
         argCounter += 1
     }
 
