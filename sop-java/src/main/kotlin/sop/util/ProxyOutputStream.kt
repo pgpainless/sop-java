@@ -16,6 +16,7 @@ import java.io.OutputStream
  * target output stream is not yet known.
  */
 @Deprecated("Marked for removal.")
+// TODO: Remove in 11.X
 class ProxyOutputStream : OutputStream() {
     private val buffer = ByteArrayOutputStream()
     private var swapped: OutputStream? = null
