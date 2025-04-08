@@ -11,6 +11,7 @@ import picocli.CommandLine.Parameters
 import sop.cli.picocli.SopCLI
 import sop.exception.SOPGPException
 import sop.util.HexUtil.Companion.bytesToHex
+import java.util.*
 
 @Command(
     name = "validate-userid",
@@ -20,6 +21,8 @@ import sop.util.HexUtil.Companion.bytesToHex
 class ValidateUserIdCmd : AbstractSopCmd() {
 
     @Option(names = ["--addr-spec-only"]) var addrSpecOnly: Boolean = false
+
+    @Option(names = ["--validate-at"]) var validateAt: Date? = null
 
     @Parameters(index = "0", arity = "1", paramLabel = "USERID") lateinit var userId: String
 
@@ -32,6 +35,10 @@ class ValidateUserIdCmd : AbstractSopCmd() {
 
         if (addrSpecOnly) {
             validateUserId.addrSpecOnly()
+        }
+
+        if (validateAt != null) {
+            validateUserId.validateAt(validateAt!!)
         }
 
         validateUserId.userId(userId)
