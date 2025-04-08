@@ -7,6 +7,7 @@ package sop.operation
 import java.io.IOException
 import java.io.InputStream
 import sop.exception.SOPGPException
+import java.util.*
 
 /** Subcommand to validate UserIDs on certificates. */
 interface ValidateUserId {
@@ -75,4 +76,6 @@ interface ValidateUserId {
     @Throws(
         SOPGPException.BadData::class, IOException::class, SOPGPException.CertUserIdNoMatch::class)
     fun subjects(certs: ByteArray): Boolean = subjects(certs.inputStream())
+
+    fun validateAt(date: Date): ValidateUserId
 }
