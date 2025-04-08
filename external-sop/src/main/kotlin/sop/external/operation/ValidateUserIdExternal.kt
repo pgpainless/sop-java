@@ -8,6 +8,7 @@ import java.io.InputStream
 import java.util.*
 import sop.external.ExternalSOP
 import sop.operation.ValidateUserId
+import sop.util.UTCUtil
 
 class ValidateUserIdExternal(binary: String, environment: Properties) : ValidateUserId {
 
@@ -34,5 +35,9 @@ class ValidateUserIdExternal(binary: String, environment: Properties) : Validate
                 Runtime.getRuntime(), commandList.plus(userId!!).plus(authorities), envList, certs)
             .bytes
         return true
+    }
+
+    override fun validateAt(date: Date): ValidateUserId = apply {
+        commandList.add("--validate-at=${UTCUtil.formatUTCDate(date)}")
     }
 }
