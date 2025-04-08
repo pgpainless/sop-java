@@ -85,8 +85,6 @@ class SopCLI {
 
             return CommandLine(SopCLI::class.java)
                 .apply {
-                    // explicitly set help command resource bundle
-                    subcommands["help"]?.setResourceBundle(ResourceBundle.getBundle("msg_help"))
                     // Hide generate-completion command
                     subcommands["generate-completion"]?.commandSpec?.usageMessage()?.hidden(true)
                     // render Input/Output sections in help command
