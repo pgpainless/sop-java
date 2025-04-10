@@ -49,13 +49,15 @@ public class CertifyValidateUserIdTest {
         assertTrue(sop.validateUserId()
                 .authorities(aliceCert)
                 .userId("Alice <alice@pgpainless.org>")
-                .subjects(aliceCert));
+                .subjects(aliceCert),
+                "Alice accepts her own self-certified user-id");
 
         // Alice has not yet certified Bobs user-id
         assertFalse(sop.validateUserId()
                 .authorities(aliceCert)
                 .userId("Bob <bob@pgpainless.org>")
-                .subjects(bobCert));
+                .subjects(bobCert),
+                "Alice has not yet certified Bobs user-id");
 
         byte[] bobCertifiedByAlice = sop.certifyUserId()
                 .userId("Bob <bob@pgpainless.org>")
@@ -67,7 +69,8 @@ public class CertifyValidateUserIdTest {
         assertTrue(sop.validateUserId()
                 .userId("Bob <bob@pgpainless.org>")
                 .authorities(aliceCert)
-                .subjects(bobCertifiedByAlice));
+                .subjects(bobCertifiedByAlice),
+                 "Alice accepts Bobs user-id after she certified it");
     }
 
     @ParameterizedTest
@@ -94,7 +97,8 @@ public class CertifyValidateUserIdTest {
                         .userId("Bobby")
                         .keys(aliceKey)
                         .certs(bobCert)
-                        .getBytes());
+                        .getBytes(),
+                "Alice cannot create a pet-name for Bob without the --no-require-self-sig flag");
 
         byte[] bobWithPetName = sop.certifyUserId()
                 .userId("Bobby")
@@ -106,6 +110,13 @@ public class CertifyValidateUserIdTest {
         assertTrue(sop.validateUserId()
                 .userId("Bobby")
                 .authorities(aliceCert)
-                .subjects(bobWithPetName));
+                .subjects(bobWithPetName),
+                "Alice accepts the pet-name she gave to Bob");
+
+        assertFalse(sop.validateUserId()
+                .userId("Bobby")
+                .authorities(bobWithPetName)
+                .subjects(bobWithPetName),
+                "Bob does not accept the pet-name Alice gave him");
     }
 }
