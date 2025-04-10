@@ -16,7 +16,7 @@ import sop.exception.SOPGPException
     exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 class MergeCertsCmd : AbstractSopCmd() {
 
-    @CommandLine.Option(names = ["--no-armor"], negatable = true) var armor = false
+    @CommandLine.Option(names = ["--no-armor"], negatable = true) var armor = true
 
     @CommandLine.Parameters(paramLabel = "CERTS") var updates: List<String> = listOf()
 
