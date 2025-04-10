@@ -20,7 +20,7 @@ class UpdateKeyCmd : AbstractSopCmd() {
 
     @Option(names = ["--signing-only"]) var signingOnly = false
 
-    @Option(names = ["--no-new-mechanisms"]) var noNewMechanisms = false
+    @Option(names = ["--no-added-capabilities"]) var noAddedCapabilities = false
 
     @Option(names = ["--with-key-password"], paramLabel = "PASSWORD")
     var withKeyPassword: List<String> = listOf()
@@ -38,8 +38,8 @@ class UpdateKeyCmd : AbstractSopCmd() {
             updateKey.signingOnly()
         }
 
-        if (noNewMechanisms) {
-            updateKey.noNewMechanisms()
+        if (noAddedCapabilities) {
+            updateKey.noAddedCapabilities()
         }
 
         for (passwordFileName in withKeyPassword) {

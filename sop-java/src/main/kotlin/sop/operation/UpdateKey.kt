@@ -21,7 +21,7 @@ interface UpdateKey {
 
     @Throws(SOPGPException.UnsupportedOption::class) fun signingOnly(): UpdateKey
 
-    @Throws(SOPGPException.UnsupportedOption::class) fun noNewMechanisms(): UpdateKey
+    @Throws(SOPGPException.UnsupportedOption::class) fun noAddedCapabilities(): UpdateKey
 
     @Throws(SOPGPException.PasswordNotHumanReadable::class, SOPGPException.UnsupportedOption::class)
     fun withKeyPassword(password: String): UpdateKey =
