@@ -5,13 +5,13 @@
 package sop.cli.picocli.commands
 
 import java.io.IOException
+import java.util.*
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
 import picocli.CommandLine.Parameters
 import sop.cli.picocli.SopCLI
 import sop.exception.SOPGPException
 import sop.util.HexUtil.Companion.bytesToHex
-import java.util.*
 
 @Command(
     name = "validate-userid",
