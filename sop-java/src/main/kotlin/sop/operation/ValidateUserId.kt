@@ -6,8 +6,8 @@ package sop.operation
 
 import java.io.IOException
 import java.io.InputStream
-import sop.exception.SOPGPException
 import java.util.*
+import sop.exception.SOPGPException
 
 /** Subcommand to validate UserIDs on certificates. */
 interface ValidateUserId {
