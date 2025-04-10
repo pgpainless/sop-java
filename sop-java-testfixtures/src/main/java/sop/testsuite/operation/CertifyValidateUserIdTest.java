@@ -119,4 +119,35 @@ public class CertifyValidateUserIdTest {
                 .subjects(bobWithPetName),
                 "Bob does not accept the pet-name Alice gave him");
     }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void certifyWithRevokedKey(SOP sop) throws IOException {
+        byte[] aliceKey = sop.generateKey()
+                .userId("Alice <alice@pgpainless.org>")
+                .generate()
+                .getBytes();
+        byte[] aliceRevokedCert = sop.revokeKey()
+                .keys(aliceKey)
+                .getBytes();
+        byte[] aliceRevokedKey = sop.updateKey()
+                .mergeCerts(aliceRevokedCert)
+                .key(aliceKey)
+                .getBytes();
+
+        byte[] bobKey = sop.generateKey()
+                .userId("Bob <bob@pgpainless.org>")
+                .generate()
+                .getBytes();
+        byte[] bobCert = sop.extractCert()
+                .key(bobKey)
+                .getBytes();
+
+        assertThrows(SOPGPException.KeyCannotCertify.class, () ->
+                sop.certifyUserId()
+                        .userId("Bob <bob@pgpainless.org>")
+                        .keys(aliceRevokedKey)
+                        .certs(bobCert)
+                        .getBytes());
+    }
 }
