@@ -9,6 +9,8 @@ SPDX-License-Identifier: Apache-2.0
 ## 10.1.1-SNAPSHOT
 - Prepare jar files for use in native images, e.g. using GraalVM by generating and including
   configuration files for reflection, resources and dynamic proxies.
+- gradle: Make use of jvmToolchain functionality
+- gradle: Improve reproducibility
 
 ## 10.1.0
 - `sop-java`:
