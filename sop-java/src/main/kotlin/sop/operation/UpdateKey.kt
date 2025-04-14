@@ -20,14 +20,14 @@ interface UpdateKey {
     fun noArmor(): UpdateKey
 
     /**
-     * Allow key to be used for signing only.
-     * If this option is not present, the operation may add a new, encryption-capable component key.
+     * Allow key to be used for signing only. If this option is not present, the operation may add a
+     * new, encryption-capable component key.
      */
     @Throws(SOPGPException.UnsupportedOption::class) fun signingOnly(): UpdateKey
 
     /**
-     * Do not allow adding new capabilities to the key.
-     * If this option is not present, the operation may add support for new capabilities to the key.
+     * Do not allow adding new capabilities to the key. If this option is not present, the operation
+     * may add support for new capabilities to the key.
      */
     @Throws(SOPGPException.UnsupportedOption::class) fun noAddedCapabilities(): UpdateKey
 

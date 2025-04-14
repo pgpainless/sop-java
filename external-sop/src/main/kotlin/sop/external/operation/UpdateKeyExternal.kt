@@ -21,7 +21,9 @@ class UpdateKeyExternal(binary: String, environment: Properties) : UpdateKey {
 
     override fun signingOnly(): UpdateKey = apply { commandList.add("--signing-only") }
 
-    override fun noAddedCapabilities(): UpdateKey = apply { commandList.add("--no-added-capabilities") }
+    override fun noAddedCapabilities(): UpdateKey = apply {
+        commandList.add("--no-added-capabilities")
+    }
 
     override fun withKeyPassword(password: ByteArray): UpdateKey = apply {
         commandList.add("--with-key-password=@ENV:KEY_PASSWORD_$argCount")
