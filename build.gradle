@@ -68,8 +68,6 @@ allprojects {
     description = "Stateless OpenPGP Protocol API for Java"
     version = shortVersion
 
-    sourceCompatibility = javaSourceCompatibility
-
     repositories {
         mavenCentral()
     }
@@ -81,6 +79,10 @@ allprojects {
 
         dirMode = 0755
         fileMode = 0644
+    }
+
+    kotlin {
+        jvmToolchain(javaSourceCompatibility)
     }
 
     // Compatibility of default implementations in kotlin interfaces with Java implementations.
@@ -115,7 +117,7 @@ allprojects {
     }
 
     jacoco {
-        toolVersion = "0.8.7"
+        toolVersion = "0.8.8"
     }
 
     jacocoTestReport {
@@ -123,7 +125,7 @@ allprojects {
         sourceDirectories.setFrom(project.files(sourceSets.main.allSource.srcDirs))
         classDirectories.setFrom(project.files(sourceSets.main.output))
         reports {
-            xml.enabled true
+            xml.required = true
         }
     }
 
@@ -141,15 +143,15 @@ subprojects {
     apply plugin: 'signing'
 
     task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
+        archiveClassifier = 'sources'
         from sourceSets.main.allSource
     }
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
+        archiveClassifier = 'javadoc'
         from javadoc.destinationDir
     }
     task testsJar(type: Jar, dependsOn: testClasses) {
-        classifier = 'tests'
+        archiveClassifier = 'tests'
         from sourceSets.test.output
     }
 
@@ -246,7 +248,7 @@ task jacocoRootReport(type: JacocoReport) {
     classDirectories.setFrom(files(subprojects.sourceSets.main.output))
     executionData.setFrom(files(subprojects.jacocoTestReport.executionData))
     reports {
-        xml.enabled true
+        xml.required = true
         xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
     // We could remove the following setOnlyIf line, but then
@@ -257,10 +259,6 @@ task jacocoRootReport(type: JacocoReport) {
 }
 
 task javadocAll(type: Javadoc) {
-    def currentJavaVersion = JavaVersion.current()
-    if (currentJavaVersion.compareTo(JavaVersion.VERSION_1_9) >= 0) {
-        options.addStringOption("-release", "8");
-    }
     source subprojects.collect {project ->
         project.sourceSets.main.allJava }
     destinationDir = new File(buildDir, 'javadoc')

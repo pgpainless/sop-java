@@ -7,7 +7,7 @@ allprojects {
         shortVersion = '10.1.1'
         isSnapshot = true
         minAndroidSdk = 10
-        javaSourceCompatibility = 1.8
+        javaSourceCompatibility = 11
         gsonVersion = '2.10.1'
         jsrVersion = '3.0.2'
         junitVersion = '5.8.2'
