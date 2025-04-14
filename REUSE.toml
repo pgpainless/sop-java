@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: 2025 Paul Schaub <vanitasvitae@fsfe.org>
+#
+# SPDX-License-Identifier: Apache-2.0
+
+version = 1
+SPDX-PackageName = "SOP-Java"
+SPDX-PackageSupplier = "Paul Schaub <info@pgpainless.org>"
+SPDX-PackageDownloadLocation = "https://pgpainless.org"
+
+[[annotations]]
+path = "gradle**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2015 the original author or authors."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ".woodpecker/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 the original author or authors."
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "external-sop/src/main/resources/sop/testsuite/external/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2023 the original author or authors"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ".github/ISSUE_TEMPLATE/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 the original author or authors"
+SPDX-License-Identifier = "Apache-2.0"
