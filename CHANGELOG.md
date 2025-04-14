@@ -11,6 +11,7 @@ SPDX-License-Identifier: Apache-2.0
   configuration files for reflection, resources and dynamic proxies.
 - gradle: Make use of jvmToolchain functionality
 - gradle: Improve reproducibility
+- gradle: Bump animalsniffer to `2.0.0`
 
 ## 10.1.0
 - `sop-java`:

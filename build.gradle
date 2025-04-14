@@ -18,7 +18,7 @@ buildscript {
 }
 
 plugins {
-    id 'ru.vyarus.animalsniffer' version '1.5.3'
+    id 'ru.vyarus.animalsniffer' version '2.0.0'
     id 'org.jetbrains.kotlin.jvm' version "1.9.21"
     id 'com.diffplug.spotless' version '6.22.0' apply false
 }
