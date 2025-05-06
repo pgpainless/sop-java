@@ -75,6 +75,45 @@ public class CertifyValidateUserIdTest {
 
     @ParameterizedTest
     @MethodSource("provideInstances")
+    public void certifyUserIdUnarmored(SOP sop) throws IOException {
+        byte[] aliceKey = sop.generateKey()
+                .noArmor()
+                .withKeyPassword("sw0rdf1sh")
+                .userId("Alice <alice@pgpainless.org>")
+                .generate()
+                .getBytes();
+        byte[] aliceCert = sop.extractCert()
+                .noArmor()
+                .key(aliceKey)
+                .getBytes();
+
+        byte[] bobKey = sop.generateKey()
+                .noArmor()
+                .userId("Bob <bob@pgpainless.org>")
+                .generate()
+                .getBytes();
+        byte[] bobCert = sop.extractCert()
+                .noArmor()
+                .key(bobKey)
+                .getBytes();
+
+        byte[] bobCertifiedByAlice = sop.certifyUserId()
+                .noArmor()
+                .userId("Bob <bob@pgpainless.org>")
+                .withKeyPassword("sw0rdf1sh")
+                .keys(aliceKey)
+                .certs(bobCert)
+                .getBytes();
+
+        assertTrue(sop.validateUserId()
+                        .userId("Bob <bob@pgpainless.org>")
+                        .authorities(aliceCert)
+                        .subjects(bobCertifiedByAlice),
+                "Alice accepts Bobs user-id after she certified it");
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
     public void addPetName(SOP sop) throws IOException {
         byte[] aliceKey = sop.generateKey()
                 .userId("Alice <alice@pgpainless.org>")
