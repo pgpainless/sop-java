@@ -41,10 +41,6 @@ public class MergeCertsTest extends AbstractSOPTest {
                 .baseCertificates(cert)
                 .getBytes();
 
-        System.out.println("cert");
-        System.out.println(new String(sop.armor().data(cert).getBytes()));
-        System.out.println("merged");
-        System.out.println(new String(sop.armor().data(merged).getBytes()));
         assertArrayEquals(cert, merged);
     }
 
