@@ -9,6 +9,7 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import sop.Profile;
 import sop.SOP;
 import sop.exception.SOPGPException;
 import sop.testsuite.JUtils;
@@ -16,9 +17,11 @@ import sop.testsuite.TestData;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class GenerateKeyTest extends AbstractSOPTest {
@@ -117,5 +120,31 @@ public class GenerateKeyTest extends AbstractSOPTest {
         assertThrows(SOPGPException.CertCannotEncrypt.class, () ->
                 sop.encrypt().withCert(signingOnlyCert)
                         .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void generateKeyWithSupportedProfiles(SOP sop) throws IOException {
+        List<Profile> profiles = sop.listProfiles()
+                .generateKey();
+
+        for (Profile profile : profiles) {
+            generateKeyWithProfile(sop, profile.getName());
+        }
+    }
+
+    private void generateKeyWithProfile(SOP sop, String profile) throws IOException {
+        byte[] key;
+        try {
+            key = sop.generateKey()
+                    .profile(profile)
+                    .userId("Alice <alice@pgpainless.org>")
+                    .generate()
+                    .getBytes();
+        } catch (SOPGPException.UnsupportedProfile e) {
+            key = null;
+        }
+        assumeTrue(key != null, "'generate-key' does not support profile '" + profile + "'.");
+        JUtils.assertArrayStartsWith(key, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK);
     }
 }
