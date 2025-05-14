@@ -4,6 +4,7 @@
 
 package sop.testsuite.operation;
 
+import kotlin.collections.ArraysKt;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -38,6 +39,52 @@ public class MergeCertsTest extends AbstractSOPTest {
                 .noArmor()
                 .updates(cert)
                 .baseCertificates(cert)
+                .getBytes();
+
+        assertArrayEquals(cert, merged);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void testMergeWithItselfArmored(SOP sop) throws IOException {
+        byte[] key = sop.generateKey()
+                .noArmor()
+                .userId("Alice <alice@pgpainless.org>")
+                .generate()
+                .getBytes();
+
+        byte[] cert = sop.extractCert()
+                .key(key)
+                .getBytes();
+
+        byte[] merged = sop.mergeCerts()
+                .updates(cert)
+                .baseCertificates(cert)
+                .getBytes();
+
+        assertArrayEquals(cert, merged);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void testMergeWithItselfViaBase(SOP sop) throws IOException {
+        byte[] key = sop.generateKey()
+                .noArmor()
+                .userId("Alice <alice@pgpainless.org>")
+                .generate()
+                .getBytes();
+
+        byte[] cert = sop.extractCert()
+                .noArmor()
+                .key(key)
+                .getBytes();
+
+        byte[] certs = ArraysKt.plus(cert, cert);
+
+        byte[] merged = sop.mergeCerts()
+                .noArmor()
+                .updates(cert)
+                .baseCertificates(certs)
                 .getBytes();
 
         assertArrayEquals(cert, merged);
@@ -98,4 +145,39 @@ public class MergeCertsTest extends AbstractSOPTest {
 
         assertArrayEquals(update, merged);
     }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void testApplyUpdateToMissingBaseDoesNothing(SOP sop) throws IOException {
+        byte[] aliceKey = sop.generateKey()
+                .noArmor()
+                .userId("Alice <alice@pgpainless.org>")
+                .generate()
+                .getBytes();
+
+        byte[] aliceCert = sop.extractCert()
+                .noArmor()
+                .key(aliceKey)
+                .getBytes();
+
+        byte[] bobKey = sop.generateKey()
+                .noArmor()
+                .userId("Bob <bob@pgpainless.org>")
+                .generate()
+                .getBytes();
+
+        byte[] bobCert = sop.extractCert()
+                .noArmor()
+                .key(bobKey)
+                .getBytes();
+
+        byte[] merged = sop.mergeCerts()
+                .noArmor()
+                .updates(bobCert)
+                .baseCertificates(aliceCert)
+                .getBytes();
+
+        assertArrayEquals(aliceCert, merged);
+    }
+
 }
