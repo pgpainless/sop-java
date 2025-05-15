@@ -17,5 +17,5 @@ steps:
       # Code has coverage
       - gradle jacocoRootReport coveralls
     environment:
-      coveralls_repo_token:
+      COVERALLS_REPO_TOKEN:
         from_secret: coveralls_repo_token
