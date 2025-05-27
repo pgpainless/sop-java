@@ -31,7 +31,6 @@ public class ProfileTest {
         assertEquals("Foo: Something something (aliases: Bar, Baz)", profile.toString());
     }
 
-
     @Test
     public void parseWithAliases() {
         Profile profile = Profile.parse("Foo: Something something (aliases: Bar, Baz)");

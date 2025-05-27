@@ -33,8 +33,9 @@ data class Profile(
     @JvmOverloads
     constructor(
         name: String,
-        description: String? = null
-    ) : this(name, Optional.ofNullable(description?.trim()?.ifBlank { null }))
+        description: String? = null,
+        aliases: List<String> = listOf()
+    ) : this(name, Optional.ofNullable(description?.trim()?.ifBlank { null }), aliases)
 
     init {
         require(name.trim().isNotBlank()) { "Name cannot be empty." }
@@ -85,10 +86,10 @@ data class Profile(
                         description.substring(
                             description.indexOf("(aliases: ") + 10, description.indexOf(")"))
                     description = description.substring(0, description.indexOf("(aliases: ")).trim()
-                    Profile(name, Optional.of(description), aliases.split(", ").toList())
+                    Profile(name, description, aliases.split(", ").toList())
                 } else {
                     if (description.isNotBlank()) {
-                        Profile(name, Optional.of(description))
+                        Profile(name, description)
                     } else {
                         Profile(name)
                     }
