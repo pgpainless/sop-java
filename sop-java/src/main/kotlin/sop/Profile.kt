@@ -20,11 +20,15 @@ import sop.util.UTF8Util
  *   in the IETF namespace that begins with the string `draft-` should have semantics that hew as
  *   closely as possible to the referenced Internet Draft.
  * @param description a free-form description of the profile.
- * @see <a
- *   href="https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-05.html#name-profile">
- *   SOP Spec - Profile</a>
+ * @param aliases list of optional profile alias names
+ * @see
+ *   [SOP Spec - Profile](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-05.html#name-profile)
  */
-data class Profile(val name: String, val description: Optional<String>) {
+data class Profile(
+    val name: String,
+    val description: Optional<String>,
+    val aliases: List<String> = listOf()
+) {
 
     @JvmOverloads
     constructor(
@@ -50,8 +54,18 @@ data class Profile(val name: String, val description: Optional<String>) {
      *
      * @return string
      */
-    override fun toString(): String =
-        if (description.isEmpty) name else "$name: ${description.get()}"
+    override fun toString(): String = buildString {
+        append(name)
+        if (!description.isEmpty || !aliases.isEmpty()) {
+            append(":")
+        }
+        if (!description.isEmpty) {
+            append(" ${description.get()}")
+        }
+        if (!aliases.isEmpty()) {
+            append(" (aliases: ${aliases.joinToString(separator = ", ")})")
+        }
+    }
 
     companion object {
 
@@ -64,9 +78,21 @@ data class Profile(val name: String, val description: Optional<String>) {
         @JvmStatic
         fun parse(string: String): Profile {
             return if (string.contains(": ")) {
-                Profile(
-                    string.substring(0, string.indexOf(": ")),
-                    string.substring(string.indexOf(": ") + 2).trim())
+                val name = string.substring(0, string.indexOf(": "))
+                var description = string.substring(string.indexOf(": ") + 2).trim()
+                if (description.contains("(aliases: ")) {
+                    val aliases =
+                        description.substring(
+                            description.indexOf("(aliases: ") + 10, description.indexOf(")"))
+                    description = description.substring(0, description.indexOf("(aliases: ")).trim()
+                    Profile(name, Optional.of(description), aliases.split(", ").toList())
+                } else {
+                    if (description.isNotBlank()) {
+                        Profile(name, Optional.of(description))
+                    } else {
+                        Profile(name)
+                    }
+                }
             } else if (string.endsWith(":")) {
                 Profile(string.substring(0, string.length - 1))
             } else {
