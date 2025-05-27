@@ -5,6 +5,9 @@
 package sop;
 
 import org.junit.jupiter.api.Test;
+import sop.util.Optional;
+
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -17,6 +20,24 @@ public class ProfileTest {
     public void toStringFull() {
         Profile profile = new Profile("default", "Use the implementers recommendations.");
         assertEquals("default: Use the implementers recommendations.", profile.toString());
+    }
+
+    @Test
+    public void withAliasesToString() {
+        Profile profile = new Profile(
+                "Foo",
+                Optional.of("Something something"),
+                Arrays.asList("Bar", "Baz"));
+        assertEquals("Foo: Something something (aliases: Bar, Baz)", profile.toString());
+    }
+
+
+    @Test
+    public void parseWithAliases() {
+        Profile profile = Profile.parse("Foo: Something something (aliases: Bar, Baz)");
+        assertEquals("Foo", profile.getName());
+        assertEquals("Something something", profile.getDescription().get());
+        assertEquals(Arrays.asList("Bar", "Baz"), profile.getAliases());
     }
 
     @Test
