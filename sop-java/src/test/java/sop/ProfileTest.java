@@ -40,6 +40,20 @@ public class ProfileTest {
     }
 
     @Test
+    public void changeAliasesWithWithAliases() {
+        Profile p = new Profile("Foo", "Bar any Baz", Arrays.asList("tinitus", "particle"));
+        p = p.withAliases("fnord", "qbit");
+
+        assertEquals("Foo", p.getName());
+        assertEquals("Bar any Baz", p.getDescription().get());
+
+        assertTrue(p.getAliases().contains("fnord"));
+        assertTrue(p.getAliases().contains("qbit"));
+        assertFalse(p.getAliases().contains("tinitus"));
+        assertFalse(p.getAliases().contains("particle"));
+    }
+
+    @Test
     public void toStringNameOnly() {
         Profile profile = new Profile("default");
         assertEquals("default", profile.toString());
