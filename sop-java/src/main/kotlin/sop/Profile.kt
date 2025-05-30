@@ -51,6 +51,16 @@ data class Profile(
     fun hasDescription() = description.isPresent
 
     /**
+     * Return a copy of this [Profile] with the aliases set to the given strings.
+     *
+     * @param alias one or more alias names
+     * @return profile with aliases
+     */
+    fun withAliases(vararg alias: String): Profile {
+        return Profile(name, description, alias.toList())
+    }
+
+    /**
      * Convert the profile into a String for displaying.
      *
      * @return string
