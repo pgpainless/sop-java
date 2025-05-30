@@ -11,12 +11,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 import sop.ByteArrayAndResult;
 import sop.DecryptionResult;
 import sop.EncryptionResult;
+import sop.Profile;
 import sop.SOP;
 import sop.SessionKey;
 import sop.Verification;
 import sop.enums.EncryptAs;
 import sop.enums.SignatureMode;
 import sop.exception.SOPGPException;
+import sop.operation.Decrypt;
+import sop.operation.Encrypt;
 import sop.testsuite.TestData;
 import sop.testsuite.assertions.VerificationListAssert;
 import sop.util.Optional;
@@ -25,6 +28,7 @@ import sop.util.UTCUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -337,5 +341,56 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                         .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8))
                         .toByteArrayAndResult()
                         .getBytes());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void encryptDecryptWithAllSupportedKeyGenerationProfiles(SOP sop) throws IOException {
+        List<Profile> profiles = sop.listProfiles().generateKey();
+
+        List<byte[]> keys = new ArrayList<>();
+        List<byte[]> certs = new ArrayList<>();
+        for (Profile p : profiles) {
+            byte[] k = sop.generateKey()
+                    .profile(p)
+                    .userId(p.getName())
+                    .generate()
+                    .getBytes();
+            keys.add(k);
+
+            byte[] c = sop.extractCert()
+                    .key(k)
+                    .getBytes();
+            certs.add(c);
+        }
+
+        byte[] plaintext = "Hello, World!\n".getBytes();
+
+        Encrypt encrypt = sop.encrypt();
+        for (byte[] c : certs) {
+            encrypt.withCert(c);
+        }
+        for (byte[] k : keys) {
+            encrypt.signWith(k);
+        }
+
+        ByteArrayAndResult<EncryptionResult> encRes = encrypt.plaintext(plaintext)
+                .toByteArrayAndResult();
+        EncryptionResult eResult = encRes.getResult();
+        byte[] ciphertext = encRes.getBytes();
+
+        for (byte[] k : keys) {
+            Decrypt decrypt = sop.decrypt()
+                    .withKey(k);
+            for (byte[] c : certs) {
+                decrypt.verifyWithCert(c);
+            }
+            ByteArrayAndResult<DecryptionResult> decRes = decrypt.ciphertext(ciphertext)
+                    .toByteArrayAndResult();
+            DecryptionResult dResult = decRes.getResult();
+            byte[] decPlaintext = decRes.getBytes();
+            assertArrayEquals(plaintext, decPlaintext);
+            assertEquals(certs.size(), dResult.getVerifications().size());
+        }
     }
 }
