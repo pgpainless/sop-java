@@ -44,5 +44,5 @@ class CertifyUserIdExternal(binary: String, environment: Properties) : CertifyUs
 
     override fun certs(certs: InputStream): Ready =
         ExternalSOP.executeTransformingOperation(
-            Runtime.getRuntime(), commandList.plus(keys), envList, certs)
+            Runtime.getRuntime(), commandList.plus("--").plus(keys), envList, certs)
 }
