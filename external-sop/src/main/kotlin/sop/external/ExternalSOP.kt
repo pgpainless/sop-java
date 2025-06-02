@@ -182,7 +182,7 @@ class ExternalSOP(
                         "External SOP backend reported error NoHardwareKeyFound ($exitCode):\n$errorMessage")
                 HardwareKeyFailure.EXIT_CODE ->
                     throw HardwareKeyFailure(
-                        "External SOP backend reported error HardwareKeyFalure ($exitCode):\n$errorMessage")
+                        "External SOP backend reported error HardwareKeyFailure ($exitCode):\n$errorMessage")
                 PrimaryKeyBad.EXIT_CODE ->
                     throw PrimaryKeyBad(
                         "External SOP backend reported error PrimaryKeyBad ($exitCode):\n$errorMessage")
