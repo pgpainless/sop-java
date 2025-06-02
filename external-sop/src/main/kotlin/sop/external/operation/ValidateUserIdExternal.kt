@@ -12,7 +12,7 @@ import sop.util.UTCUtil
 
 class ValidateUserIdExternal(binary: String, environment: Properties) : ValidateUserId {
 
-    private val commandList = mutableListOf(binary, "version")
+    private val commandList = mutableListOf(binary, "validate-userid")
     private val envList = ExternalSOP.propertiesToEnv(environment).toMutableList()
 
     private var argCount = 0
