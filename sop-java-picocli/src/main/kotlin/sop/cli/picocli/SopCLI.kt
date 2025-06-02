@@ -64,7 +64,7 @@ class SopCLI {
         @JvmField var EXECUTABLE_NAME = "sop"
 
         @JvmField
-        @Option(names = ["--stacktrace"], scope = ScopeType.INHERIT)
+        @Option(names = ["--stacktrace", "--debug"], scope = ScopeType.INHERIT)
         var stacktrace = false
 
         @JvmStatic
