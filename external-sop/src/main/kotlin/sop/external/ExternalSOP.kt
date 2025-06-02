@@ -120,6 +120,9 @@ class ExternalSOP(
             val errorMessage = readString(errIn)
 
             when (exitCode) {
+                UnspecificFailure.EXIT_CODE ->
+                    throw UnspecificFailure(
+                        "External SOP backend reported an unspecific error ($exitCode):\n$errorMessage")
                 NoSignature.EXIT_CODE ->
                     throw NoSignature(
                         "External SOP backend reported error NoSignature ($exitCode):\n$errorMessage")
