@@ -119,7 +119,9 @@ public class GenerateKeyTest extends AbstractSOPTest {
 
         assertThrows(SOPGPException.CertCannotEncrypt.class, () ->
                 sop.encrypt().withCert(signingOnlyCert)
-                        .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8)));
+                        .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8))
+                        .toByteArrayAndResult()
+                        .getBytes());
     }
 
     @ParameterizedTest
