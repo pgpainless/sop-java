@@ -12,7 +12,7 @@ import sop.operation.MergeCerts
 
 class MergeCertsExternal(binary: String, environment: Properties) : MergeCerts {
 
-    private val commandList = mutableListOf(binary, "version")
+    private val commandList = mutableListOf(binary, "merge-certs")
     private val envList = ExternalSOP.propertiesToEnv(environment).toMutableList()
 
     private var argCount = 0
