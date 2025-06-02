@@ -189,6 +189,9 @@ class ExternalSOP(
                 CertUserIdNoMatch.EXIT_CODE ->
                     throw CertUserIdNoMatch(
                         "External SOP backend reported error CertUserIdNoMatch ($exitCode):\n$errorMessage")
+                KeyCannotCertify.EXIT_CODE ->
+                    throw KeyCannotCertify(
+                        "External SOP backend reported error KeyCannotCertify ($exitCode):\n$errorMessage")
 
                 // Did you forget to add a case for a new exception type?
                 else ->
