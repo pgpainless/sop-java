@@ -45,7 +45,8 @@ class SopVCLI {
         @JvmField var EXECUTABLE_NAME = "sopv"
 
         @JvmField
-        @CommandLine.Option(names = ["--stacktrace", "--debug"], scope = CommandLine.ScopeType.INHERIT)
+        @CommandLine.Option(
+            names = ["--stacktrace", "--debug"], scope = CommandLine.ScopeType.INHERIT)
         var stacktrace = false
 
         @JvmStatic
