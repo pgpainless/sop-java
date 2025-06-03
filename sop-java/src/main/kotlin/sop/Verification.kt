@@ -15,7 +15,7 @@ data class Verification(
     val signingKeyFingerprint: String,
     val signingCertFingerprint: String,
     val signatureMode: Optional<SignatureMode>,
-    val description: Optional<String>
+    val jsonOrDescription: Optional<String>
 ) {
     @JvmOverloads
     constructor(
@@ -31,10 +31,15 @@ data class Verification(
         Optional.ofNullable(signatureMode),
         Optional.ofNullable(description?.trim()))
 
+    @Deprecated("Replaced by jsonOrDescription",
+        replaceWith = ReplaceWith("jsonOrDescription")
+    )
+    val description = jsonOrDescription
+
     override fun toString(): String =
         "${UTCUtil.formatUTCDate(creationTime)} $signingKeyFingerprint $signingCertFingerprint" +
             (if (signatureMode.isPresent) " mode:${signatureMode.get()}" else "") +
-            (if (description.isPresent) " ${description.get()}" else "")
+            (if (jsonOrDescription.isPresent) " ${jsonOrDescription.get()}" else "")
 
     companion object {
         @JvmStatic
