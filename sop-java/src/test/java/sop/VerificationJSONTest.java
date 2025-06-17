@@ -81,12 +81,12 @@ public class VerificationJSONTest {
                 sb.append("\"signers\": [");
                 for (Iterator<String> iterator = json.getSigners().iterator(); iterator.hasNext(); ) {
                     String signer = iterator.next();
-                    sb.append("\"").append(signer).append("\"");
+                    sb.append('\"').append(signer).append('\"');
                     if (iterator.hasNext()) {
                         sb.append(", ");
                     }
                 }
-                sb.append("]");
+                sb.append(']');
             }
 
             if (json.getComment() != null) {
@@ -94,7 +94,7 @@ public class VerificationJSONTest {
                     sb.append(", ");
                 }
                 comma = true;
-                sb.append("\"comment\": \"").append(json.getComment()).append("\"");
+                sb.append("\"comment\": \"").append(json.getComment()).append('\"');
             }
 
             if (json.getExt() != null) {
@@ -104,7 +104,7 @@ public class VerificationJSONTest {
                 comma = true;
                 sb.append("\"ext\": ").append(json.getExt().toString());
             }
-            return sb.append("}").toString();
+            return sb.append('}').toString();
         }
     };
 
