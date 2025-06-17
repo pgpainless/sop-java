@@ -10,7 +10,7 @@ allprojects {
         gsonVersion = '2.10.1'
         jsrVersion = '3.0.2'
         junitVersion = '5.8.2'
-        logbackVersion = '1.2.13' // 1.4+ cause CLI spam
+        logbackVersion = '1.5.13'
         mockitoVersion = '4.5.1'
         picocliVersion = '4.6.3'
         slf4jVersion = '1.7.36'
