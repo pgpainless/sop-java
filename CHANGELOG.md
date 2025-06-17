@@ -6,6 +6,22 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 14.0.0-SNAPSHOT
+- Implement changes from SOP spec `11`, `12`, `13`, `14`
+  - Implement `update-key` command
+  - Implement `merge-certs` command
+  - Implement `certify-userid` command
+  - Implement `validate-userid` command
+  - Add `UnspecificFailure` exception
+  - Add `KeyCannotCertify` exception
+  - Add `NoHardwareKeyFound` exception
+  - Add `HardwareKeyFailure` exception
+  - Add `PrimaryKeyBad` exception
+  - Add `CertUserIdNoMatch` exception
+  - `Verification`: Add support for JSON description extensions
+- Remove `animalsniffer` from build dependencies
+- Bump `logback` to `1.5.13`
+
 ## 10.1.1
 - Prepare jar files for use in native images, e.g. using GraalVM by generating and including
   configuration files for reflection, resources and dynamic proxies.
