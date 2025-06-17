@@ -18,7 +18,6 @@ buildscript {
 }
 
 plugins {
-    id 'ru.vyarus.animalsniffer' version '2.0.0'
     id 'org.jetbrains.kotlin.jvm' version "1.9.21"
     id 'com.diffplug.spotless' version '6.22.0' apply false
 }
@@ -34,18 +33,6 @@ allprojects {
     apply plugin: 'kotlin'
     apply plugin: 'kotlin-kapt'
     apply plugin: 'com.diffplug.spotless'
-
-    // For non-cli modules enable android api compatibility check
-    if (it.name.equals('sop-java')) {
-        // animalsniffer
-        apply plugin: 'ru.vyarus.animalsniffer'
-        dependencies {
-            signature "net.sf.androidscents.signature:android-api-level-${minAndroidSdk}:2.3.3_r2@signature"
-        }
-        animalsniffer {
-            sourceSets = [sourceSets.main]
-        }
-    }
 
     // Only generate jar for submodules
     // https://stackoverflow.com/a/25445035

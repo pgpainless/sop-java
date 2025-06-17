@@ -4,18 +4,7 @@
 
 package sop
 
-import sop.operation.Armor
-import sop.operation.ChangeKeyPassword
-import sop.operation.Dearmor
-import sop.operation.Decrypt
-import sop.operation.DetachedSign
-import sop.operation.Encrypt
-import sop.operation.ExtractCert
-import sop.operation.GenerateKey
-import sop.operation.InlineDetach
-import sop.operation.InlineSign
-import sop.operation.ListProfiles
-import sop.operation.RevokeKey
+import sop.operation.*
 
 /**
  * Stateless OpenPGP Interface. This class provides a stateless interface to various OpenPGP related
@@ -26,48 +15,57 @@ import sop.operation.RevokeKey
 interface SOP : SOPV {
 
     /** Generate a secret key. */
-    fun generateKey(): GenerateKey
+    fun generateKey(): GenerateKey?
 
     /** Extract a certificate (public key) from a secret key. */
-    fun extractCert(): ExtractCert
+    fun extractCert(): ExtractCert?
 
     /**
      * Create detached signatures. If you want to sign a message inline, use [inlineSign] instead.
      */
-    fun sign(): DetachedSign = detachedSign()
+    fun sign(): DetachedSign? = detachedSign()
 
     /**
      * Create detached signatures. If you want to sign a message inline, use [inlineSign] instead.
      */
-    fun detachedSign(): DetachedSign
+    fun detachedSign(): DetachedSign?
 
     /**
      * Sign a message using inline signatures. If you need to create detached signatures, use
      * [detachedSign] instead.
      */
-    fun inlineSign(): InlineSign
+    fun inlineSign(): InlineSign?
 
     /** Detach signatures from an inline signed message. */
-    fun inlineDetach(): InlineDetach
+    fun inlineDetach(): InlineDetach?
 
     /** Encrypt a message. */
-    fun encrypt(): Encrypt
+    fun encrypt(): Encrypt?
 
     /** Decrypt a message. */
-    fun decrypt(): Decrypt
+    fun decrypt(): Decrypt?
 
     /** Convert binary OpenPGP data to ASCII. */
-    fun armor(): Armor
+    fun armor(): Armor?
 
     /** Converts ASCII armored OpenPGP data to binary. */
-    fun dearmor(): Dearmor
+    fun dearmor(): Dearmor?
 
     /** List supported [Profiles][Profile] of a subcommand. */
-    fun listProfiles(): ListProfiles
+    fun listProfiles(): ListProfiles?
 
     /** Revoke one or more secret keys. */
-    fun revokeKey(): RevokeKey
+    fun revokeKey(): RevokeKey?
 
     /** Update a key's password. */
-    fun changeKeyPassword(): ChangeKeyPassword
+    fun changeKeyPassword(): ChangeKeyPassword?
+
+    /** Keep a secret key up-to-date. */
+    fun updateKey(): UpdateKey?
+
+    /** Merge OpenPGP certificates. */
+    fun mergeCerts(): MergeCerts?
+
+    /** Certify OpenPGP Certificate User-IDs. */
+    fun certifyUserId(): CertifyUserId?
 }

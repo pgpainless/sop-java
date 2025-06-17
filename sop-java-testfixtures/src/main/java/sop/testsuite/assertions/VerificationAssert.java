@@ -45,12 +45,12 @@ public final class VerificationAssert {
     }
 
     public VerificationAssert hasDescription(String description) {
-        assertEquals(description, verification.getDescription().get());
+        assertEquals(description, verification.getJsonOrDescription().get());
         return this;
     }
 
     public VerificationAssert hasDescriptionOrNull(String description) {
-        if (verification.getDescription().isEmpty()) {
+        if (verification.getJsonOrDescription().isEmpty()) {
             return this;
         }
 

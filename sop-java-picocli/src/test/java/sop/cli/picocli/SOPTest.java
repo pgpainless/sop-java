@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import sop.SOP;
 import sop.exception.SOPGPException;
 import sop.operation.Armor;
+import sop.operation.CertifyUserId;
 import sop.operation.ChangeKeyPassword;
 import sop.operation.Dearmor;
 import sop.operation.Decrypt;
@@ -29,7 +30,10 @@ import sop.operation.InlineVerify;
 import sop.operation.DetachedSign;
 import sop.operation.DetachedVerify;
 import sop.operation.ListProfiles;
+import sop.operation.MergeCerts;
 import sop.operation.RevokeKey;
+import sop.operation.UpdateKey;
+import sop.operation.ValidateUserId;
 import sop.operation.Version;
 
 public class SOPTest {
@@ -52,6 +56,26 @@ public class SOPTest {
     @Test
     public void UnsupportedSubcommandsTest() {
         SOP nullCommandSOP = new SOP() {
+            @Override
+            public ValidateUserId validateUserId() {
+                return null;
+            }
+
+            @Override
+            public CertifyUserId certifyUserId() {
+                return null;
+            }
+
+            @Override
+            public MergeCerts mergeCerts() {
+                return null;
+            }
+
+            @Override
+            public UpdateKey updateKey() {
+                return null;
+            }
+
             @Override
             public Version version() {
                 return null;
@@ -140,6 +164,11 @@ public class SOPTest {
         commands.add(new String[] {"sign"});
         commands.add(new String[] {"verify", "signature.asc", "cert.asc"});
         commands.add(new String[] {"version"});
+        commands.add(new String[] {"list-profiles", "generate-key"});
+        commands.add(new String[] {"certify-userid", "--userid", "Alice <alice@pgpainless.org>", "--", "alice.pgp"});
+        commands.add(new String[] {"validate-userid", "Alice <alice@pgpainless.org>", "bob.pgp", "--", "alice.pgp"});
+        commands.add(new String[] {"update-key"});
+        commands.add(new String[] {"merge-certs"});
 
         for (String[] command : commands) {
             int exit = SopCLI.execute(command);

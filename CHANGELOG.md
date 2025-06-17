@@ -6,6 +6,25 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 14.0.0-SNAPSHOT
+- Update implementation to [SOP Specification revision 14](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-14.html), 
+  including changes from revisions `11`, `12`, `13`, `14`.
+  - Implement newly introduced operations
+    - `update-key` 'fixes' everything wrong with a key
+    - `merge-certs` merges a certificate with other copies
+    - `certify-userid` create signatures over user-ids on certificates
+    - `validate-userid` validate signatures over user-ids
+  - Add new exceptions
+    - `UnspecificFailure` maps generic application errors
+    - `KeyCannotCertify` signals that a key cannot be used for third-party certifications
+    - `NoHardwareKeyFound` signals that a key backed by a hardware device cannot be found
+    - `HardwareKeyFailure` signals a hardware device failure
+    - `PrimaryKeyBad` signals an unusable or bad primary key
+    - `CertUserIdNoMatch` signals that a user-id cannot be found/validated on a certificate
+  - `Verification`: Add support for JSON description extensions
+- Remove `animalsniffer` from build dependencies
+- Bump `logback` to `1.5.13`
+
 ## 10.1.1
 - Prepare jar files for use in native images, e.g. using GraalVM by generating and including
   configuration files for reflection, resources and dynamic proxies.

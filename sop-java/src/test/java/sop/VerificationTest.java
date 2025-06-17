@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class VerificationTest {
@@ -24,6 +25,8 @@ public class VerificationTest {
         String certFP = "4E2C78519512C2AE9A8BFE7EB3298EB2FBE5F51B";
         Verification verification = new Verification(signDate, keyFP, certFP);
         assertEquals("2022-11-07T15:01:24Z F9E6F53F7201C60A87064EAB0B27F2B0760A1209 4E2C78519512C2AE9A8BFE7EB3298EB2FBE5F51B", verification.toString());
+
+        assertFalse(verification.getContainsJson());
 
         VerificationAssert.assertThatVerification(verification)
                 .issuedBy(certFP)

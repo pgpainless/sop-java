@@ -27,6 +27,10 @@ import sop.exception.SOPGPException
             ChangeKeyPasswordCmd::class,
             RevokeKeyCmd::class,
             ExtractCertCmd::class,
+            UpdateKeyCmd::class,
+            MergeCertsCmd::class,
+            CertifyUserIdCmd::class,
+            ValidateUserIdCmd::class,
             // Messaging subcommands
             SignCmd::class,
             VerifyCmd::class,
@@ -60,7 +64,7 @@ class SopCLI {
         @JvmField var EXECUTABLE_NAME = "sop"
 
         @JvmField
-        @Option(names = ["--stacktrace"], scope = ScopeType.INHERIT)
+        @Option(names = ["--stacktrace", "--debug"], scope = ScopeType.INHERIT)
         var stacktrace = false
 
         @JvmStatic
@@ -83,6 +87,12 @@ class SopCLI {
                 .apply {
                     // Hide generate-completion command
                     subcommands["generate-completion"]?.commandSpec?.usageMessage()?.hidden(true)
+                    // render Input/Output sections in help command
+                    subcommands.values
+                        .filter {
+                            (it.getCommand() as Any) is AbstractSopCmd
+                        } // Only for AbstractSopCmd objects
+                        .forEach { (it.getCommand() as AbstractSopCmd).installIORenderer(it) }
                     // overwrite executable name
                     commandName = EXECUTABLE_NAME
                     // setup exception handling

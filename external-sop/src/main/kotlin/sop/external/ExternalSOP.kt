@@ -69,6 +69,14 @@ class ExternalSOP(
     override fun changeKeyPassword(): ChangeKeyPassword =
         ChangeKeyPasswordExternal(binaryName, properties)
 
+    override fun updateKey(): UpdateKey = UpdateKeyExternal(binaryName, properties)
+
+    override fun mergeCerts(): MergeCerts = MergeCertsExternal(binaryName, properties)
+
+    override fun certifyUserId(): CertifyUserId = CertifyUserIdExternal(binaryName, properties)
+
+    override fun validateUserId(): ValidateUserId = ValidateUserIdExternal(binaryName, properties)
+
     /**
      * This interface can be used to provide a directory in which external SOP binaries can
      * temporarily store additional results of OpenPGP operations such that the binding classes can
@@ -112,6 +120,9 @@ class ExternalSOP(
             val errorMessage = readString(errIn)
 
             when (exitCode) {
+                UnspecificFailure.EXIT_CODE ->
+                    throw UnspecificFailure(
+                        "External SOP backend reported an unspecific error ($exitCode):\n$errorMessage")
                 NoSignature.EXIT_CODE ->
                     throw NoSignature(
                         "External SOP backend reported error NoSignature ($exitCode):\n$errorMessage")
@@ -169,6 +180,21 @@ class ExternalSOP(
                 UnsupportedProfile.EXIT_CODE ->
                     throw UnsupportedProfile(
                         "External SOP backend reported error UnsupportedProfile ($exitCode):\n$errorMessage")
+                NoHardwareKeyFound.EXIT_CODE ->
+                    throw NoHardwareKeyFound(
+                        "External SOP backend reported error NoHardwareKeyFound ($exitCode):\n$errorMessage")
+                HardwareKeyFailure.EXIT_CODE ->
+                    throw HardwareKeyFailure(
+                        "External SOP backend reported error HardwareKeyFailure ($exitCode):\n$errorMessage")
+                PrimaryKeyBad.EXIT_CODE ->
+                    throw PrimaryKeyBad(
+                        "External SOP backend reported error PrimaryKeyBad ($exitCode):\n$errorMessage")
+                CertUserIdNoMatch.EXIT_CODE ->
+                    throw CertUserIdNoMatch(
+                        "External SOP backend reported error CertUserIdNoMatch ($exitCode):\n$errorMessage")
+                KeyCannotCertify.EXIT_CODE ->
+                    throw KeyCannotCertify(
+                        "External SOP backend reported error KeyCannotCertify ($exitCode):\n$errorMessage")
 
                 // Did you forget to add a case for a new exception type?
                 else ->

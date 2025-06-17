@@ -16,6 +16,22 @@ abstract class SOPGPException : RuntimeException {
 
     abstract fun getExitCode(): Int
 
+    /** An otherwise unspecified failure occurred */
+    class UnspecificFailure : SOPGPException {
+
+        constructor(message: String) : super(message)
+
+        constructor(message: String, e: Throwable) : super(message, e)
+
+        constructor(e: Throwable) : super(e)
+
+        override fun getExitCode(): Int = EXIT_CODE
+
+        companion object {
+            const val EXIT_CODE = 1
+        }
+    }
+
     /** No acceptable signatures found (sop verify, inline-verify). */
     class NoSignature : SOPGPException {
         @JvmOverloads
@@ -335,6 +351,66 @@ abstract class SOPGPException : RuntimeException {
 
         companion object {
             const val EXIT_CODE = 101
+        }
+    }
+
+    /** The primary key of a KEYS object is too weak or revoked. */
+    class PrimaryKeyBad : SOPGPException {
+        constructor() : super()
+
+        constructor(errorMsg: String) : super(errorMsg)
+
+        override fun getExitCode(): Int = EXIT_CODE
+
+        companion object {
+            const val EXIT_CODE = 103
+        }
+    }
+
+    /** The CERTS object has no matching User ID. */
+    class CertUserIdNoMatch : SOPGPException {
+
+        val fingerprint: ByteArray?
+
+        constructor() : super() {
+            fingerprint = null
+        }
+
+        constructor(fingerprint: ByteArray) : super() {
+            this.fingerprint = fingerprint
+        }
+
+        constructor(errorMsg: String) : super(errorMsg) {
+            fingerprint = null
+        }
+
+        constructor(errorMsg: String, cause: Throwable) : super(errorMsg, cause) {
+            fingerprint = null
+        }
+
+        override fun getExitCode(): Int = EXIT_CODE
+
+        companion object {
+            const val EXIT_CODE = 107
+        }
+    }
+
+    /**
+     * Key not certification-capable (e.g., expired, revoked, unacceptable usage flags) (sop
+     * certify-userid)
+     */
+    class KeyCannotCertify : SOPGPException {
+
+        constructor(message: String) : super(message)
+
+        constructor(message: String, e: Throwable) : super(message, e)
+
+        constructor(e: Throwable) : super(e)
+
+        override fun getExitCode(): Int = EXIT_CODE
+
+        companion object {
+            const val EXIT_CODE = 109
         }
     }
 }

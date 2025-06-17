@@ -86,4 +86,10 @@ public class VersionTest extends AbstractSOPTest {
             throw new TestAbortedException("Implementation does not provide coverage for any sopv interface version.");
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void sopJavaVersionTest(SOP sop) {
+        assertNotNull(sop.version().getSopJavaVersion());
+    }
 }
