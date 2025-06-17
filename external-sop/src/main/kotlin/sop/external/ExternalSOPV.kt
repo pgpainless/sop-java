@@ -10,9 +10,11 @@ import sop.SOPV
 import sop.external.ExternalSOP.TempDirProvider
 import sop.external.operation.DetachedVerifyExternal
 import sop.external.operation.InlineVerifyExternal
+import sop.external.operation.ValidateUserIdExternal
 import sop.external.operation.VersionExternal
 import sop.operation.DetachedVerify
 import sop.operation.InlineVerify
+import sop.operation.ValidateUserId
 import sop.operation.Version
 
 /**
@@ -36,6 +38,8 @@ class ExternalSOPV(
 
     override fun inlineVerify(): InlineVerify =
         InlineVerifyExternal(binaryName, properties, tempDirProvider)
+
+    override fun validateUserId(): ValidateUserId = ValidateUserIdExternal(binaryName, properties)
 
     companion object {
 

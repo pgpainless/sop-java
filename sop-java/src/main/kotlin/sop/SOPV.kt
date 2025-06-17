@@ -6,6 +6,7 @@ package sop
 
 import sop.operation.DetachedVerify
 import sop.operation.InlineVerify
+import sop.operation.ValidateUserId
 import sop.operation.Version
 
 /** Subset of [SOP] implementing only OpenPGP signature verification. */
@@ -31,4 +32,7 @@ interface SOPV {
      * a message, use [detachedVerify] instead.
      */
     fun inlineVerify(): InlineVerify?
+
+    /** Validate a UserID in an OpenPGP certificate. */
+    fun validateUserId(): ValidateUserId?
 }

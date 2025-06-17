@@ -68,7 +68,4 @@ interface SOP : SOPV {
 
     /** Certify OpenPGP Certificate User-IDs. */
     fun certifyUserId(): CertifyUserId?
-
-    /** Validate a UserID in an OpenPGP certificate. */
-    fun validateUserId(): ValidateUserId?
 }
