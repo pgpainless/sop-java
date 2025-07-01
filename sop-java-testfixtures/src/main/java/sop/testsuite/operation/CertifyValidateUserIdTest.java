@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
-public class CertifyValidateUserIdTest {
+public class CertifyValidateUserIdTest extends AbstractSOPTest {
 
     static Stream<Arguments> provideInstances() {
         return AbstractSOPTest.provideBackends();
@@ -27,25 +27,25 @@ public class CertifyValidateUserIdTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void certifyUserId(SOP sop) throws IOException {
-        byte[] aliceKey = sop.generateKey()
+        byte[] aliceKey = assumeSupported(sop::generateKey)
                 .withKeyPassword("sw0rdf1sh")
                 .userId("Alice <alice@pgpainless.org>")
                 .generate()
                 .getBytes();
-        byte[] aliceCert = sop.extractCert()
+        byte[] aliceCert = assumeSupported(sop::extractCert)
                 .key(aliceKey)
                 .getBytes();
 
-        byte[] bobKey = sop.generateKey()
+        byte[] bobKey = assumeSupported(sop::generateKey)
                 .userId("Bob <bob@pgpainless.org>")
                 .generate()
                 .getBytes();
-        byte[] bobCert = sop.extractCert()
+        byte[] bobCert = assumeSupported(sop::extractCert)
                 .key(bobKey)
                 .getBytes();
 
         // Alice has her own user-id self-certified
-        assertTrue(sop.validateUserId()
+        assertTrue(assumeSupported(sop::validateUserId)
                         .authorities(aliceCert)
                         .userId("Alice <alice@pgpainless.org>")
                         .subjects(aliceCert),
@@ -53,20 +53,20 @@ public class CertifyValidateUserIdTest {
 
         // Alice has not yet certified Bobs user-id
         assertThrows(SOPGPException.CertUserIdNoMatch.class, () ->
-                        sop.validateUserId()
+                        assumeSupported(sop::validateUserId)
                                 .authorities(aliceCert)
                                 .userId("Bob <bob@pgpainless.org>")
                                 .subjects(bobCert),
                 "Alice has not yet certified Bobs user-id");
 
-        byte[] bobCertifiedByAlice = sop.certifyUserId()
+        byte[] bobCertifiedByAlice = assumeSupported(sop::certifyUserId)
                 .userId("Bob <bob@pgpainless.org>")
                 .withKeyPassword("sw0rdf1sh")
                 .keys(aliceKey)
                 .certs(bobCert)
                 .getBytes();
 
-        assertTrue(sop.validateUserId()
+        assertTrue(assumeSupported(sop::validateUserId)
                         .userId("Bob <bob@pgpainless.org>")
                         .authorities(aliceCert)
                         .subjects(bobCertifiedByAlice),
@@ -76,28 +76,28 @@ public class CertifyValidateUserIdTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void certifyUserIdUnarmored(SOP sop) throws IOException {
-        byte[] aliceKey = sop.generateKey()
+        byte[] aliceKey = assumeSupported(sop::generateKey)
                 .noArmor()
                 .withKeyPassword("sw0rdf1sh")
                 .userId("Alice <alice@pgpainless.org>")
                 .generate()
                 .getBytes();
-        byte[] aliceCert = sop.extractCert()
+        byte[] aliceCert = assumeSupported(sop::extractCert)
                 .noArmor()
                 .key(aliceKey)
                 .getBytes();
 
-        byte[] bobKey = sop.generateKey()
+        byte[] bobKey = assumeSupported(sop::generateKey)
                 .noArmor()
                 .userId("Bob <bob@pgpainless.org>")
                 .generate()
                 .getBytes();
-        byte[] bobCert = sop.extractCert()
+        byte[] bobCert = assumeSupported(sop::extractCert)
                 .noArmor()
                 .key(bobKey)
                 .getBytes();
 
-        byte[] bobCertifiedByAlice = sop.certifyUserId()
+        byte[] bobCertifiedByAlice = assumeSupported(sop::certifyUserId)
                 .noArmor()
                 .userId("Bob <bob@pgpainless.org>")
                 .withKeyPassword("sw0rdf1sh")
@@ -105,7 +105,7 @@ public class CertifyValidateUserIdTest {
                 .certs(bobCert)
                 .getBytes();
 
-        assertTrue(sop.validateUserId()
+        assertTrue(assumeSupported(sop::validateUserId)
                         .userId("Bob <bob@pgpainless.org>")
                         .authorities(aliceCert)
                         .subjects(bobCertifiedByAlice),
@@ -115,45 +115,45 @@ public class CertifyValidateUserIdTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void addPetName(SOP sop) throws IOException {
-        byte[] aliceKey = sop.generateKey()
+        byte[] aliceKey = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@pgpainless.org>")
                 .generate()
                 .getBytes();
-        byte[] aliceCert = sop.extractCert()
+        byte[] aliceCert = assumeSupported(sop::extractCert)
                 .key(aliceKey)
                 .getBytes();
 
-        byte[] bobKey = sop.generateKey()
+        byte[] bobKey = assumeSupported(sop::generateKey)
                 .userId("Bob <bob@pgpainless.org>")
                 .generate()
                 .getBytes();
-        byte[] bobCert = sop.extractCert()
+        byte[] bobCert = assumeSupported(sop::extractCert)
                 .key(bobKey)
                 .getBytes();
 
         assertThrows(SOPGPException.CertUserIdNoMatch.class, () ->
-                        sop.certifyUserId()
+                        assumeSupported(sop::certifyUserId)
                                 .userId("Bobby")
                                 .keys(aliceKey)
                                 .certs(bobCert)
                                 .getBytes(),
                 "Alice cannot create a pet-name for Bob without the --no-require-self-sig flag");
 
-        byte[] bobWithPetName = sop.certifyUserId()
+        byte[] bobWithPetName = assumeSupported(sop::certifyUserId)
                 .userId("Bobby")
                 .noRequireSelfSig()
                 .keys(aliceKey)
                 .certs(bobCert)
                 .getBytes();
 
-        assertTrue(sop.validateUserId()
+        assertTrue(assumeSupported(sop::validateUserId)
                         .userId("Bobby")
                         .authorities(aliceCert)
                         .subjects(bobWithPetName),
                 "Alice accepts the pet-name she gave to Bob");
 
         assertThrows(SOPGPException.CertUserIdNoMatch.class, () ->
-                        sop.validateUserId()
+                        assumeSupported(sop::validateUserId)
                                 .userId("Bobby")
                                 .authorities(bobWithPetName)
                                 .subjects(bobWithPetName),
@@ -163,28 +163,28 @@ public class CertifyValidateUserIdTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void certifyWithRevokedKey(SOP sop) throws IOException {
-        byte[] aliceKey = sop.generateKey()
+        byte[] aliceKey = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@pgpainless.org>")
                 .generate()
                 .getBytes();
-        byte[] aliceRevokedCert = sop.revokeKey()
+        byte[] aliceRevokedCert = assumeSupported(sop::revokeKey)
                 .keys(aliceKey)
                 .getBytes();
-        byte[] aliceRevokedKey = sop.updateKey()
+        byte[] aliceRevokedKey = assumeSupported(sop::updateKey)
                 .mergeCerts(aliceRevokedCert)
                 .key(aliceKey)
                 .getBytes();
 
-        byte[] bobKey = sop.generateKey()
+        byte[] bobKey = assumeSupported(sop::generateKey)
                 .userId("Bob <bob@pgpainless.org>")
                 .generate()
                 .getBytes();
-        byte[] bobCert = sop.extractCert()
+        byte[] bobCert = assumeSupported(sop::extractCert)
                 .key(bobKey)
                 .getBytes();
 
         assertThrows(SOPGPException.KeyCannotCertify.class, () ->
-                sop.certifyUserId()
+                assumeSupported(sop::certifyUserId)
                         .userId("Bob <bob@pgpainless.org>")
                         .keys(aliceRevokedKey)
                         .certs(bobCert)

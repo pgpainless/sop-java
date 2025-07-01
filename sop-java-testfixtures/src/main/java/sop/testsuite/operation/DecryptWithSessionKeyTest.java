@@ -41,7 +41,7 @@ public class DecryptWithSessionKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void testDecryptAndExtractSessionKey(SOP sop) throws IOException {
-        ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
+        ByteArrayAndResult<DecryptionResult> bytesAndResult = assumeSupported(sop::decrypt)
                 .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(CIPHERTEXT.getBytes(StandardCharsets.UTF_8))
                 .toByteArrayAndResult();
@@ -54,7 +54,7 @@ public class DecryptWithSessionKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void testDecryptWithSessionKey(SOP sop) throws IOException {
-        byte[] decrypted = sop.decrypt()
+        byte[] decrypted = assumeSupported(sop::decrypt)
                 .withSessionKey(SessionKey.fromString(SESSION_KEY))
                 .ciphertext(CIPHERTEXT.getBytes(StandardCharsets.UTF_8))
                 .toByteArrayAndResult()

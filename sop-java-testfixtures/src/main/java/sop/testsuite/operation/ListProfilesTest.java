@@ -26,8 +26,7 @@ public class ListProfilesTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void listGenerateKeyProfiles(SOP sop) {
-        List<Profile> profiles = sop
-                .listProfiles()
+        List<Profile> profiles = assumeSupported(sop::listProfiles)
                 .generateKey();
 
         assertFalse(profiles.isEmpty());
@@ -36,8 +35,7 @@ public class ListProfilesTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void listEncryptProfiles(SOP sop) {
-        List<Profile> profiles = sop
-                .listProfiles()
+        List<Profile> profiles = assumeSupported(sop::listProfiles)
                 .encrypt();
 
         assertFalse(profiles.isEmpty());
@@ -46,8 +44,7 @@ public class ListProfilesTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void listUnsupportedProfiles(SOP sop) {
-        assertThrows(SOPGPException.UnsupportedProfile.class, () -> sop
-                .listProfiles()
+        assertThrows(SOPGPException.UnsupportedProfile.class, () -> assumeSupported(sop::listProfiles)
                 .subcommand("invalid"));
     }
 }

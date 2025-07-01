@@ -7,6 +7,7 @@ package sop;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import sop.enums.SignatureMode;
+import sop.testsuite.assertions.VerificationAssert;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -158,6 +159,8 @@ public class VerificationJSONTest {
         assertNull(json.getExt());
 
         verification = new Verification(verification.getCreationTime(), verification.getSigningKeyFingerprint(), verification.getSigningCertFingerprint(), verification.getSignatureMode().get(), json, dummySerializer);
+        VerificationAssert.assertThatVerification(verification)
+                        .hasJSON(dummyParser, j -> j.getSigners().contains("alice.pgp"));
         assertEquals(string, verification.toString());
     }
 }

@@ -32,18 +32,18 @@ public class ChangeKeyPasswordTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void changePasswordFromUnprotectedToProtected(SOP sop) throws IOException {
-        byte[] unprotectedKey = sop.generateKey().generate().getBytes();
+        byte[] unprotectedKey = assumeSupported(sop::generateKey).generate().getBytes();
         byte[] password = "sw0rdf1sh".getBytes(UTF8Util.UTF8);
-        byte[] protectedKey = sop.changeKeyPassword().newKeyPassphrase(password).keys(unprotectedKey).getBytes();
+        byte[] protectedKey = assumeSupported(sop::changeKeyPassword).newKeyPassphrase(password).keys(unprotectedKey).getBytes();
 
-        sop.sign().withKeyPassword(password).key(protectedKey).data("Test123".getBytes(StandardCharsets.UTF_8));
+        assumeSupported(sop::sign).withKeyPassword(password).key(protectedKey).data("Test123".getBytes(StandardCharsets.UTF_8));
     }
 
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void changePasswordFromUnprotectedToUnprotected(SOP sop) throws IOException {
-        byte[] unprotectedKey = sop.generateKey().noArmor().generate().getBytes();
-        byte[] stillUnprotectedKey = sop.changeKeyPassword().noArmor().keys(unprotectedKey).getBytes();
+        byte[] unprotectedKey = assumeSupported(sop::generateKey).noArmor().generate().getBytes();
+        byte[] stillUnprotectedKey = assumeSupported(sop::changeKeyPassword).noArmor().keys(unprotectedKey).getBytes();
 
         assertArrayEquals(unprotectedKey, stillUnprotectedKey);
     }
@@ -52,12 +52,12 @@ public class ChangeKeyPasswordTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void changePasswordFromProtectedToUnprotected(SOP sop) throws IOException {
         byte[] password = "sw0rdf1sh".getBytes(UTF8Util.UTF8);
-        byte[] protectedKey = sop.generateKey().withKeyPassword(password).generate().getBytes();
-        byte[] unprotectedKey = sop.changeKeyPassword()
+        byte[] protectedKey = assumeSupported(sop::generateKey).withKeyPassword(password).generate().getBytes();
+        byte[] unprotectedKey = assumeSupported(sop::changeKeyPassword)
                 .oldKeyPassphrase(password)
                 .keys(protectedKey).getBytes();
 
-        sop.sign().key(unprotectedKey).data("Test123".getBytes(StandardCharsets.UTF_8));
+        assumeSupported(sop::sign).key(unprotectedKey).data("Test123".getBytes(StandardCharsets.UTF_8));
     }
 
     @ParameterizedTest
@@ -65,13 +65,13 @@ public class ChangeKeyPasswordTest extends AbstractSOPTest {
     public void changePasswordFromProtectedToDifferentProtected(SOP sop) throws IOException {
         byte[] oldPassword = "sw0rdf1sh".getBytes(UTF8Util.UTF8);
         byte[] newPassword = "0r4ng3".getBytes(UTF8Util.UTF8);
-        byte[] protectedKey = sop.generateKey().withKeyPassword(oldPassword).generate().getBytes();
-        byte[] reprotectedKey = sop.changeKeyPassword()
+        byte[] protectedKey = assumeSupported(sop::generateKey).withKeyPassword(oldPassword).generate().getBytes();
+        byte[] reprotectedKey = assumeSupported(sop::changeKeyPassword)
                 .oldKeyPassphrase(oldPassword)
                 .newKeyPassphrase(newPassword)
                 .keys(protectedKey).getBytes();
 
-        sop.sign().key(reprotectedKey).withKeyPassword(newPassword).data("Test123".getBytes(StandardCharsets.UTF_8));
+        assumeSupported(sop::sign).key(reprotectedKey).withKeyPassword(newPassword).data("Test123".getBytes(StandardCharsets.UTF_8));
     }
 
 
@@ -82,8 +82,8 @@ public class ChangeKeyPasswordTest extends AbstractSOPTest {
         byte[] newPassword = "monkey123".getBytes(UTF8Util.UTF8);
         byte[] wrongPassword = "0r4ng3".getBytes(UTF8Util.UTF8);
 
-        byte[] protectedKey = sop.generateKey().withKeyPassword(oldPassword).generate().getBytes();
-        assertThrows(SOPGPException.KeyIsProtected.class, () -> sop.changeKeyPassword()
+        byte[] protectedKey = assumeSupported(sop::generateKey).withKeyPassword(oldPassword).generate().getBytes();
+        assertThrows(SOPGPException.KeyIsProtected.class, () -> assumeSupported(sop::changeKeyPassword)
                 .oldKeyPassphrase(wrongPassword)
                 .newKeyPassphrase(newPassword)
                 .keys(protectedKey).getBytes());
@@ -93,9 +93,9 @@ public class ChangeKeyPasswordTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void nonUtf8PasswordsFail(SOP sop) {
         assertThrows(SOPGPException.PasswordNotHumanReadable.class, () ->
-                sop.changeKeyPassword().oldKeyPassphrase(new byte[] {(byte) 0xff, (byte) 0xfe}));
+                assumeSupported(sop::changeKeyPassword).oldKeyPassphrase(new byte[] {(byte) 0xff, (byte) 0xfe}));
         assertThrows(SOPGPException.PasswordNotHumanReadable.class, () ->
-                sop.changeKeyPassword().newKeyPassphrase(new byte[] {(byte) 0xff, (byte) 0xfe}));
+                assumeSupported(sop::changeKeyPassword).newKeyPassphrase(new byte[] {(byte) 0xff, (byte) 0xfe}));
 
     }
 
@@ -104,16 +104,16 @@ public class ChangeKeyPasswordTest extends AbstractSOPTest {
     public void testNoArmor(SOP sop) throws IOException {
         byte[] oldPassword = "sw0rdf1sh".getBytes(UTF8Util.UTF8);
         byte[] newPassword = "0r4ng3".getBytes(UTF8Util.UTF8);
-        byte[] protectedKey = sop.generateKey().withKeyPassword(oldPassword).generate().getBytes();
+        byte[] protectedKey = assumeSupported(sop::generateKey).withKeyPassword(oldPassword).generate().getBytes();
 
-        byte[] armored = sop.changeKeyPassword()
+        byte[] armored = assumeSupported(sop::changeKeyPassword)
                 .oldKeyPassphrase(oldPassword)
                 .newKeyPassphrase(newPassword)
                 .keys(protectedKey)
                 .getBytes();
         JUtils.assertArrayStartsWith(armored, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK);
 
-        byte[] unarmored = sop.changeKeyPassword()
+        byte[] unarmored = assumeSupported(sop::changeKeyPassword)
                 .noArmor()
                 .oldKeyPassphrase(oldPassword)
                 .newKeyPassphrase(newPassword)

@@ -8,9 +8,13 @@ import sop.Verification;
 import sop.enums.SignatureMode;
 import sop.testsuite.JUtils;
 
+import java.text.ParseException;
 import java.util.Date;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class VerificationAssert {
 
@@ -55,6 +59,27 @@ public final class VerificationAssert {
         }
 
         return hasDescription(description);
+    }
+
+    public VerificationAssert hasValidJSONOrNull(Verification.JSONParser parser)
+            throws ParseException {
+        if (!verification.getJsonOrDescription().isPresent()) {
+            // missing description
+            return this;
+        }
+
+        return hasJSON(parser, null);
+    }
+
+    public VerificationAssert hasJSON(Verification.JSONParser parser, Predicate<Verification.JSON> predicate) {
+        assertTrue(verification.getContainsJson(), "Verification does not appear to contain JSON extension");
+
+        Verification.JSON json = verification.getJson(parser);
+        assertNotNull(verification.getJson(parser), "Verification does not appear to contain valid JSON extension.");
+        if (predicate != null) {
+            assertTrue(predicate.test(json), "JSON object does not match predicate.");
+        }
+        return this;
     }
 
     public VerificationAssert hasMode(SignatureMode mode) {

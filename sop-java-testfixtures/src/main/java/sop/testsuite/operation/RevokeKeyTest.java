@@ -36,8 +36,8 @@ public class RevokeKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void revokeUnprotectedKey(SOP sop) throws IOException {
-        byte[] secretKey = sop.generateKey().userId("Alice <alice@pgpainless.org>").generate().getBytes();
-        byte[] revocation = sop.revokeKey().keys(secretKey).getBytes();
+        byte[] secretKey = assumeSupported(sop::generateKey).userId("Alice <alice@pgpainless.org>").generate().getBytes();
+        byte[] revocation = assumeSupported(sop::revokeKey).keys(secretKey).getBytes();
 
         assertTrue(JUtils.arrayStartsWith(revocation, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK));
         assertFalse(Arrays.equals(secretKey, revocation));
@@ -46,8 +46,8 @@ public class RevokeKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void revokeUnprotectedKeyNoArmor(SOP sop) throws IOException {
-        byte[] secretKey = sop.generateKey().userId("Alice <alice@pgpainless.org>").generate().getBytes();
-        byte[] revocation = sop.revokeKey().noArmor().keys(secretKey).getBytes();
+        byte[] secretKey = assumeSupported(sop::generateKey).userId("Alice <alice@pgpainless.org>").generate().getBytes();
+        byte[] revocation = assumeSupported(sop::revokeKey).noArmor().keys(secretKey).getBytes();
 
         assertFalse(JUtils.arrayStartsWith(revocation, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK));
     }
@@ -55,8 +55,8 @@ public class RevokeKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void revokeUnprotectedKeyUnarmored(SOP sop) throws IOException {
-        byte[] secretKey = sop.generateKey().userId("Alice <alice@pgpainless.org>").noArmor().generate().getBytes();
-        byte[] revocation = sop.revokeKey().noArmor().keys(secretKey).getBytes();
+        byte[] secretKey = assumeSupported(sop::generateKey).userId("Alice <alice@pgpainless.org>").noArmor().generate().getBytes();
+        byte[] revocation = assumeSupported(sop::revokeKey).noArmor().keys(secretKey).getBytes();
 
         assertFalse(JUtils.arrayStartsWith(revocation, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK));
         assertFalse(Arrays.equals(secretKey, revocation));
@@ -65,18 +65,18 @@ public class RevokeKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void revokeCertificateFails(SOP sop) throws IOException {
-        byte[] secretKey = sop.generateKey().generate().getBytes();
-        byte[] certificate = sop.extractCert().key(secretKey).getBytes();
+        byte[] secretKey = assumeSupported(sop::generateKey).generate().getBytes();
+        byte[] certificate = assumeSupported(sop::extractCert).key(secretKey).getBytes();
 
-        assertThrows(SOPGPException.BadData.class, () -> sop.revokeKey().keys(certificate).getBytes());
+        assertThrows(SOPGPException.BadData.class, () -> assumeSupported(sop::revokeKey).keys(certificate).getBytes());
     }
 
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void revokeProtectedKey(SOP sop) throws IOException {
         byte[] password = "sw0rdf1sh".getBytes(UTF8Util.UTF8);
-        byte[] secretKey = sop.generateKey().withKeyPassword(password).userId("Alice <alice@pgpainless.org>").generate().getBytes();
-        byte[] revocation = sop.revokeKey().withKeyPassword(password).keys(secretKey).getBytes();
+        byte[] secretKey = assumeSupported(sop::generateKey).withKeyPassword(password).userId("Alice <alice@pgpainless.org>").generate().getBytes();
+        byte[] revocation = assumeSupported(sop::revokeKey).withKeyPassword(password).keys(secretKey).getBytes();
 
         assertFalse(Arrays.equals(secretKey, revocation));
     }
@@ -86,8 +86,8 @@ public class RevokeKeyTest extends AbstractSOPTest {
     public void revokeProtectedKeyWithMultiplePasswordOptions(SOP sop) throws IOException {
         byte[] password = "sw0rdf1sh".getBytes(UTF8Util.UTF8);
         byte[] wrongPassword = "0r4ng3".getBytes(UTF8Util.UTF8);
-        byte[] secretKey = sop.generateKey().withKeyPassword(password).userId("Alice <alice@pgpainless.org>").generate().getBytes();
-        byte[] revocation = sop.revokeKey().withKeyPassword(wrongPassword).withKeyPassword(password).keys(secretKey).getBytes();
+        byte[] secretKey = assumeSupported(sop::generateKey).withKeyPassword(password).userId("Alice <alice@pgpainless.org>").generate().getBytes();
+        byte[] revocation = assumeSupported(sop::revokeKey).withKeyPassword(wrongPassword).withKeyPassword(password).keys(secretKey).getBytes();
 
         assertFalse(Arrays.equals(secretKey, revocation));
     }
@@ -96,9 +96,9 @@ public class RevokeKeyTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void revokeProtectedKeyWithMissingPassphraseFails(SOP sop) throws IOException {
         byte[] password = "sw0rdf1sh".getBytes(UTF8Util.UTF8);
-        byte[] secretKey = sop.generateKey().withKeyPassword(password).userId("Alice <alice@pgpainless.org>").generate().getBytes();
+        byte[] secretKey = assumeSupported(sop::generateKey).withKeyPassword(password).userId("Alice <alice@pgpainless.org>").generate().getBytes();
 
-        assertThrows(SOPGPException.KeyIsProtected.class, () -> sop.revokeKey().keys(secretKey).getBytes());
+        assertThrows(SOPGPException.KeyIsProtected.class, () -> assumeSupported(sop::revokeKey).keys(secretKey).getBytes());
     }
 
     @ParameterizedTest
@@ -106,27 +106,27 @@ public class RevokeKeyTest extends AbstractSOPTest {
     public void revokeProtectedKeyWithWrongPassphraseFails(SOP sop) throws IOException {
         byte[] password = "sw0rdf1sh".getBytes(UTF8Util.UTF8);
         String wrongPassword = "or4ng3";
-        byte[] secretKey = sop.generateKey().withKeyPassword(password).userId("Alice <alice@pgpainless.org>").generate().getBytes();
+        byte[] secretKey = assumeSupported(sop::generateKey).withKeyPassword(password).userId("Alice <alice@pgpainless.org>").generate().getBytes();
 
-        assertThrows(SOPGPException.KeyIsProtected.class, () -> sop.revokeKey().withKeyPassword(wrongPassword).keys(secretKey).getBytes());
+        assertThrows(SOPGPException.KeyIsProtected.class, () -> assumeSupported(sop::revokeKey).withKeyPassword(wrongPassword).keys(secretKey).getBytes());
     }
 
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void revokeKeyIsNowHardRevoked(SOP sop) throws IOException {
-        byte[] key = sop.generateKey().generate().getBytes();
-        byte[] cert = sop.extractCert().key(key).getBytes();
+        byte[] key = assumeSupported(sop::generateKey).generate().getBytes();
+        byte[] cert = assumeSupported(sop::extractCert).key(key).getBytes();
 
         // Sign a message with the key
         byte[] msg = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
-        byte[] signedMsg = sop.inlineSign().key(key).data(msg).getBytes();
+        byte[] signedMsg = assumeSupported(sop::inlineSign).key(key).data(msg).getBytes();
 
         // Verifying the message with the valid cert works
-        List<Verification> result = sop.inlineVerify().cert(cert).data(signedMsg).toByteArrayAndResult().getResult();
+        List<Verification> result = assumeSupported(sop::inlineVerify).cert(cert).data(signedMsg).toByteArrayAndResult().getResult();
         VerificationListAssert.assertThatVerificationList(result).hasSingleItem();
 
         // Now hard revoke the key and re-check signature, expecting no valid certification
-        byte[] revokedCert = sop.revokeKey().keys(key).getBytes();
-        assertThrows(SOPGPException.NoSignature.class, () -> sop.inlineVerify().cert(revokedCert).data(signedMsg).toByteArrayAndResult());
+        byte[] revokedCert = assumeSupported(sop::revokeKey).keys(key).getBytes();
+        assertThrows(SOPGPException.NoSignature.class, () -> assumeSupported(sop::inlineVerify).cert(revokedCert).data(signedMsg).toByteArrayAndResult());
     }
 }

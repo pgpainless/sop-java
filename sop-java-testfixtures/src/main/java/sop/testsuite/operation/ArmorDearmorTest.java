@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 @EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
-public class ArmorDearmorTest {
+public class ArmorDearmorTest extends AbstractSOPTest {
 
     static Stream<Arguments> provideInstances() {
         return AbstractSOPTest.provideBackends();
@@ -31,13 +31,13 @@ public class ArmorDearmorTest {
     public void dearmorArmorAliceKey(SOP sop) throws IOException {
         byte[] aliceKey = TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8);
 
-        byte[] dearmored = sop.dearmor()
+        byte[] dearmored = assumeSupported(sop::dearmor)
                 .data(aliceKey)
                 .getBytes();
 
         Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK));
 
-        byte[] armored = sop.armor()
+        byte[] armored = assumeSupported(sop::armor)
                 .data(dearmored)
                 .getBytes();
 
@@ -52,13 +52,13 @@ public class ArmorDearmorTest {
     public void dearmorArmorAliceCert(SOP sop) throws IOException {
         byte[] aliceCert = TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] dearmored = sop.dearmor()
+        byte[] dearmored = assumeSupported(sop::dearmor)
                 .data(aliceCert)
                 .getBytes();
 
         Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK));
 
-        byte[] armored = sop.armor()
+        byte[] armored = assumeSupported(sop::armor)
                 .data(dearmored)
                 .getBytes();
 
@@ -73,13 +73,13 @@ public class ArmorDearmorTest {
     public void dearmorArmorBobKey(SOP sop) throws IOException {
         byte[] bobKey = TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8);
 
-        byte[] dearmored = sop.dearmor()
+        byte[] dearmored = assumeSupported(sop::dearmor)
                 .data(bobKey)
                 .getBytes();
 
         Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK));
 
-        byte[] armored = sop.armor()
+        byte[] armored = assumeSupported(sop::armor)
                 .data(dearmored)
                 .getBytes();
 
@@ -94,13 +94,13 @@ public class ArmorDearmorTest {
     public void dearmorArmorBobCert(SOP sop) throws IOException {
         byte[] bobCert = TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] dearmored = sop.dearmor()
+        byte[] dearmored = assumeSupported(sop::dearmor)
                 .data(bobCert)
                 .getBytes();
 
         Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK));
 
-        byte[] armored = sop.armor()
+        byte[] armored = assumeSupported(sop::armor)
                 .data(dearmored)
                 .getBytes();
 
@@ -115,13 +115,13 @@ public class ArmorDearmorTest {
     public void dearmorArmorCarolKey(SOP sop) throws IOException {
         byte[] carolKey = TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8);
 
-        byte[] dearmored = sop.dearmor()
+        byte[] dearmored = assumeSupported(sop::dearmor)
                 .data(carolKey)
                 .getBytes();
 
         Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_PRIVATE_KEY_BLOCK));
 
-        byte[] armored = sop.armor()
+        byte[] armored = assumeSupported(sop::armor)
                 .data(dearmored)
                 .getBytes();
 
@@ -136,13 +136,13 @@ public class ArmorDearmorTest {
     public void dearmorArmorCarolCert(SOP sop) throws IOException {
         byte[] carolCert = TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] dearmored = sop.dearmor()
+        byte[] dearmored = assumeSupported(sop::dearmor)
                 .data(carolCert)
                 .getBytes();
 
         Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK));
 
-        byte[] armored = sop.armor()
+        byte[] armored = assumeSupported(sop::armor)
                 .data(dearmored)
                 .getBytes();
 
@@ -163,13 +163,13 @@ public class ArmorDearmorTest {
                 "CePQFpprprnGEzpE3flQLUc=\n" +
                 "=ZiFR\n" +
                 "-----END PGP MESSAGE-----\n").getBytes(StandardCharsets.UTF_8);
-        byte[] dearmored = sop.dearmor()
+        byte[] dearmored = assumeSupported(sop::dearmor)
                 .data(message)
                 .getBytes();
 
         Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_MESSAGE));
 
-        byte[] armored = sop.armor()
+        byte[] armored = assumeSupported(sop::armor)
                 .data(dearmored)
                 .getBytes();
 
@@ -191,13 +191,13 @@ public class ArmorDearmorTest {
                 "=GHvQ\n" +
                 "-----END PGP SIGNATURE-----\n").getBytes(StandardCharsets.UTF_8);
 
-        byte[] dearmored = sop.dearmor()
+        byte[] dearmored = assumeSupported(sop::dearmor)
                 .data(signature)
                 .getBytes();
 
         Assertions.assertFalse(JUtils.arrayStartsWith(dearmored, TestData.BEGIN_PGP_SIGNATURE));
 
-        byte[] armored = sop.armor()
+        byte[] armored = assumeSupported(sop::armor)
                 .data(dearmored)
                 .getBytes();
 
@@ -210,11 +210,11 @@ public class ArmorDearmorTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void testDearmoringTwiceIsIdempotent(SOP sop) throws IOException {
-        byte[] dearmored = sop.dearmor()
+        byte[] dearmored = assumeSupported(sop::dearmor)
                 .data(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .getBytes();
 
-        byte[] dearmoredAgain = sop.dearmor()
+        byte[] dearmoredAgain = assumeSupported(sop::dearmor)
                 .data(dearmored)
                 .getBytes();
 
@@ -233,7 +233,7 @@ public class ArmorDearmorTest {
                 "=GHvQ\n" +
                 "-----END PGP SIGNATURE-----\n").getBytes(StandardCharsets.UTF_8);
 
-        byte[] armoredAgain = sop.armor()
+        byte[] armoredAgain = assumeSupported(sop::armor)
                 .data(armored)
                 .getBytes();
 

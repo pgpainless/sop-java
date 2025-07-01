@@ -37,13 +37,13 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
     public void signVerifyWithAliceKey(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] signature = sop.detachedSign()
+        byte[] signature = assumeSupported(sop::detachedSign)
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        List<Verification> verificationList = sop.detachedVerify()
+        List<Verification> verificationList = assumeSupported(sop::detachedVerify)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
                 .data(message);
@@ -60,14 +60,14 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
     public void signVerifyTextModeWithAliceKey(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] signature = sop.detachedSign()
+        byte[] signature = assumeSupported(sop::detachedSign)
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(SignAs.text)
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        List<Verification> verificationList = sop.detachedVerify()
+        List<Verification> verificationList = assumeSupported(sop::detachedVerify)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
                 .data(message);
@@ -85,7 +85,7 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] signature = TestData.ALICE_DETACHED_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8);
 
-        List<Verification> verificationList = sop.detachedVerify()
+        List<Verification> verificationList = assumeSupported(sop::detachedVerify)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
                 .data(message);
@@ -101,13 +101,13 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
     public void signVerifyWithBobKey(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] signature = sop.detachedSign()
+        byte[] signature = assumeSupported(sop::detachedSign)
                 .key(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        List<Verification> verificationList = sop.detachedVerify()
+        List<Verification> verificationList = assumeSupported(sop::detachedVerify)
                 .cert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
                 .data(message);
@@ -123,13 +123,13 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
     public void signVerifyWithCarolKey(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] signature = sop.detachedSign()
+        byte[] signature = assumeSupported(sop::detachedSign)
                 .key(TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        List<Verification> verificationList = sop.detachedVerify()
+        List<Verification> verificationList = assumeSupported(sop::detachedVerify)
                 .cert(TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
                 .data(message);
@@ -145,7 +145,7 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
     public void signVerifyWithEncryptedKey(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] signature = sop.detachedSign()
+        byte[] signature = assumeSupported(sop::detachedSign)
                 .key(TestData.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
                 .withKeyPassword(TestData.PASSWORD)
                 .data(message)
@@ -154,7 +154,7 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
 
         JUtils.assertArrayStartsWith(signature, TestData.BEGIN_PGP_SIGNATURE);
 
-        List<Verification> verificationList = sop.detachedVerify()
+        List<Verification> verificationList = assumeSupported(sop::detachedVerify)
                 .cert(TestData.PASSWORD_PROTECTED_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
                 .data(message);
@@ -170,18 +170,18 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
     public void signArmorVerifyWithBobKey(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] signature = sop.detachedSign()
+        byte[] signature = assumeSupported(sop::detachedSign)
                 .key(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .noArmor()
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        byte[] armored = sop.armor()
+        byte[] armored = assumeSupported(sop::armor)
                 .data(signature)
                 .getBytes();
 
-        List<Verification> verificationList = sop.detachedVerify()
+        List<Verification> verificationList = assumeSupported(sop::detachedVerify)
                 .cert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(armored)
                 .data(message);
@@ -199,7 +199,7 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
         byte[] signature = TestData.ALICE_DETACHED_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8);
         Date beforeSignature = new Date(TestData.ALICE_DETACHED_SIGNED_MESSAGE_DATE.getTime() - 1000); // 1 sec before sig
 
-        assertThrows(SOPGPException.NoSignature.class, () -> sop.detachedVerify()
+        assertThrows(SOPGPException.NoSignature.class, () -> assumeSupported(sop::detachedVerify)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .notAfter(beforeSignature)
                 .signatures(signature)
@@ -213,7 +213,7 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
         byte[] signature = TestData.ALICE_DETACHED_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8);
         Date afterSignature = new Date(TestData.ALICE_DETACHED_SIGNED_MESSAGE_DATE.getTime() + 1000); // 1 sec after sig
 
-        assertThrows(SOPGPException.NoSignature.class, () -> sop.detachedVerify()
+        assertThrows(SOPGPException.NoSignature.class, () -> assumeSupported(sop::detachedVerify)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .notBefore(afterSignature)
                 .signatures(signature)
@@ -224,13 +224,13 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void signWithAliceVerifyWithBobThrowsNoSignature(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
-        byte[] signatures = sop.detachedSign()
+        byte[] signatures = assumeSupported(sop::detachedSign)
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        assertThrows(SOPGPException.NoSignature.class, () -> sop.detachedVerify()
+        assertThrows(SOPGPException.NoSignature.class, () -> assumeSupported(sop::detachedVerify)
                 .cert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signatures)
                 .data(message));
@@ -240,7 +240,7 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void signVerifyWithEncryptedKeyWithoutPassphraseFails(SOP sop) {
         assertThrows(SOPGPException.KeyIsProtected.class, () ->
-                sop.detachedSign()
+                assumeSupported(sop::detachedSign)
                         .key(TestData.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
                         .data(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8))
                         .toByteArrayAndResult()
@@ -253,7 +253,7 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
             throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] signature = sop.sign()
+        byte[] signature = assumeSupported(sop::sign)
                 .key(TestData.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
                 .withKeyPassword("wrong")
                 .withKeyPassword(TestData.PASSWORD) // correct
@@ -262,7 +262,7 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
                 .toByteArrayAndResult()
                 .getBytes();
 
-        List<Verification> verificationList = sop.verify()
+        List<Verification> verificationList = assumeSupported(sop::verify)
                 .cert(TestData.PASSWORD_PROTECTED_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signature)
                 .data(message);
@@ -279,7 +279,7 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
         assertThrows(SOPGPException.MissingArg.class, () ->
-                sop.verify()
+                assumeSupported(sop::verify)
                         .signatures(TestData.ALICE_DETACHED_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8))
                         .data(message));
     }
@@ -288,14 +288,14 @@ public class DetachedSignDetachedVerifyTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void signVerifyWithMultipleKeys(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
-        byte[] signatures = sop.detachedSign()
+        byte[] signatures = assumeSupported(sop::detachedSign)
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .key(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        List<Verification> verificationList = sop.detachedVerify()
+        List<Verification> verificationList = assumeSupported(sop::detachedVerify)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .cert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signatures)

@@ -36,12 +36,12 @@ public class InlineSignInlineDetachDetachedVerifyTest extends AbstractSOPTest {
     public void inlineSignThenDetachThenDetachedVerifyTest(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = sop.inlineSign()
+        byte[] inlineSigned = assumeSupported(sop::inlineSign)
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
-        ByteArrayAndResult<Signatures> bytesAndResult = sop.inlineDetach()
+        ByteArrayAndResult<Signatures> bytesAndResult = assumeSupported(sop::inlineDetach)
                 .message(inlineSigned)
                 .toByteArrayAndResult();
 
@@ -51,7 +51,7 @@ public class InlineSignInlineDetachDetachedVerifyTest extends AbstractSOPTest {
         byte[] signatures = bytesAndResult.getResult()
                 .getBytes();
 
-        List<Verification> verifications = sop.detachedVerify()
+        List<Verification> verifications = assumeSupported(sop::detachedVerify)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(signatures)
                 .data(plaintext);
@@ -64,12 +64,12 @@ public class InlineSignInlineDetachDetachedVerifyTest extends AbstractSOPTest {
     public void inlineSignThenDetachNoArmorThenArmorThenDetachedVerifyTest(SOP sop) throws IOException {
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = sop.inlineSign()
+        byte[] inlineSigned = assumeSupported(sop::inlineSign)
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
-        ByteArrayAndResult<Signatures> bytesAndResult = sop.inlineDetach()
+        ByteArrayAndResult<Signatures> bytesAndResult = assumeSupported(sop::inlineDetach)
                 .noArmor()
                 .message(inlineSigned)
                 .toByteArrayAndResult();
@@ -81,12 +81,12 @@ public class InlineSignInlineDetachDetachedVerifyTest extends AbstractSOPTest {
                 .getBytes();
         Assertions.assertFalse(JUtils.arrayStartsWith(signatures, TestData.BEGIN_PGP_SIGNATURE));
 
-        byte[] armored = sop.armor()
+        byte[] armored = assumeSupported(sop::armor)
                 .data(signatures)
                 .getBytes();
         JUtils.assertArrayStartsWith(armored, TestData.BEGIN_PGP_SIGNATURE);
 
-        List<Verification> verifications = sop.detachedVerify()
+        List<Verification> verifications = assumeSupported(sop::detachedVerify)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signatures(armored)
                 .data(plaintext);

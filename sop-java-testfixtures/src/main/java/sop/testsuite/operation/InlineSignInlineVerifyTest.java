@@ -40,14 +40,14 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
     public void inlineSignVerifyAlice(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = sop.inlineSign()
+        byte[] inlineSigned = assumeSupported(sop::inlineSign)
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
         JUtils.assertArrayStartsWith(inlineSigned, TestData.BEGIN_PGP_MESSAGE);
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = assumeSupported(sop::inlineVerify)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(inlineSigned)
                 .toByteArrayAndResult();
@@ -66,7 +66,7 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
     public void inlineSignVerifyAliceNoArmor(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = sop.inlineSign()
+        byte[] inlineSigned = assumeSupported(sop::inlineSign)
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .noArmor()
                 .data(message)
@@ -74,7 +74,7 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
 
         Assertions.assertFalse(JUtils.arrayStartsWith(inlineSigned, TestData.BEGIN_PGP_MESSAGE));
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = assumeSupported(sop::inlineVerify)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(inlineSigned)
                 .toByteArrayAndResult();
@@ -93,7 +93,7 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
     public void clearsignVerifyAlice(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] clearsigned = sop.inlineSign()
+        byte[] clearsigned = assumeSupported(sop::inlineSign)
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(InlineSignAs.clearsigned)
                 .data(message)
@@ -101,12 +101,13 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
 
         JUtils.assertArrayStartsWith(clearsigned, TestData.BEGIN_PGP_SIGNED_MESSAGE);
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = assumeSupported(sop::inlineVerify)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(clearsigned)
                 .toByteArrayAndResult();
 
-        assertArrayEquals(message, bytesAndResult.getBytes());
+        assertArrayEquals(message, bytesAndResult.getBytes(),
+                "ASCII armored message does not appear to start with the 'BEGIN PGP SIGNED MESSAGE' header.");
 
         List<Verification> verificationList = bytesAndResult.getResult();
         VerificationListAssert.assertThatVerificationList(verificationList)
@@ -121,7 +122,7 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
         byte[] message = TestData.ALICE_INLINE_SIGNED_MESSAGE.getBytes(StandardCharsets.UTF_8);
         Date signatureDate = TestData.ALICE_INLINE_SIGNED_MESSAGE_DATE;
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = assumeSupported(sop::inlineVerify)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .toByteArrayAndResult();
@@ -141,7 +142,7 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
         Date signatureDate = TestData.ALICE_INLINE_SIGNED_MESSAGE_DATE;
         Date afterSignature = new Date(signatureDate.getTime() + 1000); // 1 sec before sig
 
-        assertThrows(SOPGPException.NoSignature.class, () -> sop.inlineVerify()
+        assertThrows(SOPGPException.NoSignature.class, () -> assumeSupported(sop::inlineVerify)
                 .notBefore(afterSignature)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(message)
@@ -155,7 +156,7 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
         Date signatureDate = TestData.ALICE_INLINE_SIGNED_MESSAGE_DATE;
         Date beforeSignature = new Date(signatureDate.getTime() - 1000); // 1 sec before sig
 
-        assertThrows(SOPGPException.NoSignature.class, () -> sop.inlineVerify()
+        assertThrows(SOPGPException.NoSignature.class, () -> assumeSupported(sop::inlineVerify)
                 .notAfter(beforeSignature)
                 .cert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(message)
@@ -167,14 +168,14 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
     public void inlineSignVerifyBob(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = sop.inlineSign()
+        byte[] inlineSigned = assumeSupported(sop::inlineSign)
                 .key(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
         JUtils.assertArrayStartsWith(inlineSigned, TestData.BEGIN_PGP_MESSAGE);
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = assumeSupported(sop::inlineVerify)
                 .cert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(inlineSigned)
                 .toByteArrayAndResult();
@@ -193,14 +194,14 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
     public void inlineSignVerifyCarol(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = sop.inlineSign()
+        byte[] inlineSigned = assumeSupported(sop::inlineSign)
                 .key(TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
                 .data(message)
                 .getBytes();
 
         JUtils.assertArrayStartsWith(inlineSigned, TestData.BEGIN_PGP_MESSAGE);
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = assumeSupported(sop::inlineVerify)
                 .cert(TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(inlineSigned)
                 .toByteArrayAndResult();
@@ -219,14 +220,14 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
     public void inlineSignVerifyProtectedKey(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        byte[] inlineSigned = sop.inlineSign()
+        byte[] inlineSigned = assumeSupported(sop::inlineSign)
                 .withKeyPassword(TestData.PASSWORD)
                 .key(TestData.PASSWORD_PROTECTED_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(InlineSignAs.binary)
                 .data(message)
                 .getBytes();
 
-        ByteArrayAndResult<List<Verification>> bytesAndResult = sop.inlineVerify()
+        ByteArrayAndResult<List<Verification>> bytesAndResult = assumeSupported(sop::inlineVerify)
                 .cert(TestData.PASSWORD_PROTECTED_CERT.getBytes(StandardCharsets.UTF_8))
                 .data(inlineSigned)
                 .toByteArrayAndResult();

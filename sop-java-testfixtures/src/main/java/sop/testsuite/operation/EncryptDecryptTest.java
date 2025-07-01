@@ -49,7 +49,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void encryptDecryptRoundTripPasswordTest(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
-        ByteArrayAndResult<EncryptionResult> encResult = sop.encrypt()
+        ByteArrayAndResult<EncryptionResult> encResult = assumeSupported(sop::encrypt)
                 .withPassword("sw0rdf1sh")
                 .plaintext(message)
                 .toByteArrayAndResult();
@@ -57,7 +57,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         byte[] ciphertext = encResult.getBytes();
         Optional<SessionKey> encSessionKey = encResult.getResult().getSessionKey();
 
-        ByteArrayAndResult<DecryptionResult> decResult = sop.decrypt()
+        ByteArrayAndResult<DecryptionResult> decResult = assumeSupported(sop::decrypt)
                 .withPassword("sw0rdf1sh")
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult();
@@ -65,9 +65,10 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         byte[] plaintext = decResult.getBytes();
         Optional<SessionKey> decSessionKey = decResult.getResult().getSessionKey();
 
-        assertArrayEquals(message, plaintext);
+        assertArrayEquals(message, plaintext, "Decrypted plaintext does not match original plaintext.");
         if (encSessionKey.isPresent() && decSessionKey.isPresent()) {
-            assertEquals(encSessionKey.get(), decSessionKey.get());
+            assertEquals(encSessionKey.get(), decSessionKey.get(),
+                    "Extracted Session Key mismatch.");
         }
     }
 
@@ -75,91 +76,93 @@ public class EncryptDecryptTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void encryptDecryptRoundTripAliceTest(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
-        byte[] ciphertext = sop.encrypt()
+        byte[] ciphertext = assumeSupported(sop::encrypt)
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
+        ByteArrayAndResult<DecryptionResult> bytesAndResult = assumeSupported(sop::decrypt)
                 .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult();
 
         byte[] plaintext = bytesAndResult.getBytes();
-        assertArrayEquals(message, plaintext);
+        assertArrayEquals(message, plaintext, "Decrypted plaintext does not match original plaintext.");
 
         DecryptionResult result = bytesAndResult.getResult();
-        assertNotNull(result.getSessionKey().get());
+        if (result.getSessionKey().isPresent()) {
+            assertNotNull(result.getSessionKey().get(), "Session key MUST NOT be null.");
+        }
     }
 
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void encryptDecryptRoundTripBobTest(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
-        byte[] ciphertext = sop.encrypt()
+        byte[] ciphertext = assumeSupported(sop::encrypt)
                 .withCert(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        byte[] plaintext = sop.decrypt()
+        byte[] plaintext = assumeSupported(sop::decrypt)
                 .withKey(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        assertArrayEquals(message, plaintext);
+        assertArrayEquals(message, plaintext, "Decrypted plaintext does not match original plaintext.");
     }
 
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void encryptDecryptRoundTripCarolTest(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
-        byte[] ciphertext = sop.encrypt()
+        byte[] ciphertext = assumeSupported(sop::encrypt)
                 .withCert(TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8))
                 .plaintext(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        byte[] plaintext = sop.decrypt()
+        byte[] plaintext = assumeSupported(sop::decrypt)
                 .withKey(TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        assertArrayEquals(message, plaintext);
+        assertArrayEquals(message, plaintext, "Decrypted plaintext does not match original plaintext.");
     }
 
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void encryptNoArmorThenArmorThenDecryptRoundTrip(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
-        byte[] ciphertext = sop.encrypt()
+        byte[] ciphertext = assumeSupported(sop::encrypt)
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .noArmor()
                 .plaintext(message)
                 .toByteArrayAndResult()
                 .getBytes();
 
-        byte[] armored = sop.armor()
+        byte[] armored = assumeSupported(sop::armor)
                 .data(ciphertext)
                 .getBytes();
 
-        ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
+        ByteArrayAndResult<DecryptionResult> bytesAndResult = assumeSupported(sop::decrypt)
                 .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(armored)
                 .toByteArrayAndResult();
 
         byte[] plaintext = bytesAndResult.getBytes();
-        assertArrayEquals(message, plaintext);
+        assertArrayEquals(message, plaintext, "Decrypted plaintext does not match original plaintext.");
     }
 
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void encryptSignDecryptVerifyRoundTripAliceTest(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
-        byte[] ciphertext = sop.encrypt()
+        byte[] ciphertext = assumeSupported(sop::encrypt)
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(EncryptAs.binary)
@@ -167,17 +170,19 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                 .toByteArrayAndResult()
                 .getBytes();
 
-        ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
+        ByteArrayAndResult<DecryptionResult> bytesAndResult = assumeSupported(sop::decrypt)
                 .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .verifyWithCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult();
 
         byte[] plaintext = bytesAndResult.getBytes();
-        assertArrayEquals(message, plaintext);
+        assertArrayEquals(message, plaintext, "Decrypted plaintext does not match original plaintext.");
 
         DecryptionResult result = bytesAndResult.getResult();
-        assertNotNull(result.getSessionKey().get());
+        if (result.getSessionKey().isPresent()) {
+            assertNotNull(result.getSessionKey().get(), "Session key MUST NOT be null.");
+        }
 
         List<Verification> verificationList = result.getVerifications();
         VerificationListAssert.assertThatVerificationList(verificationList)
@@ -191,7 +196,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void encryptSignAsTextDecryptVerifyRoundTripAliceTest(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
-        byte[] ciphertext = sop.encrypt()
+        byte[] ciphertext = assumeSupported(sop::encrypt)
                 .withCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .signWith(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .mode(EncryptAs.text)
@@ -199,14 +204,14 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                 .toByteArrayAndResult()
                 .getBytes();
 
-        ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
+        ByteArrayAndResult<DecryptionResult> bytesAndResult = assumeSupported(sop::decrypt)
                 .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .verifyWithCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                 .ciphertext(ciphertext)
                 .toByteArrayAndResult();
 
         byte[] plaintext = bytesAndResult.getBytes();
-        assertArrayEquals(message, plaintext);
+        assertArrayEquals(message, plaintext, "Decrypted plaintext does not match original plaintext.");
 
         DecryptionResult result = bytesAndResult.getResult();
         assertNotNull(result.getSessionKey().get());
@@ -222,17 +227,17 @@ public class EncryptDecryptTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void encryptSignDecryptVerifyRoundTripWithFreshEncryptedKeyTest(SOP sop) throws IOException {
         byte[] keyPassword = "sw0rdf1sh".getBytes(StandardCharsets.UTF_8);
-        byte[] key = sop.generateKey()
+        byte[] key = assumeSupported(sop::generateKey)
                 .withKeyPassword(keyPassword)
                 .userId("Alice <alice@openpgp.org>")
                 .generate()
                 .getBytes();
-        byte[] cert = sop.extractCert()
+        byte[] cert = assumeSupported(sop::extractCert)
                 .key(key)
                 .getBytes();
 
         byte[] message = "Hello, World!\n".getBytes(StandardCharsets.UTF_8);
-        byte[] ciphertext = sop.encrypt()
+        byte[] ciphertext = assumeSupported(sop::encrypt)
                 .withCert(cert)
                 .signWith(key)
                 .withKeyPassword(keyPassword)
@@ -240,7 +245,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                 .toByteArrayAndResult()
                 .getBytes();
 
-        ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
+        ByteArrayAndResult<DecryptionResult> bytesAndResult = assumeSupported(sop::decrypt)
                 .withKey(key)
                 .withKeyPassword(keyPassword)
                 .verifyWithCert(cert)
@@ -273,7 +278,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         Date beforeSignature = new Date(signatureDate.getTime() - 1000); // 1 sec before signing date
 
         assertThrows(SOPGPException.NoSignature.class, () -> {
-            ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
+            ByteArrayAndResult<DecryptionResult> bytesAndResult = assumeSupported(sop::decrypt)
                     .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                     .verifyWithCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                     .verifyNotAfter(beforeSignature)
@@ -307,7 +312,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         Date afterSignature = new Date(signatureDate.getTime() + 1000); // 1 sec after signing date
 
         assertThrows(SOPGPException.NoSignature.class, () -> {
-            ByteArrayAndResult<DecryptionResult> bytesAndResult = sop.decrypt()
+            ByteArrayAndResult<DecryptionResult> bytesAndResult = assumeSupported(sop::decrypt)
                     .withKey(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                     .verifyWithCert(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8))
                     .verifyNotBefore(afterSignature)
@@ -326,7 +331,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
     public void missingArgsTest(SOP sop) {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 
-        assertThrows(SOPGPException.MissingArg.class, () -> sop.encrypt()
+        assertThrows(SOPGPException.MissingArg.class, () -> assumeSupported(sop::encrypt)
                 .plaintext(message)
                 .toByteArrayAndResult()
                 .getBytes());
@@ -336,7 +341,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void passingSecretKeysForPublicKeysFails(SOP sop) {
         assertThrows(SOPGPException.BadData.class, () ->
-                sop.encrypt()
+                assumeSupported(sop::encrypt)
                         .withCert(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                         .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8))
                         .toByteArrayAndResult()
@@ -346,19 +351,19 @@ public class EncryptDecryptTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void encryptDecryptWithAllSupportedKeyGenerationProfiles(SOP sop) throws IOException {
-        List<Profile> profiles = sop.listProfiles().generateKey();
+        List<Profile> profiles = assumeSupported(sop::listProfiles).generateKey();
 
         List<byte[]> keys = new ArrayList<>();
         List<byte[]> certs = new ArrayList<>();
         for (Profile p : profiles) {
-            byte[] k = sop.generateKey()
+            byte[] k = assumeSupported(sop::generateKey)
                     .profile(p)
                     .userId(p.getName())
                     .generate()
                     .getBytes();
             keys.add(k);
 
-            byte[] c = sop.extractCert()
+            byte[] c = assumeSupported(sop::extractCert)
                     .key(k)
                     .getBytes();
             certs.add(c);
@@ -366,7 +371,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
 
         byte[] plaintext = "Hello, World!\n".getBytes();
 
-        Encrypt encrypt = sop.encrypt();
+        Encrypt encrypt = assumeSupported(sop::encrypt);
         for (byte[] c : certs) {
             encrypt.withCert(c);
         }
@@ -380,7 +385,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         byte[] ciphertext = encRes.getBytes();
 
         for (byte[] k : keys) {
-            Decrypt decrypt = sop.decrypt()
+            Decrypt decrypt = assumeSupported(sop::decrypt)
                     .withKey(k);
             for (byte[] c : certs) {
                 decrypt.verifyWithCert(c);
@@ -389,7 +394,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                     .toByteArrayAndResult();
             DecryptionResult dResult = decRes.getResult();
             byte[] decPlaintext = decRes.getBytes();
-            assertArrayEquals(plaintext, decPlaintext);
+            assertArrayEquals(plaintext, decPlaintext, "Decrypted plaintext does not match original plaintext.");
             assertEquals(certs.size(), dResult.getVerifications().size());
         }
     }

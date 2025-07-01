@@ -33,7 +33,7 @@ public class GenerateKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void generateKeyTest(SOP sop) throws IOException {
-        byte[] key = sop.generateKey()
+        byte[] key = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@openpgp.org>")
                 .generate()
                 .getBytes();
@@ -45,7 +45,7 @@ public class GenerateKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void generateKeyNoArmor(SOP sop) throws IOException {
-        byte[] key = sop.generateKey()
+        byte[] key = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@openpgp.org>")
                 .noArmor()
                 .generate()
@@ -57,7 +57,7 @@ public class GenerateKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void generateKeyWithMultipleUserIdsTest(SOP sop) throws IOException {
-        byte[] key = sop.generateKey()
+        byte[] key = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@openpgp.org>")
                 .userId("Bob <bob@openpgp.org>")
                 .generate()
@@ -70,7 +70,7 @@ public class GenerateKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void generateKeyWithoutUserIdTest(SOP sop) throws IOException {
-        byte[] key = sop.generateKey()
+        byte[] key = assumeSupported(sop::generateKey)
                 .generate()
                 .getBytes();
 
@@ -81,7 +81,7 @@ public class GenerateKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void generateKeyWithPasswordTest(SOP sop) throws IOException {
-        byte[] key = sop.generateKey()
+        byte[] key = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@openpgp.org>")
                 .withKeyPassword("sw0rdf1sh")
                 .generate()
@@ -94,7 +94,7 @@ public class GenerateKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void generateKeyWithMultipleUserIdsAndPassword(SOP sop) throws IOException {
-        byte[] key = sop.generateKey()
+        byte[] key = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@openpgp.org>")
                 .userId("Bob <bob@openpgp.org>")
                 .withKeyPassword("sw0rdf1sh")
@@ -108,17 +108,17 @@ public class GenerateKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void generateSigningOnlyKey(SOP sop) throws IOException {
-        byte[] signingOnlyKey = sop.generateKey()
+        byte[] signingOnlyKey = assumeSupported(sop::generateKey)
                 .signingOnly()
                 .userId("Alice <alice@pgpainless.org>")
                 .generate()
                 .getBytes();
-        byte[] signingOnlyCert = sop.extractCert()
+        byte[] signingOnlyCert = assumeSupported(sop::extractCert)
                 .key(signingOnlyKey)
                 .getBytes();
 
         assertThrows(SOPGPException.CertCannotEncrypt.class, () ->
-                sop.encrypt().withCert(signingOnlyCert)
+                assumeSupported(sop::encrypt).withCert(signingOnlyCert)
                         .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8))
                         .toByteArrayAndResult()
                         .getBytes());
@@ -127,7 +127,7 @@ public class GenerateKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void generateKeyWithSupportedProfiles(SOP sop) throws IOException {
-        List<Profile> profiles = sop.listProfiles()
+        List<Profile> profiles = assumeSupported(sop::listProfiles)
                 .generateKey();
 
         for (Profile profile : profiles) {
@@ -138,7 +138,7 @@ public class GenerateKeyTest extends AbstractSOPTest {
     private void generateKeyWithProfile(SOP sop, String profile) throws IOException {
         byte[] key;
         try {
-            key = sop.generateKey()
+            key = assumeSupported(sop::generateKey)
                     .profile(profile)
                     .userId("Alice <alice@pgpainless.org>")
                     .generate()

@@ -24,16 +24,16 @@ public class MergeCertsTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void testMergeWithItself(SOP sop) throws IOException {
-        byte[] key = sop.generateKey()
+        byte[] key = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@pgpainless.org>")
                 .generate()
                 .getBytes();
 
-        byte[] cert = sop.extractCert()
+        byte[] cert = assumeSupported(sop::extractCert)
                 .key(key)
                 .getBytes();
 
-        byte[] merged = sop.mergeCerts()
+        byte[] merged = assumeSupported(sop::mergeCerts)
                 .updates(cert)
                 .baseCertificates(cert)
                 .getBytes();
@@ -44,17 +44,17 @@ public class MergeCertsTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void testMergeWithItselfArmored(SOP sop) throws IOException {
-        byte[] key = sop.generateKey()
+        byte[] key = assumeSupported(sop::generateKey)
                 .noArmor()
                 .userId("Alice <alice@pgpainless.org>")
                 .generate()
                 .getBytes();
 
-        byte[] cert = sop.extractCert()
+        byte[] cert = assumeSupported(sop::extractCert)
                 .key(key)
                 .getBytes();
 
-        byte[] merged = sop.mergeCerts()
+        byte[] merged = assumeSupported(sop::mergeCerts)
                 .updates(cert)
                 .baseCertificates(cert)
                 .getBytes();
@@ -65,18 +65,18 @@ public class MergeCertsTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void testMergeWithItselfViaBase(SOP sop) throws IOException {
-        byte[] key = sop.generateKey()
+        byte[] key = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@pgpainless.org>")
                 .generate()
                 .getBytes();
 
-        byte[] cert = sop.extractCert()
+        byte[] cert = assumeSupported(sop::extractCert)
                 .key(key)
                 .getBytes();
 
         byte[] certs = ArraysKt.plus(cert, cert);
 
-        byte[] merged = sop.mergeCerts()
+        byte[] merged = assumeSupported(sop::mergeCerts)
                 .updates(cert)
                 .baseCertificates(certs)
                 .getBytes();
@@ -87,20 +87,20 @@ public class MergeCertsTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void testApplyBaseToUpdate(SOP sop) throws IOException {
-        byte[] key = sop.generateKey()
+        byte[] key = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@pgpainless.org>")
                 .generate()
                 .getBytes();
 
-        byte[] cert = sop.extractCert()
+        byte[] cert = assumeSupported(sop::extractCert)
                 .key(key)
                 .getBytes();
 
-        byte[] update = sop.revokeKey()
+        byte[] update = assumeSupported(sop::revokeKey)
                 .keys(key)
                 .getBytes();
 
-        byte[] merged = sop.mergeCerts()
+        byte[] merged = assumeSupported(sop::mergeCerts)
                 .updates(cert)
                 .baseCertificates(update)
                 .getBytes();
@@ -111,20 +111,20 @@ public class MergeCertsTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void testApplyUpdateToBase(SOP sop) throws IOException {
-        byte[] key = sop.generateKey()
+        byte[] key = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@pgpainless.org>")
                 .generate()
                 .getBytes();
 
-        byte[] cert = sop.extractCert()
+        byte[] cert = assumeSupported(sop::extractCert)
                 .key(key)
                 .getBytes();
 
-        byte[] update = sop.revokeKey()
+        byte[] update = assumeSupported(sop::revokeKey)
                 .keys(key)
                 .getBytes();
 
-        byte[] merged = sop.mergeCerts()
+        byte[] merged = assumeSupported(sop::mergeCerts)
                 .updates(update)
                 .baseCertificates(cert)
                 .getBytes();
@@ -135,25 +135,25 @@ public class MergeCertsTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void testApplyUpdateToMissingBaseDoesNothing(SOP sop) throws IOException {
-        byte[] aliceKey = sop.generateKey()
+        byte[] aliceKey = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@pgpainless.org>")
                 .generate()
                 .getBytes();
 
-        byte[] aliceCert = sop.extractCert()
+        byte[] aliceCert = assumeSupported(sop::extractCert)
                 .key(aliceKey)
                 .getBytes();
 
-        byte[] bobKey = sop.generateKey()
+        byte[] bobKey = assumeSupported(sop::generateKey)
                 .userId("Bob <bob@pgpainless.org>")
                 .generate()
                 .getBytes();
 
-        byte[] bobCert = sop.extractCert()
+        byte[] bobCert = assumeSupported(sop::extractCert)
                 .key(bobKey)
                 .getBytes();
 
-        byte[] merged = sop.mergeCerts()
+        byte[] merged = assumeSupported(sop::mergeCerts)
                 .updates(bobCert)
                 .baseCertificates(aliceCert)
                 .getBytes();

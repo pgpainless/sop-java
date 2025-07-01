@@ -28,7 +28,7 @@ public class VersionTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void versionNameTest(SOP sop) {
-        String name = sop.version().getName();
+        String name = assumeSupported(sop::version).getName();
         assertNotNull(name);
         assertFalse(name.isEmpty());
     }
@@ -36,21 +36,21 @@ public class VersionTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void versionVersionTest(SOP sop) {
-        String version = sop.version().getVersion();
+        String version = assumeSupported(sop::version).getVersion();
         assertFalse(version.isEmpty());
     }
 
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void backendVersionTest(SOP sop) {
-        String backend = sop.version().getBackendVersion();
+        String backend = assumeSupported(sop::version).getBackendVersion();
         assertFalse(backend.isEmpty());
     }
 
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void extendedVersionTest(SOP sop) {
-        String extended = sop.version().getExtendedVersion();
+        String extended = assumeSupported(sop::version).getExtendedVersion();
         assertFalse(extended.isEmpty());
     }
 
@@ -58,27 +58,27 @@ public class VersionTest extends AbstractSOPTest {
     @MethodSource("provideInstances")
     public void sopSpecVersionTest(SOP sop) {
         try {
-            sop.version().getSopSpecVersion();
+            assumeSupported(sop::version).getSopSpecVersion();
         } catch (RuntimeException e) {
             throw new TestAbortedException("SOP backend does not support 'version --sop-spec' yet.");
         }
 
-        String sopSpec = sop.version().getSopSpecVersion();
-        if (sop.version().isSopSpecImplementationIncomplete()) {
+        String sopSpec = assumeSupported(sop::version).getSopSpecVersion();
+        if (assumeSupported(sop::version).isSopSpecImplementationIncomplete()) {
             assertTrue(sopSpec.startsWith("~draft-dkg-openpgp-stateless-cli-"));
         } else {
             assertTrue(sopSpec.startsWith("draft-dkg-openpgp-stateless-cli-"));
         }
 
-        int sopRevision = sop.version().getSopSpecRevisionNumber();
-        assertTrue(sop.version().getSopSpecRevisionName().endsWith("" + sopRevision));
+        int sopRevision = assumeSupported(sop::version).getSopSpecRevisionNumber();
+        assertTrue(assumeSupported(sop::version).getSopSpecRevisionName().endsWith("" + sopRevision));
     }
 
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void sopVVersionTest(SOP sop) {
         try {
-            sop.version().getSopVVersion();
+            assumeSupported(sop::version).getSopVVersion();
         } catch (SOPGPException.UnsupportedOption e) {
             throw new TestAbortedException(
                     "Implementation does (gracefully) not provide coverage for any sopv interface version.");
@@ -90,6 +90,6 @@ public class VersionTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void sopJavaVersionTest(SOP sop) {
-        assertNotNull(sop.version().getSopJavaVersion());
+        assertNotNull(assumeSupported(sop::version).getSopJavaVersion());
     }
 }

@@ -28,12 +28,12 @@ public class ExtractCertTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void extractArmoredCertFromArmoredKeyTest(SOP sop) throws IOException {
-        InputStream keyIn = sop.generateKey()
+        InputStream keyIn = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@openpgp.org>")
                 .generate()
                 .getInputStream();
 
-        byte[] cert = sop.extractCert().key(keyIn).getBytes();
+        byte[] cert = assumeSupported(sop::extractCert).key(keyIn).getBytes();
         JUtils.assertArrayStartsWith(cert, TestData.BEGIN_PGP_PUBLIC_KEY_BLOCK);
         JUtils.assertArrayEndsWithIgnoreNewlines(cert, TestData.END_PGP_PUBLIC_KEY_BLOCK);
     }
@@ -41,7 +41,7 @@ public class ExtractCertTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void extractAliceCertFromAliceKeyTest(SOP sop) throws IOException {
-        byte[] armoredCert = sop.extractCert()
+        byte[] armoredCert = assumeSupported(sop::extractCert)
                 .key(TestData.ALICE_KEY.getBytes(StandardCharsets.UTF_8))
                 .getBytes();
         JUtils.assertAsciiArmorEquals(TestData.ALICE_CERT.getBytes(StandardCharsets.UTF_8), armoredCert);
@@ -50,7 +50,7 @@ public class ExtractCertTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void extractBobsCertFromBobsKeyTest(SOP sop) throws IOException {
-        byte[] armoredCert = sop.extractCert()
+        byte[] armoredCert = assumeSupported(sop::extractCert)
                 .key(TestData.BOB_KEY.getBytes(StandardCharsets.UTF_8))
                 .getBytes();
         JUtils.assertAsciiArmorEquals(TestData.BOB_CERT.getBytes(StandardCharsets.UTF_8), armoredCert);
@@ -59,7 +59,7 @@ public class ExtractCertTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void extractCarolsCertFromCarolsKeyTest(SOP sop) throws IOException {
-        byte[] armoredCert = sop.extractCert()
+        byte[] armoredCert = assumeSupported(sop::extractCert)
                 .key(TestData.CAROL_KEY.getBytes(StandardCharsets.UTF_8))
                 .getBytes();
         JUtils.assertAsciiArmorEquals(TestData.CAROL_CERT.getBytes(StandardCharsets.UTF_8), armoredCert);
@@ -68,12 +68,12 @@ public class ExtractCertTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void extractUnarmoredCertFromArmoredKeyTest(SOP sop) throws IOException {
-        InputStream keyIn = sop.generateKey()
+        InputStream keyIn = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@openpgp.org>")
                 .generate()
                 .getInputStream();
 
-        byte[] cert = sop.extractCert()
+        byte[] cert = assumeSupported(sop::extractCert)
                 .noArmor()
                 .key(keyIn)
                 .getBytes();
@@ -84,13 +84,13 @@ public class ExtractCertTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void extractArmoredCertFromUnarmoredKeyTest(SOP sop) throws IOException {
-        InputStream keyIn = sop.generateKey()
+        InputStream keyIn = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@openpgp.org>")
                 .noArmor()
                 .generate()
                 .getInputStream();
 
-        byte[] cert = sop.extractCert()
+        byte[] cert = assumeSupported(sop::extractCert)
                 .key(keyIn)
                 .getBytes();
 
@@ -101,13 +101,13 @@ public class ExtractCertTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void extractUnarmoredCertFromUnarmoredKeyTest(SOP sop) throws IOException {
-        InputStream keyIn = sop.generateKey()
+        InputStream keyIn = assumeSupported(sop::generateKey)
                 .noArmor()
                 .userId("Alice <alice@openpgp.org>")
                 .generate()
                 .getInputStream();
 
-        byte[] cert = sop.extractCert()
+        byte[] cert = assumeSupported(sop::extractCert)
                 .noArmor()
                 .key(keyIn)
                 .getBytes();
