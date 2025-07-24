@@ -11,6 +11,7 @@ import sop.SigningResult
 import sop.enums.SignAs
 import sop.exception.SOPGPException.*
 
+/** Interface for creating detached signatures over plaintext messages. */
 interface DetachedSign : AbstractSign<DetachedSign> {
 
     /**

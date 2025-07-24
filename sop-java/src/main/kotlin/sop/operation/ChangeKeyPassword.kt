@@ -11,6 +11,7 @@ import sop.exception.SOPGPException.KeyIsProtected
 import sop.exception.SOPGPException.PasswordNotHumanReadable
 import sop.util.UTF8Util
 
+/** Interface for changing key passwords. */
 interface ChangeKeyPassword {
 
     /**
@@ -28,13 +29,8 @@ interface ChangeKeyPassword {
      * @param oldPassphrase old passphrase
      * @return builder instance
      */
-    @Throws(PasswordNotHumanReadable::class)
-    fun oldKeyPassphrase(oldPassphrase: ByteArray): ChangeKeyPassword =
-        try {
-            oldKeyPassphrase(UTF8Util.decodeUTF8(oldPassphrase))
-        } catch (e: CharacterCodingException) {
-            throw PasswordNotHumanReadable("Password MUST be a valid UTF8 string.")
-        }
+    fun oldKeyPassphrase(oldPassphrase: CharArray): ChangeKeyPassword =
+        oldKeyPassphrase(oldPassphrase.concatToString())
 
     /**
      * Provide a passphrase to unlock the secret key. This method can be provided multiple times to
@@ -47,17 +43,18 @@ interface ChangeKeyPassword {
     fun oldKeyPassphrase(oldPassphrase: String): ChangeKeyPassword
 
     /**
-     * Provide a passphrase to re-lock the secret key with. This method can only be used once, and
-     * all key material encountered will be encrypted with the given passphrase. If this method is
-     * not called, the key material will not be protected.
+     * Provide a passphrase to unlock the secret key. This method can be provided multiple times to
+     * provide separate passphrases that are tried as a means to unlock any secret key material
+     * encountered.
      *
-     * @param newPassphrase new passphrase
+     * @param oldPassphrase old passphrase
      * @return builder instance
+     * @throws PasswordNotHumanReadable if the old key passphrase is not human-readable
      */
     @Throws(PasswordNotHumanReadable::class)
-    fun newKeyPassphrase(newPassphrase: ByteArray): ChangeKeyPassword =
+    fun oldKeyPassphrase(oldPassphrase: ByteArray): ChangeKeyPassword =
         try {
-            newKeyPassphrase(UTF8Util.decodeUTF8(newPassphrase))
+            oldKeyPassphrase(UTF8Util.decodeUTF8(oldPassphrase))
         } catch (e: CharacterCodingException) {
             throw PasswordNotHumanReadable("Password MUST be a valid UTF8 string.")
         }
@@ -70,7 +67,35 @@ interface ChangeKeyPassword {
      * @param newPassphrase new passphrase
      * @return builder instance
      */
+    fun newKeyPassphrase(newPassphrase: CharArray): ChangeKeyPassword =
+        newKeyPassphrase(newPassphrase.concatToString())
+
+    /**
+     * Provide a passphrase to re-lock the secret key with. This method can only be used once, and
+     * all key material encountered will be encrypted with the given passphrase. If this method is
+     * not called, the key material will not be protected.
+     *
+     * @param newPassphrase new passphrase
+     * @return builder instance
+     */
     fun newKeyPassphrase(newPassphrase: String): ChangeKeyPassword
+
+    /**
+     * Provide a passphrase to re-lock the secret key with. This method can only be used once, and
+     * all key material encountered will be encrypted with the given passphrase. If this method is
+     * not called, the key material will not be protected.
+     *
+     * @param newPassphrase new passphrase
+     * @return builder instance
+     * @throws PasswordNotHumanReadable if the passphrase is not human-readable
+     */
+    @Throws(PasswordNotHumanReadable::class)
+    fun newKeyPassphrase(newPassphrase: ByteArray): ChangeKeyPassword =
+        try {
+            newKeyPassphrase(UTF8Util.decodeUTF8(newPassphrase))
+        } catch (e: CharacterCodingException) {
+            throw PasswordNotHumanReadable("Password MUST be a valid UTF8 string.")
+        }
 
     /**
      * Provide the key material.

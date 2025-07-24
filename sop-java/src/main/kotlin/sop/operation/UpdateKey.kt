@@ -7,9 +7,10 @@ package sop.operation
 import java.io.IOException
 import java.io.InputStream
 import sop.Ready
-import sop.exception.SOPGPException
+import sop.exception.SOPGPException.*
 import sop.util.UTF8Util
 
+/** Interface for bringing an OpenPGP key up to date. */
 interface UpdateKey {
 
     /**
@@ -22,21 +23,39 @@ interface UpdateKey {
     /**
      * Allow key to be used for signing only. If this option is not present, the operation may add a
      * new, encryption-capable component key.
+     *
+     * @return builder instance
+     * @throws UnsupportedOption if this option is not supported
      */
-    @Throws(SOPGPException.UnsupportedOption::class) fun signingOnly(): UpdateKey
+    @Throws(UnsupportedOption::class) fun signingOnly(): UpdateKey
 
     /**
      * Do not allow adding new capabilities to the key. If this option is not present, the operation
      * may add support for new capabilities to the key.
+     *
+     * @return builder instance
+     * @throws UnsupportedOption if this option is not supported
      */
-    @Throws(SOPGPException.UnsupportedOption::class) fun noAddedCapabilities(): UpdateKey
+    @Throws(UnsupportedOption::class) fun noAddedCapabilities(): UpdateKey
 
     /**
      * Provide a passphrase for unlocking the secret key.
      *
      * @param password password
+     * @return builder instance
+     * @throws UnsupportedOption if this option is not supported
      */
-    @Throws(SOPGPException.PasswordNotHumanReadable::class, SOPGPException.UnsupportedOption::class)
+    @Throws(UnsupportedOption::class)
+    fun withKeyPassword(password: CharArray): UpdateKey = withKeyPassword(password.concatToString())
+
+    /**
+     * Provide a passphrase for unlocking the secret key.
+     *
+     * @param password password
+     * @return builder instance
+     * @throws UnsupportedOption if this option is not supported
+     */
+    @Throws(UnsupportedOption::class)
     fun withKeyPassword(password: String): UpdateKey =
         withKeyPassword(password.toByteArray(UTF8Util.UTF8))
 
@@ -44,8 +63,11 @@ interface UpdateKey {
      * Provide a passphrase for unlocking the secret key.
      *
      * @param password password
+     * @return builder instance
+     * @throws PasswordNotHumanReadable if the password is not human-readable
+     * @throws UnsupportedOption if this option is not supported
      */
-    @Throws(SOPGPException.PasswordNotHumanReadable::class, SOPGPException.UnsupportedOption::class)
+    @Throws(PasswordNotHumanReadable::class, UnsupportedOption::class)
     fun withKeyPassword(password: ByteArray): UpdateKey
 
     /**
@@ -53,9 +75,12 @@ interface UpdateKey {
      * These certificates will be merged into the key.
      *
      * @param certs input stream of certificates
+     * @return builder instance
+     * @throws UnsupportedOption if this option is not supported
+     * @throws BadData if the certificate cannot be read
+     * @throws IOException if an IO error occurs
      */
-    @Throws(
-        SOPGPException.UnsupportedOption::class, SOPGPException.BadData::class, IOException::class)
+    @Throws(UnsupportedOption::class, BadData::class, IOException::class)
     fun mergeCerts(certs: InputStream): UpdateKey
 
     /**
@@ -63,9 +88,12 @@ interface UpdateKey {
      * These certificates will be merged into the key.
      *
      * @param certs binary certificates
+     * @return builder instance
+     * @throws UnsupportedOption if this option is not supported
+     * @throws BadData if the certificate cannot be read
+     * @throws IOException if an IO error occurs
      */
-    @Throws(
-        SOPGPException.UnsupportedOption::class, SOPGPException.BadData::class, IOException::class)
+    @Throws(UnsupportedOption::class, BadData::class, IOException::class)
     fun mergeCerts(certs: ByteArray): UpdateKey = mergeCerts(certs.inputStream())
 
     /**
@@ -73,12 +101,12 @@ interface UpdateKey {
      *
      * @param key input stream containing the key
      * @return handle to acquire the updated OpenPGP key from
+     * @throws BadData if the key cannot be read
+     * @throws IOException if an IO error occurs
+     * @throws KeyIsProtected if the key is passphrase protected and cannot be unlocked
+     * @throws PrimaryKeyBad if the primary key is bad (e.g. expired, too weak)
      */
-    @Throws(
-        SOPGPException.BadData::class,
-        IOException::class,
-        SOPGPException.KeyIsProtected::class,
-        SOPGPException.PrimaryKeyBad::class)
+    @Throws(BadData::class, IOException::class, KeyIsProtected::class, PrimaryKeyBad::class)
     fun key(key: InputStream): Ready
 
     /**
@@ -86,11 +114,11 @@ interface UpdateKey {
      *
      * @param key binary OpenPGP key
      * @return handle to acquire the updated OpenPGP key from
+     * @throws BadData if the key cannot be read
+     * @throws IOException if an IO error occurs
+     * @throws KeyIsProtected if the key is passphrase protected and cannot be unlocked
+     * @throws PrimaryKeyBad if the primary key is bad (e.g. expired, too weak)
      */
-    @Throws(
-        SOPGPException.BadData::class,
-        IOException::class,
-        SOPGPException.KeyIsProtected::class,
-        SOPGPException.PrimaryKeyBad::class)
+    @Throws(BadData::class, IOException::class, KeyIsProtected::class, PrimaryKeyBad::class)
     fun key(key: ByteArray): Ready = key(key.inputStream())
 }

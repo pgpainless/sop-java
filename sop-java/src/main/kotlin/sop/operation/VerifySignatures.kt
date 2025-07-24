@@ -10,6 +10,7 @@ import sop.Verification
 import sop.exception.SOPGPException.BadData
 import sop.exception.SOPGPException.NoSignature
 
+/** API handle for verifying signatures. */
 interface VerifySignatures {
 
     /**

@@ -8,6 +8,7 @@ import java.io.IOException
 import java.io.InputStream
 import sop.exception.SOPGPException.BadData
 
+/** Interface for verifying detached OpenPGP signatures over plaintext messages. */
 interface DetachedVerify : AbstractVerify<DetachedVerify>, VerifySignatures {
 
     /**

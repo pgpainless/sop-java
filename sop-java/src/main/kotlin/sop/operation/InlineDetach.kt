@@ -10,6 +10,7 @@ import sop.ReadyWithResult
 import sop.Signatures
 import sop.exception.SOPGPException.BadData
 
+/** Interface for detaching inline signatures from OpenPGP messages. */
 interface InlineDetach {
 
     /**

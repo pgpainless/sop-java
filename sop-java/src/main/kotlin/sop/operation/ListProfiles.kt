@@ -6,7 +6,7 @@ package sop.operation
 
 import sop.Profile
 
-/** Subcommand to list supported profiles of other subcommands. */
+/** Interface to list supported profiles of other subcommands. */
 interface ListProfiles {
 
     /**

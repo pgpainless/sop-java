@@ -13,6 +13,7 @@ import sop.enums.EncryptAs
 import sop.exception.SOPGPException.*
 import sop.util.UTF8Util
 
+/** Interface for creating encrypted OpenPGP messages. */
 interface Encrypt {
 
     /**

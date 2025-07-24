@@ -61,9 +61,18 @@ interface AbstractSign<T> {
      * @param password password
      * @return builder instance
      * @throws UnsupportedOption if key passwords are not supported
-     * @throws PasswordNotHumanReadable if the provided passphrase is not human-readable
      */
-    @Throws(UnsupportedOption::class, PasswordNotHumanReadable::class)
+    @Throws(UnsupportedOption::class)
+    fun withKeyPassword(password: CharArray): T = withKeyPassword(password.concatToString())
+
+    /**
+     * Provide the password for the secret key used for signing.
+     *
+     * @param password password
+     * @return builder instance
+     * @throws UnsupportedOption if key passwords are not supported
+     */
+    @Throws(UnsupportedOption::class)
     fun withKeyPassword(password: String): T = withKeyPassword(password.toByteArray(UTF8Util.UTF8))
 
     /**

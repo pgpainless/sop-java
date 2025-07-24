@@ -11,7 +11,7 @@ import sop.Verification
 import sop.exception.SOPGPException.BadData
 import sop.exception.SOPGPException.NoSignature
 
-/** API for verification of inline-signed messages. */
+/** Interface for verification of inline-signed messages. */
 interface InlineVerify : AbstractVerify<InlineVerify> {
 
     /**

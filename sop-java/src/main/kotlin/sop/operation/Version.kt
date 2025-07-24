@@ -10,6 +10,7 @@ import java.util.*
 import kotlin.jvm.Throws
 import sop.exception.SOPGPException
 
+/** Interface for acquiring version information about the SOP implementation. */
 interface Version {
 
     /**

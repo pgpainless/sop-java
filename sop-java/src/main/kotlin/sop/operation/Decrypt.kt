@@ -13,6 +13,7 @@ import sop.SessionKey
 import sop.exception.SOPGPException.*
 import sop.util.UTF8Util
 
+/** Interface for decrypting encrypted OpenPGP messages. */
 interface Decrypt {
 
     /**

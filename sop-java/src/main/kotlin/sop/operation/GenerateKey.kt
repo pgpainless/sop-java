@@ -10,6 +10,7 @@ import sop.Ready
 import sop.exception.SOPGPException.*
 import sop.util.UTF8Util
 
+/** Interface for generating OpenPGP keys. */
 interface GenerateKey {
 
     /**

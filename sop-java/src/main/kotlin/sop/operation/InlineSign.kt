@@ -10,6 +10,7 @@ import sop.Ready
 import sop.enums.InlineSignAs
 import sop.exception.SOPGPException.*
 
+/** Interface for creating inline-signed OpenPGP messages. */
 interface InlineSign : AbstractSign<InlineSign> {
 
     /**

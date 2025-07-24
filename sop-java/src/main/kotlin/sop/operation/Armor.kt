@@ -9,6 +9,7 @@ import java.io.InputStream
 import sop.Ready
 import sop.exception.SOPGPException.BadData
 
+/** Interface for armoring binary OpenPGP data. */
 interface Armor {
 
     /**

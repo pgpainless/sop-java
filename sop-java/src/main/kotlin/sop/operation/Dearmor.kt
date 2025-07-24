@@ -10,6 +10,7 @@ import sop.Ready
 import sop.exception.SOPGPException.BadData
 import sop.util.UTF8Util
 
+/** Interface for removing ASCII armor from OpenPGP data. */
 interface Dearmor {
 
     /**
