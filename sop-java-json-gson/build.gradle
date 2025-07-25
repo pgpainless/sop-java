@@ -1,0 +1,28 @@
+// SPDX-FileCopyrightText: 2025 Paul Schaub <vanitasvitae@fsfe.org>
+//
+// SPDX-License-Identifier: Apache-2.0
+
+plugins {
+    id 'java-library'
+}
+
+group 'org.pgpainless'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    implementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+    runtimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+
+    implementation project(":sop-java")
+    api "org.slf4j:slf4j-api:$slf4jVersion"
+    testImplementation "ch.qos.logback:logback-classic:$logbackVersion"
+
+    // @Nonnull, @Nullable...
+    implementation "com.google.code.findbugs:jsr305:$jsrVersion"
+
+    api "com.google.code.gson:gson:$gsonVersion"
+}
