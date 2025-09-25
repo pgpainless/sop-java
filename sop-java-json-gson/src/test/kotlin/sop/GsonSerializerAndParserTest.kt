@@ -4,10 +4,10 @@
 
 package sop
 
+import java.text.ParseException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.text.ParseException
 
 class GsonSerializerAndParserTest {
 
@@ -40,10 +40,7 @@ class GsonSerializerAndParserTest {
 
     @Test
     fun withCommentTest() {
-        val before = Verification.JSON(
-            listOf("/tmp/alice.pgp"),
-            "This is a comment.",
-            null)
+        val before = Verification.JSON(listOf("/tmp/alice.pgp"), "This is a comment.", null)
 
         val json = serializer.serialize(before)
         assertEquals("{\"signers\":[\"/tmp/alice.pgp\"],\"comment\":\"This is a comment.\"}", json)
@@ -55,13 +52,14 @@ class GsonSerializerAndParserTest {
 
     @Test
     fun withExtStringTest() {
-        val before = Verification.JSON(
-            listOf("/tmp/alice.pgp"),
-            "This is a comment.",
-            "This is an ext object string.")
+        val before =
+            Verification.JSON(
+                listOf("/tmp/alice.pgp"), "This is a comment.", "This is an ext object string.")
 
         val json = serializer.serialize(before)
-        assertEquals("{\"signers\":[\"/tmp/alice.pgp\"],\"comment\":\"This is a comment.\",\"ext\":\"This is an ext object string.\"}", json)
+        assertEquals(
+            "{\"signers\":[\"/tmp/alice.pgp\"],\"comment\":\"This is a comment.\",\"ext\":\"This is an ext object string.\"}",
+            json)
 
         val after = parser.parse(json)
 
@@ -70,13 +68,13 @@ class GsonSerializerAndParserTest {
 
     @Test
     fun withExtListTest() {
-        val before = Verification.JSON(
-            listOf("/tmp/alice.pgp"),
-            "This is a comment.",
-            listOf(1.0,2.0,3.0))
+        val before =
+            Verification.JSON(listOf("/tmp/alice.pgp"), "This is a comment.", listOf(1.0, 2.0, 3.0))
 
         val json = serializer.serialize(before)
-        assertEquals("{\"signers\":[\"/tmp/alice.pgp\"],\"comment\":\"This is a comment.\",\"ext\":[1.0,2.0,3.0]}", json)
+        assertEquals(
+            "{\"signers\":[\"/tmp/alice.pgp\"],\"comment\":\"This is a comment.\",\"ext\":[1.0,2.0,3.0]}",
+            json)
 
         val after = parser.parse(json)
 
