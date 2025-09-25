@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 # SOP for Java
 
 [![status-badge](https://ci.codeberg.org/api/badges/PGPainless/sop-java/status.svg)](https://ci.codeberg.org/PGPainless/sop-java)
-[![Spec Revision: 14](https://img.shields.io/badge/Spec%20Revision-10-blue)](https://datatracker.ietf.org/doc/draft-dkg-openpgp-stateless-cli/14/)
+[![Spec Revision: 14](https://img.shields.io/badge/Spec%20Revision-14-blue)](https://datatracker.ietf.org/doc/draft-dkg-openpgp-stateless-cli/14/)
 [![Coverage Status](https://coveralls.io/repos/github/pgpainless/sop-java/badge.svg?branch=main)](https://coveralls.io/github/pgpainless/sop-java?branch=main)
 [![REUSE status](https://api.reuse.software/badge/github.com/pgpainless/sop-java)](https://api.reuse.software/info/github.com/pgpainless/sop-java)
 
@@ -29,6 +29,7 @@ compatible with the SOP-CLI specification.
 allowing to delegate the implementation logic to an arbitrary SOP CLI implementation.
 * [sop-java-testfixtures](/sop-java-testfixtures) contains a test suite that can be shared by downstream implementations
   of `sop-java`.
+* [sop-java-json-gson](/sop-java-json-gson) contains an optional module for parsing JSON objects from verification strings using GSON.
 
 ## Known Implementations
 (Please expand!)
