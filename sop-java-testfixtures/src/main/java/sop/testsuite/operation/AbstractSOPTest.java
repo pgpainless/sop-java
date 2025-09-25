@@ -5,7 +5,6 @@
 package sop.testsuite.operation;
 
 import kotlin.jvm.functions.Function0;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.provider.Arguments;
