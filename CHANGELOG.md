@@ -6,6 +6,12 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 14.0.1
+- add `VerificationAssert` methods to test `Verification` objects
+- `sop`: Add missing `withKeyPassword(CharArray)` methods
+- Introduce optional `sop-java-json-gson` module
+- `external-sop`: Depend on `junit-platform-suite` to avoid needing to inherit test suite classes
+
 ## 14.0.0
 - Update implementation to [SOP Specification revision 14](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-14.html), 
   including changes from revisions `11`, `12`, `13`, `14`.
