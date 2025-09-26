@@ -47,6 +47,8 @@ import sop.exception.SOPGPException
             GenerateCompletion::class])
 class SopCLI {
 
+    @Option(names = ["-l", "--locale"], descriptionKey = "sop.locale") lateinit var ignored: String
+
     companion object {
         @JvmStatic private var sopInstance: SOP? = null
 
