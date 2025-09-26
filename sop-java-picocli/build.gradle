@@ -21,6 +21,7 @@ dependencies {
 
     // CLI
     implementation "info.picocli:picocli:$picocliVersion"
+    annotationProcessor "info.picocli:picocli-codegen:$picocliVersion"
     kapt "info.picocli:picocli-codegen:$picocliVersion"
 
     // @Nonnull, @Nullable...
