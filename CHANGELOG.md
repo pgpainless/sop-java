@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 14.0.2-SNAPSHOT
+## 14.0.2
 - `sop`: Prevent error message for unmatched `--locale=` argument
 - Bump gradlew to `8.8`
 - Fix manpage generation
