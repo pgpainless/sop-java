@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-14.0.3-SNAPSHOT
+## 14.0.3
 - Bump `logback-core` to `1.5.19`
 
 ## 14.0.2
