@@ -4,8 +4,8 @@
 
 allprojects {
     ext {
-        shortVersion = '14.0.2'
-        isSnapshot = false
+        shortVersion = '14.0.3'
+        isSnapshot = true
         javaSourceCompatibility = 11
         gsonVersion = '2.10.1'
         jsrVersion = '3.0.2'
