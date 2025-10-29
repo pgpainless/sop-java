@@ -6,6 +6,11 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 14.0.2-SNAPSHOT
+- `sop`: Prevent error message for unmatched `--locale=` argument
+- Bump gradlew to `8.8`
+- Fix manpage generation
+
 ## 14.0.1
 - add `VerificationAssert` methods to test `Verification` objects
 - `sop`: Add missing `withKeyPassword(CharArray)` methods
