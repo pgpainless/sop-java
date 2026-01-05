@@ -16,6 +16,7 @@ import sop.SOP;
 import sop.SessionKey;
 import sop.Verification;
 import sop.enums.EncryptAs;
+import sop.enums.EncryptFor;
 import sop.enums.SignatureMode;
 import sop.exception.SOPGPException;
 import sop.operation.Decrypt;
@@ -397,5 +398,116 @@ public class EncryptDecryptTest extends AbstractSOPTest {
             assertArrayEquals(plaintext, decPlaintext, "Decrypted plaintext does not match original plaintext.");
             assertEquals(certs.size(), dResult.getVerifications().size());
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void encryptForPurpose(SOP sop) throws IOException {
+        String CERT = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
+                "Comment: 88BF 5516 C226 5B7D 1817  03E6 1FF0 DE1E AF8B 379F\n" +
+                "\n" +
+                "mCYEaVxG2BvmBuO3v5cDQQCuGnAIuaeP0frpw7mutcMQwPkGuuAKUMKSBB8bCgA+\n" +
+                "FqEEiL9VFsImW30YFwPmH/DeHq+LN58FgmlcRtgCngkFlQoJCAsFlgIDAQAEiwkI\n" +
+                "BwknCQEJAgkDCAECmwEACgkQH/DeHq+LN5/NVHbqH098dr34p9KVQQNLXr8CITqP\n" +
+                "vLTkijVXyfZg6Lz1krs3EgEvc8nz3evyYj5xJI+Hg1kHb+ctB5myyTyEtge4JgRp\n" +
+                "XEbYG52SLEi5Biq9vn1pFgrozM2QuCqkwXtOr/0ASs0b3t20wsAnBBgbCgCTFqEE\n" +
+                "iL9VFsImW30YFwPmH/DeHq+LN58FgmlcRtgCmwJyoAQZGwoAHRahBGp6EAtdr26T\n" +
+                "x4sGLa+TQ+g71BlpBYJpXEbYAAoJEK+TQ+g71BlpkJ4VPAQeTXN88wXzLloW2WYP\n" +
+                "5w3w7Js4csGE5OynUupCNwUBcIfC+FBMuUdgqjczw4xKRLbZMgp5YLr8Ve3pG48L\n" +
+                "AAoJEB/w3h6vizefXrbECKbGBPh+c3+fFG3Au0gzkRMCsZsMaQaRWlQ1E2P/VWlo\n" +
+                "xy4JF5nCA6bSC+sFl+DTbwpgvdQlIILR9O386EcHuCYEaVxG2Blrm96fHzaN1JmO\n" +
+                "uhU0OMbiDMBYKOL3Iup+TQWzx897CMJ0BBgbCgAgFqEEiL9VFsImW30YFwPmH/De\n" +
+                "Hq+LN58FgmlcRtgCmwQACgkQH/DeHq+LN5/wOkjl+MJktOsh+COv4tAhSu2kR0iw\n" +
+                "rdY4IAEp7jlnZfx0BVMnVURSrZSge3Zw2vbQQe864GA3Y4le4CWFKm2QAwG4JgRp\n" +
+                "XEbYGUzlbIju0H0KDcLmLXsXp7CCLmkcnSjNAj9WTRW7GCJownQEGBsKACAWoQSI\n" +
+                "v1UWwiZbfRgXA+Yf8N4er4s3nwWCaVxG2AKbCAAKCRAf8N4er4s3n4+EpHlXYNzD\n" +
+                "I2OT9NpobaalDbmDMuvIu/81Uoxv+pJLkrMV+WW5be27HrH6w7YTH1TngILr4V2e\n" +
+                "jSB2HhjClk4YBw==\n" +
+                "=3S3M\n" +
+                "-----END PGP PUBLIC KEY BLOCK-----";
+        String KEY_ONLY_STORAGE = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n" +
+                "Comment: 88BF 5516 C226 5B7D 1817  03E6 1FF0 DE1E AF8B 379F\n" +
+                "\n" +
+                "lEkEaVxG2BvmBuO3v5cDQQCuGnAIuaeP0frpw7mutcMQwPkGuuAKUAA0eJO2aUrG\n" +
+                "NwfD+W5mn/EHzossHrQPa0jPzERJ1m7kkA/MwpIEHxsKAD4WoQSIv1UWwiZbfRgX\n" +
+                "A+Yf8N4er4s3nwWCaVxG2AKeCQWVCgkICwWWAgMBAASLCQgHCScJAQkCCQMIAQKb\n" +
+                "AQAKCRAf8N4er4s3n81UduofT3x2vfin0pVBA0tevwIhOo+8tOSKNVfJ9mDovPWS\n" +
+                "uzcSAS9zyfPd6/JiPnEkj4eDWQdv5y0HmbLJPIS2B5xJBGlcRtgbnZIsSLkGKr2+\n" +
+                "fWkWCujMzZC4KqTBe06v/QBKzRve3bQA80/esWlwPguauRAay+kli/gw/SRhTAK7\n" +
+                "n1k63W1vkxkPHsLAJwQYGwoAkxahBIi/VRbCJlt9GBcD5h/w3h6vizefBYJpXEbY\n" +
+                "ApsCcqAEGRsKAB0WoQRqehALXa9uk8eLBi2vk0PoO9QZaQWCaVxG2AAKCRCvk0Po\n" +
+                "O9QZaZCeFTwEHk1zfPMF8y5aFtlmD+cN8OybOHLBhOTsp1LqQjcFAXCHwvhQTLlH\n" +
+                "YKo3M8OMSkS22TIKeWC6/FXt6RuPCwAKCRAf8N4er4s3n162xAimxgT4fnN/nxRt\n" +
+                "wLtIM5ETArGbDGkGkVpUNRNj/1VpaMcuCReZwgOm0gvrBZfg028KYL3UJSCC0fTt\n" +
+                "/OhHB5xJBGlcRtgZTOVsiO7QfQoNwuYtexensIIuaRydKM0CP1ZNFbsYImgAUDFh\n" +
+                "CkwFwBaiasW9oHJQd1TALWOtj0TjQo9tEp1zxmQOC8J0BBgbCgAgFqEEiL9VFsIm\n" +
+                "W30YFwPmH/DeHq+LN58FgmlcRtgCmwgACgkQH/DeHq+LN5+PhKR5V2DcwyNjk/Ta\n" +
+                "aG2mpQ25gzLryLv/NVKMb/qSS5KzFflluW3tux6x+sO2Ex9U54CC6+Fdno0gdh4Y\n" +
+                "wpZOGAc=\n" +
+                "=oK8k\n" +
+                "-----END PGP PRIVATE KEY BLOCK-----";
+        String KEY_ONLY_COMMS = "-----BEGIN PGP PRIVATE KEY BLOCK-----\n" +
+                "Comment: 88BF 5516 C226 5B7D 1817  03E6 1FF0 DE1E AF8B 379F\n" +
+                "\n" +
+                "lEkEaVxG2BvmBuO3v5cDQQCuGnAIuaeP0frpw7mutcMQwPkGuuAKUAA0eJO2aUrG\n" +
+                "NwfD+W5mn/EHzossHrQPa0jPzERJ1m7kkA/MwpIEHxsKAD4WoQSIv1UWwiZbfRgX\n" +
+                "A+Yf8N4er4s3nwWCaVxG2AKeCQWVCgkICwWWAgMBAASLCQgHCScJAQkCCQMIAQKb\n" +
+                "AQAKCRAf8N4er4s3n81UduofT3x2vfin0pVBA0tevwIhOo+8tOSKNVfJ9mDovPWS\n" +
+                "uzcSAS9zyfPd6/JiPnEkj4eDWQdv5y0HmbLJPIS2B5xJBGlcRtgbnZIsSLkGKr2+\n" +
+                "fWkWCujMzZC4KqTBe06v/QBKzRve3bQA80/esWlwPguauRAay+kli/gw/SRhTAK7\n" +
+                "n1k63W1vkxkPHsLAJwQYGwoAkxahBIi/VRbCJlt9GBcD5h/w3h6vizefBYJpXEbY\n" +
+                "ApsCcqAEGRsKAB0WoQRqehALXa9uk8eLBi2vk0PoO9QZaQWCaVxG2AAKCRCvk0Po\n" +
+                "O9QZaZCeFTwEHk1zfPMF8y5aFtlmD+cN8OybOHLBhOTsp1LqQjcFAXCHwvhQTLlH\n" +
+                "YKo3M8OMSkS22TIKeWC6/FXt6RuPCwAKCRAf8N4er4s3n162xAimxgT4fnN/nxRt\n" +
+                "wLtIM5ETArGbDGkGkVpUNRNj/1VpaMcuCReZwgOm0gvrBZfg028KYL3UJSCC0fTt\n" +
+                "/OhHB5xJBGlcRtgZa5venx82jdSZjroVNDjG4gzAWCji9yLqfk0Fs8fPewgAILUp\n" +
+                "R5Ihy+ooSi/6ZnicHsld84qTXLpmeKZMVYhqDm4Ov8J0BBgbCgAgFqEEiL9VFsIm\n" +
+                "W30YFwPmH/DeHq+LN58FgmlcRtgCmwQACgkQH/DeHq+LN5/wOkjl+MJktOsh+COv\n" +
+                "4tAhSu2kR0iwrdY4IAEp7jlnZfx0BVMnVURSrZSge3Zw2vbQQe864GA3Y4le4CWF\n" +
+                "Km2QAwE=\n" +
+                "=6hyI\n" +
+                "-----END PGP PRIVATE KEY BLOCK-----";
+
+        // Encrypt message only for the storage encryption subkey
+        byte[] forStorage = sop.encrypt()
+                .encryptFor(EncryptFor.storage)
+                .withCert(CERT.getBytes(StandardCharsets.UTF_8))
+                .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8))
+                .toByteArrayAndResult()
+                .getBytes();
+
+        // Storage enc key can decrypt
+        assertArrayEquals(
+                TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8),
+                sop.decrypt()
+                        .withKey(KEY_ONLY_STORAGE.getBytes(StandardCharsets.UTF_8))
+                        .ciphertext(forStorage)
+                        .toByteArrayAndResult()
+                        .getBytes());
+        // Comms only subkey cannot decrypt
+        assertThrows(SOPGPException.CannotDecrypt.class, () -> sop.decrypt()
+                .withKey(KEY_ONLY_COMMS.getBytes(StandardCharsets.UTF_8))
+                .ciphertext(forStorage));
+
+        // Encrypt message only for the comms encryption subkey
+        byte[] forComms = sop.encrypt()
+                .encryptFor(EncryptFor.communications)
+                .withCert(CERT.getBytes(StandardCharsets.UTF_8))
+                .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8))
+                .toByteArrayAndResult()
+                .getBytes();
+
+        // Comms enc key can decrypt
+        assertArrayEquals(
+                TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8),
+                sop.decrypt()
+                        .withKey(KEY_ONLY_COMMS.getBytes(StandardCharsets.UTF_8))
+                        .ciphertext(forComms)
+                        .toByteArrayAndResult()
+                        .getBytes());
+        // Storage only subkey cannot decrypt
+        assertThrows(SOPGPException.CannotDecrypt.class, () -> sop.decrypt()
+                .withKey(KEY_ONLY_STORAGE.getBytes(StandardCharsets.UTF_8))
+                .ciphertext(forComms));
     }
 }

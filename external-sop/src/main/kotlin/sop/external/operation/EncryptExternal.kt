@@ -14,6 +14,7 @@ import sop.EncryptionResult
 import sop.ReadyWithResult
 import sop.SessionKey.Companion.fromString
 import sop.enums.EncryptAs
+import sop.enums.EncryptFor
 import sop.external.ExternalSOP
 import sop.external.ExternalSOP.Companion.finish
 import sop.external.ExternalSOP.Companion.readString
@@ -34,6 +35,10 @@ class EncryptExternal(
     override fun noArmor(): Encrypt = apply { commandList.add("--no-armor") }
 
     override fun mode(mode: EncryptAs): Encrypt = apply { commandList.add("--as=$mode") }
+
+    override fun encryptFor(purpose: EncryptFor): Encrypt = apply {
+        commandList.add("--for=$purpose")
+    }
 
     override fun signWith(key: InputStream): Encrypt = apply {
         commandList.add("--sign-with=@ENV:SIGN_WITH_$argCounter")

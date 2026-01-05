@@ -10,6 +10,7 @@ import sop.EncryptionResult
 import sop.Profile
 import sop.ReadyWithResult
 import sop.enums.EncryptAs
+import sop.enums.EncryptFor
 import sop.exception.SOPGPException.*
 import sop.util.UTF8Util
 
@@ -31,6 +32,15 @@ interface Encrypt {
      * @throws UnsupportedOption if this option is not supported
      */
     @Throws(UnsupportedOption::class) fun mode(mode: EncryptAs): Encrypt
+
+    /**
+     * Sets the encryption purpose.
+     *
+     * @param purpose
+     * @return builder instance
+     * @throws UnsupportedOption if this option is not supported
+     */
+    @Throws(UnsupportedOption::class) fun encryptFor(purpose: EncryptFor): Encrypt
 
     /**
      * Adds the signer key.

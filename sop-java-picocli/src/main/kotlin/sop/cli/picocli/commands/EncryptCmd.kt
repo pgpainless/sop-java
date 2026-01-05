@@ -9,6 +9,7 @@ import java.io.PrintWriter
 import picocli.CommandLine.*
 import sop.cli.picocli.SopCLI
 import sop.enums.EncryptAs
+import sop.enums.EncryptFor
 import sop.exception.SOPGPException.*
 
 @Command(
@@ -20,6 +21,9 @@ class EncryptCmd : AbstractSopCmd() {
     @Option(names = ["--no-armor"], negatable = true) var armor = true
 
     @Option(names = ["--as"], paramLabel = "{binary|text}") var type: EncryptAs? = null
+
+    @Option(names = ["--for"], paramLabel = "{storage|communications|any}")
+    var purpose: EncryptFor? = null
 
     @Option(names = ["--with-password"], paramLabel = "PASSWORD")
     var withPassword: List<String> = listOf()
@@ -55,6 +59,15 @@ class EncryptCmd : AbstractSopCmd() {
                 encrypt.mode(it)
             } catch (e: UnsupportedOption) {
                 val errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--as")
+                throw UnsupportedOption(errorMsg, e)
+            }
+        }
+
+        purpose?.let {
+            try {
+                encrypt.encryptFor(it)
+            } catch (e: UnsupportedOption) {
+                val errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--for")
                 throw UnsupportedOption(errorMsg, e)
             }
         }
