@@ -41,6 +41,23 @@ public class UpdateKeyTest extends AbstractSOPTest {
 
     @ParameterizedTest
     @MethodSource("provideInstances")
+    public void updateFreshSignOnlyKeyWithSignOnlyFlagDoesNothing(SOP sop) throws IOException {
+        byte[] freshKey = sop.generateKey()
+                .userId("Alice <alice@pgpainless.org>")
+                .signingOnly()
+                .generate()
+                .getBytes();
+
+        byte[] updateKey = sop.updateKey()
+                .signingOnly()
+                .key(freshKey)
+                .getBytes();
+
+        assertArrayEquals(freshKey, updateKey, "Armored representation of fresh sign-only and updated fresh sign-only key does not match.");
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
     public void updateFreshSignOnlyKeyWithoutSignOnlyFlagAddsEncryptionSubkey(SOP sop) throws IOException {
         byte[] signOnlyKey = sop.generateKey()
                 .userId("Alice <alice@pgpainless.org>")
