@@ -33,7 +33,6 @@ class DearmorCmd : AbstractSopCmd() {
                     it.startsWith("unable to decode base64 data")) {
                     throw BadData(errorMsg, e)
                 }
-                throw RuntimeException(e)
             }
                 ?: throw RuntimeException(e)
         }
