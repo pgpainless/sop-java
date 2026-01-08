@@ -82,6 +82,15 @@ abstract class AbstractSopCmd(locale: Locale = Locale.getDefault()) : Runnable {
         return subcommand
     }
 
+    fun throwIfUnsupportedOption(optionName: String, operation: Runnable) {
+        try {
+            operation.run()
+        } catch (e: UnsupportedOption) {
+            val errorMsg = getMsg("sop.error.feature_support.option_not_supported", optionName)
+            throw UnsupportedOption(errorMsg, e)
+        }
+    }
+
     @Throws(IOException::class)
     fun getInput(indirectInput: String): InputStream {
         val trimmed = indirectInput.trim()
