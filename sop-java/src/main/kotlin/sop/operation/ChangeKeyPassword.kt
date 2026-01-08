@@ -6,6 +6,7 @@ package sop.operation
 
 import java.io.InputStream
 import sop.Ready
+import sop.exception.SOPGPException
 import sop.exception.SOPGPException.BadData
 import sop.exception.SOPGPException.KeyIsProtected
 import sop.exception.SOPGPException.PasswordNotHumanReadable
@@ -19,7 +20,7 @@ interface ChangeKeyPassword {
      *
      * @return builder instance
      */
-    fun noArmor(): ChangeKeyPassword
+    @Throws(SOPGPException.UnsupportedOption::class) fun noArmor(): ChangeKeyPassword
 
     /**
      * Provide a passphrase to unlock the secret key. This method can be provided multiple times to
