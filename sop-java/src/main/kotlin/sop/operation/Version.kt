@@ -14,21 +14,30 @@ import sop.exception.SOPGPException
 interface Version {
 
     /**
-     * Return the implementations name. e.g. `SOP`,
+     * Return the implementations name. Example:
+     * ```
+     * Example-SOP
+     * ```
      *
      * @return implementation name
      */
     fun getName(): String
 
     /**
-     * Return the implementations short version string. e.g. `1.0`
+     * Return the implementations short version string. Example:
+     * ```
+     * 1.0
+     * ```
      *
      * @return version string
      */
     fun getVersion(): String
 
     /**
-     * Return version information about the used OpenPGP backend. e.g. `Bouncycastle 1.70`
+     * Return version information about the used OpenPGP backend. Example:
+     * ```
+     * Bouncy Castle 1.70
+     * ```
      *
      * @return backend version string
      */
@@ -39,11 +48,11 @@ interface Version {
      * line MUST match the information produced by [getName] and [getVersion], but the rest of the
      * text has no defined structure. Example:
      * ```
-     * "SOP 1.0
+     * Example-SOP 1.0
      * Awesome PGP!
-     * Using Bouncycastle 1.70
+     * Using Bouncy Castle 1.70
      * LibFoo 1.2.2
-     * See https://pgp.example.org/sop/ for more information"
+     * See https://pgp.example.org/sop/ for more information
      * ```
      *
      * @return extended version string
@@ -52,11 +61,19 @@ interface Version {
 
     /**
      * Return the revision of the SOP specification that this implementation is implementing, for
-     * example, `draft-dkg-openpgp-stateless-cli-06`. If the implementation targets a specific draft
-     * but the implementer knows the implementation is incomplete, it should prefix the draft title
-     * with a `~` (TILDE, U+007E), for example: `~draft-dkg-openpgp-stateless-cli-06`. The
-     * implementation MAY emit additional text about its relationship to the targeted draft on the
-     * lines following the versioned title.
+     * example:
+     * ```
+     * draft-dkg-openpgp-stateless-cli-06
+     * ```
+     *
+     * If the implementation targets a specific draft but the implementer knows the implementation
+     * is incomplete, it should prefix the draft title with a `~` (TILDE, U+007E), for example:
+     * ```
+     * ~draft-dkg-openpgp-stateless-cli-06
+     * ```
+     *
+     * The implementation MAY emit additional text about its relationship to the targeted draft on
+     * the lines following the versioned title.
      *
      * @return implemented SOP spec version
      */
