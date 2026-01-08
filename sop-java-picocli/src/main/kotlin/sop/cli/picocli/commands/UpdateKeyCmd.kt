@@ -22,6 +22,8 @@ class UpdateKeyCmd : AbstractSopCmd() {
 
     @Option(names = ["--no-added-capabilities"]) var noAddedCapabilities = false
 
+    @Option(names = [OPT_REVOKE_DEPRECATED_KEYS]) var revokeDeprecatedKeys = false
+
     @Option(names = ["--with-key-password"], paramLabel = "PASSWORD")
     var withKeyPassword: List<String> = listOf()
 
@@ -40,6 +42,12 @@ class UpdateKeyCmd : AbstractSopCmd() {
 
         if (noAddedCapabilities) {
             updateKey.noAddedCapabilities()
+        }
+
+        if (revokeDeprecatedKeys) {
+            throwIfUnsupportedOption(OPT_REVOKE_DEPRECATED_KEYS) {
+                updateKey.revokeDeprecatedKeys()
+            }
         }
 
         for (passwordFileName in withKeyPassword) {
@@ -75,5 +83,9 @@ class UpdateKeyCmd : AbstractSopCmd() {
             val errorMsg = getMsg("sop.error.input.not_a_private_key", "STDIN")
             throw BadData(errorMsg, badData)
         }
+    }
+
+    companion object {
+        const val OPT_REVOKE_DEPRECATED_KEYS = "--revoke-deprecated-keys"
     }
 }

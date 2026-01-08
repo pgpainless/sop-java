@@ -39,6 +39,14 @@ interface UpdateKey {
     @Throws(UnsupportedOption::class) fun noAddedCapabilities(): UpdateKey
 
     /**
+     * Specify, whether deprecated component keys shall be revoked with reason superseded.
+     *
+     * @return builder instance
+     * @throws UnsupportedOption if this option is not supported
+     */
+    @Throws(UnsupportedOption::class) fun revokeDeprecatedKeys(): UpdateKey
+
+    /**
      * Provide a passphrase for unlocking the secret key.
      *
      * @param password password

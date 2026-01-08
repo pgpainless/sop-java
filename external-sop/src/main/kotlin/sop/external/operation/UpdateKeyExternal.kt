@@ -25,6 +25,10 @@ class UpdateKeyExternal(binary: String, environment: Properties) : UpdateKey {
         commandList.add("--no-added-capabilities")
     }
 
+    override fun revokeDeprecatedKeys(): UpdateKey = apply {
+        commandList.add("--revoke-deprecated-keys")
+    }
+
     override fun withKeyPassword(password: ByteArray): UpdateKey = apply {
         commandList.add("--with-key-password=@ENV:KEY_PASSWORD_$argCount")
         envList.add("KEY_PASSWORD_$argCount=${String(password)}")
