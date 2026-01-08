@@ -151,25 +151,17 @@ class DecryptCmd : AbstractSopCmd() {
                     val errorMsg = getMsg("sop.error.input.malformed_session_key")
                     throw IllegalArgumentException(errorMsg, e)
                 }
-            try {
-                decrypt.withSessionKey(sessionKey)
-            } catch (unsupportedOption: UnsupportedOption) {
-                val errorMsg =
-                    getMsg("sop.error.feature_support.option_not_supported", OPT_WITH_SESSION_KEY)
-                throw UnsupportedOption(errorMsg, unsupportedOption)
-            }
+            throwIfUnsupportedOption(OPT_WITH_SESSION_KEY) { decrypt.withSessionKey(sessionKey) }
         }
     }
 
     private fun setWithPasswords(withPassword: List<String>, decrypt: Decrypt) {
         for (passwordFile in withPassword) {
             try {
-                val password = stringFromInputStream(getInput(passwordFile))
-                decrypt.withPassword(password)
-            } catch (unsupportedOption: UnsupportedOption) {
-                val errorMsg =
-                    getMsg("sop.error.feature_support.option_not_supported", OPT_WITH_PASSWORD)
-                throw UnsupportedOption(errorMsg, unsupportedOption)
+                throwIfUnsupportedOption(OPT_WITH_PASSWORD) {
+                    val password = stringFromInputStream(getInput(passwordFile))
+                    decrypt.withPassword(password)
+                }
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }
@@ -179,12 +171,10 @@ class DecryptCmd : AbstractSopCmd() {
     private fun setWithKeyPassword(withKeyPassword: List<String>, decrypt: Decrypt) {
         for (passwordFile in withKeyPassword) {
             try {
-                val password = stringFromInputStream(getInput(passwordFile))
-                decrypt.withKeyPassword(password)
-            } catch (unsupportedOption: UnsupportedOption) {
-                val errorMsg =
-                    getMsg("sop.error.feature_support.option_not_supported", OPT_WITH_KEY_PASSWORD)
-                throw UnsupportedOption(errorMsg, unsupportedOption)
+                throwIfUnsupportedOption(OPT_WITH_KEY_PASSWORD) {
+                    val password = stringFromInputStream(getInput(passwordFile))
+                    decrypt.withKeyPassword(password)
+                }
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }
@@ -193,22 +183,12 @@ class DecryptCmd : AbstractSopCmd() {
 
     private fun setNotAfter(notAfter: String, decrypt: Decrypt) {
         val notAfterDate = parseNotAfter(notAfter)
-        try {
-            decrypt.verifyNotAfter(notAfterDate)
-        } catch (unsupportedOption: UnsupportedOption) {
-            val errorMsg = getMsg("sop.error.feature_support.option_not_supported", OPT_NOT_AFTER)
-            throw UnsupportedOption(errorMsg, unsupportedOption)
-        }
+        throwIfUnsupportedOption(OPT_NOT_AFTER) { decrypt.verifyNotAfter(notAfterDate) }
     }
 
     private fun setNotBefore(notBefore: String, decrypt: Decrypt) {
         val notBeforeDate = parseNotBefore(notBefore)
-        try {
-            decrypt.verifyNotBefore(notBeforeDate)
-        } catch (unsupportedOption: UnsupportedOption) {
-            val errorMsg = getMsg("sop.error.feature_support.option_not_supported", OPT_NOT_BEFORE)
-            throw UnsupportedOption(errorMsg, unsupportedOption)
-        }
+        throwIfUnsupportedOption(OPT_NOT_BEFORE) { decrypt.verifyNotBefore(notBeforeDate) }
     }
 
     companion object {

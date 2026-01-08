@@ -16,7 +16,7 @@ import sop.exception.SOPGPException
     exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 class MergeCertsCmd : AbstractSopCmd() {
 
-    @CommandLine.Option(names = ["--no-armor"], negatable = true) var armor = true
+    @CommandLine.Option(names = [OPT_NO_ARMOR], negatable = true) var armor = true
 
     @CommandLine.Parameters(paramLabel = "CERTS") var updates: List<String> = listOf()
 
@@ -24,7 +24,7 @@ class MergeCertsCmd : AbstractSopCmd() {
         val mergeCerts = throwIfUnsupportedSubcommand(SopCLI.getSop().mergeCerts(), "merge-certs")
 
         if (!armor) {
-            mergeCerts.noArmor()
+            throwIfUnsupportedOption(OPT_NO_ARMOR) { mergeCerts.noArmor() }
         }
 
         for (certFileName in updates) {
@@ -36,11 +36,14 @@ class MergeCertsCmd : AbstractSopCmd() {
         }
 
         try {
-
             val ready = mergeCerts.baseCertificates(System.`in`)
             ready.writeTo(System.out)
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+    }
+
+    companion object {
+        const val OPT_NO_ARMOR = "--no-armor"
     }
 }

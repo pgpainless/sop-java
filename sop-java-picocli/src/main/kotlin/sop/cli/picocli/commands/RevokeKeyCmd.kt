@@ -17,26 +17,24 @@ import sop.exception.SOPGPException.KeyIsProtected
     exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 class RevokeKeyCmd : AbstractSopCmd() {
 
-    @Option(names = ["--no-armor"], negatable = true) var armor = true
+    @Option(names = [OPT_NO_ARMOR], negatable = true) var armor = true
 
-    @Option(names = ["--with-key-password"], paramLabel = "PASSWORD", arity = "0..*")
+    @Option(names = [OPT_WITH_KEY_PASSWORD], paramLabel = "PASSWORD", arity = "0..*")
     var withKeyPassword: List<String> = listOf()
 
     override fun run() {
         val revokeKey = throwIfUnsupportedSubcommand(SopCLI.getSop().revokeKey(), "revoke-key")
 
         if (!armor) {
-            revokeKey.noArmor()
+            throwIfUnsupportedOption(OPT_NO_ARMOR) { revokeKey.noArmor() }
         }
 
         for (passwordIn in withKeyPassword) {
             try {
-                val password = stringFromInputStream(getInput(passwordIn))
-                revokeKey.withKeyPassword(password)
-            } catch (e: SOPGPException.UnsupportedOption) {
-                val errorMsg =
-                    getMsg("sop.error.feature_support.option_not_supported", "--with-key-password")
-                throw SOPGPException.UnsupportedOption(errorMsg, e)
+                throwIfUnsupportedOption(OPT_WITH_KEY_PASSWORD) {
+                    val password = stringFromInputStream(getInput(passwordIn))
+                    revokeKey.withKeyPassword(password)
+                }
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }
@@ -54,5 +52,10 @@ class RevokeKeyCmd : AbstractSopCmd() {
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+    }
+
+    companion object {
+        const val OPT_NO_ARMOR = "--no-armor"
+        const val OPT_WITH_KEY_PASSWORD = "--with-key-password"
     }
 }

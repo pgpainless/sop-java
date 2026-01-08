@@ -19,10 +19,10 @@ class VersionCmd : AbstractSopCmd() {
     @ArgGroup var exclusive: Exclusive? = null
 
     class Exclusive {
-        @Option(names = ["--extended"]) var extended: Boolean = false
-        @Option(names = ["--backend"]) var backend: Boolean = false
-        @Option(names = ["--sop-spec"]) var sopSpec: Boolean = false
-        @Option(names = ["--sopv"]) var sopv: Boolean = false
+        @Option(names = [OPT_EXTENDED]) var extended: Boolean = false
+        @Option(names = [OPT_BACKEND]) var backend: Boolean = false
+        @Option(names = [OPT_SOP_SPEC]) var sopSpec: Boolean = false
+        @Option(names = [OPT_SOPV]) var sopv: Boolean = false
     }
 
     override fun run() {
@@ -50,8 +50,15 @@ class VersionCmd : AbstractSopCmd() {
         }
 
         if (exclusive!!.sopv) {
-            println(version.getSopVVersion())
+            throwIfUnsupportedOption(OPT_SOPV) { println(version.getSopVVersion()) }
             return
         }
+    }
+
+    companion object {
+        const val OPT_EXTENDED = "--extended"
+        const val OPT_BACKEND = "--backend"
+        const val OPT_SOP_SPEC = "--sop-spec"
+        const val OPT_SOPV = "--sopv"
     }
 }

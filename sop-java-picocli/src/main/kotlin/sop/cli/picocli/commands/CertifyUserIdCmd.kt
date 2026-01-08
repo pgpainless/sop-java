@@ -19,15 +19,15 @@ import sop.exception.SOPGPException.UnsupportedOption
     showEndOfOptionsDelimiterInUsageHelp = true)
 class CertifyUserIdCmd : AbstractSopCmd() {
 
-    @Option(names = ["--no-armor"], negatable = true) var armor = true
+    @Option(names = [OPT_NO_ARMOR], negatable = true) var armor = true
 
-    @Option(names = ["--userid"], required = true, arity = "1..*", paramLabel = "USERID")
+    @Option(names = [OPT_USERID], required = true, arity = "1..*", paramLabel = "USERID")
     var userIds: List<String> = listOf()
 
-    @Option(names = ["--with-key-password"], paramLabel = "PASSWORD")
+    @Option(names = [OPT_WITH_KEY_PASSWORD], paramLabel = "PASSWORD")
     var withKeyPassword: List<String> = listOf()
 
-    @Option(names = ["--no-require-self-sig"]) var noRequireSelfSig = false
+    @Option(names = [OPT_NO_REQUIRE_SELF_SIG]) var noRequireSelfSig = false
 
     @Parameters(paramLabel = "KEYS", arity = "1..*") var keys: List<String> = listOf()
 
@@ -36,25 +36,23 @@ class CertifyUserIdCmd : AbstractSopCmd() {
             throwIfUnsupportedSubcommand(SopCLI.getSop().certifyUserId(), "certify-userid")
 
         if (!armor) {
-            certifyUserId.noArmor()
+            throwIfUnsupportedOption(OPT_NO_ARMOR) { certifyUserId.noArmor() }
         }
 
         if (noRequireSelfSig) {
-            certifyUserId.noRequireSelfSig()
+            throwIfUnsupportedOption(OPT_NO_REQUIRE_SELF_SIG) { certifyUserId.noRequireSelfSig() }
         }
 
         for (userId in userIds) {
-            certifyUserId.userId(userId)
+            throwIfUnsupportedOption(OPT_USERID) { certifyUserId.userId(userId) }
         }
 
         for (passwordFileName in withKeyPassword) {
             try {
-                val password = stringFromInputStream(getInput(passwordFileName))
-                certifyUserId.withKeyPassword(password)
-            } catch (unsupportedOption: UnsupportedOption) {
-                val errorMsg =
-                    getMsg("sop.error.feature_support.option_not_supported", "--with-key-password")
-                throw UnsupportedOption(errorMsg, unsupportedOption)
+                throwIfUnsupportedOption(OPT_WITH_KEY_PASSWORD) {
+                    val password = stringFromInputStream(getInput(passwordFileName))
+                    certifyUserId.withKeyPassword(password)
+                }
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }
@@ -80,5 +78,12 @@ class CertifyUserIdCmd : AbstractSopCmd() {
             val errorMsg = getMsg("sop.error.input.not_a_private_key", "STDIN")
             throw BadData(errorMsg, badData)
         }
+    }
+
+    companion object {
+        const val OPT_NO_ARMOR = "--no-armor"
+        const val OPT_USERID = "--userid"
+        const val OPT_WITH_KEY_PASSWORD = "--with-key-password"
+        const val OPT_NO_REQUIRE_SELF_SIG = "--no-require-self-sig"
     }
 }

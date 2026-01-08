@@ -18,26 +18,26 @@ import sop.exception.SOPGPException.*
     exitCodeOnInvalidInput = UnsupportedOption.EXIT_CODE)
 class EncryptCmd : AbstractSopCmd() {
 
-    @Option(names = ["--no-armor"], negatable = true) var armor = true
+    @Option(names = [OPT_NO_ARMOR], negatable = true) var armor = true
 
-    @Option(names = ["--as"], paramLabel = "{binary|text}") var type: EncryptAs? = null
+    @Option(names = [OPT_AS], paramLabel = "{binary|text}") var type: EncryptAs? = null
 
-    @Option(names = ["--for"], paramLabel = "{storage|communications|any}")
+    @Option(names = [OPT_FOR], paramLabel = "{storage|communications|any}")
     var purpose: EncryptFor? = null
 
-    @Option(names = ["--with-password"], paramLabel = "PASSWORD")
+    @Option(names = [OPT_WITH_PASSWORD], paramLabel = "PASSWORD")
     var withPassword: List<String> = listOf()
 
-    @Option(names = ["--sign-with"], paramLabel = "KEY") var signWith: List<String> = listOf()
+    @Option(names = [OPT_SIGN_WITH], paramLabel = "KEY") var signWith: List<String> = listOf()
 
-    @Option(names = ["--with-key-password"], paramLabel = "PASSWORD")
+    @Option(names = [OPT_WITH_KEY_PASSWORD], paramLabel = "PASSWORD")
     var withKeyPassword: List<String> = listOf()
 
-    @Option(names = ["--profile"], paramLabel = "PROFILE") var profile: String? = null
+    @Option(names = [OPT_PROFILE], paramLabel = "PROFILE") var profile: String? = null
 
     @Parameters(index = "0..*", paramLabel = "CERTS") var certs: List<String> = listOf()
 
-    @Option(names = ["--session-key-out"], paramLabel = "SESSIONKEY")
+    @Option(names = [OPT_SESSION_KEY_OUT], paramLabel = "SESSIONKEY")
     var sessionKeyOut: String? = null
 
     override fun run() {
@@ -54,23 +54,9 @@ class EncryptCmd : AbstractSopCmd() {
             }
         }
 
-        type?.let {
-            try {
-                encrypt.mode(it)
-            } catch (e: UnsupportedOption) {
-                val errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--as")
-                throw UnsupportedOption(errorMsg, e)
-            }
-        }
+        type?.let { throwIfUnsupportedOption(OPT_AS) { encrypt.mode(it) } }
 
-        purpose?.let {
-            try {
-                encrypt.encryptFor(it)
-            } catch (e: UnsupportedOption) {
-                val errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--for")
-                throw UnsupportedOption(errorMsg, e)
-            }
-        }
+        purpose?.let { throwIfUnsupportedOption(OPT_FOR) { encrypt.encryptFor(it) } }
 
         if (withPassword.isEmpty() && certs.isEmpty()) {
             val errorMsg = getMsg("sop.error.usage.password_or_cert_required")
@@ -79,12 +65,10 @@ class EncryptCmd : AbstractSopCmd() {
 
         for (passwordFileName in withPassword) {
             try {
-                val password = stringFromInputStream(getInput(passwordFileName))
-                encrypt.withPassword(password)
-            } catch (unsupportedOption: UnsupportedOption) {
-                val errorMsg =
-                    getMsg("sop.error.feature_support.option_not_supported", "--with-password")
-                throw UnsupportedOption(errorMsg, unsupportedOption)
+                throwIfUnsupportedOption(OPT_WITH_PASSWORD) {
+                    val password = stringFromInputStream(getInput(passwordFileName))
+                    encrypt.withPassword(password)
+                }
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }
@@ -92,12 +76,10 @@ class EncryptCmd : AbstractSopCmd() {
 
         for (passwordFileName in withKeyPassword) {
             try {
-                val password = stringFromInputStream(getInput(passwordFileName))
-                encrypt.withKeyPassword(password)
-            } catch (unsupportedOption: UnsupportedOption) {
-                val errorMsg =
-                    getMsg("sop.error.feature_support.option_not_supported", "--with-key-password")
-                throw UnsupportedOption(errorMsg, unsupportedOption)
+                throwIfUnsupportedOption(OPT_WITH_KEY_PASSWORD) {
+                    val password = stringFromInputStream(getInput(passwordFileName))
+                    encrypt.withKeyPassword(password)
+                }
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }
@@ -144,7 +126,7 @@ class EncryptCmd : AbstractSopCmd() {
         }
 
         if (!armor) {
-            encrypt.noArmor()
+            throwIfUnsupportedOption(OPT_NO_ARMOR) { encrypt.noArmor() }
         }
 
         try {
@@ -168,5 +150,16 @@ class EncryptCmd : AbstractSopCmd() {
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+    }
+
+    companion object {
+        const val OPT_NO_ARMOR = "--no-armor"
+        const val OPT_AS = "--as"
+        const val OPT_FOR = "--for"
+        const val OPT_WITH_PASSWORD = "--with-password"
+        const val OPT_SIGN_WITH = "--sign-with"
+        const val OPT_WITH_KEY_PASSWORD = "--with-key-password"
+        const val OPT_PROFILE = "--profile"
+        const val OPT_SESSION_KEY_OUT = "--session-key-out"
     }
 }

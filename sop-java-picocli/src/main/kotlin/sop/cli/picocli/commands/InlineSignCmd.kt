@@ -16,14 +16,14 @@ import sop.exception.SOPGPException.*
     exitCodeOnInvalidInput = UnsupportedOption.EXIT_CODE)
 class InlineSignCmd : AbstractSopCmd() {
 
-    @Option(names = ["--no-armor"], negatable = true) var armor = true
+    @Option(names = [OPT_NO_ARMOR], negatable = true) var armor = true
 
-    @Option(names = ["--as"], paramLabel = "{binary|text|clearsigned}")
+    @Option(names = [OPT_AS], paramLabel = "{binary|text|clearsigned}")
     var type: InlineSignAs? = null
 
     @Parameters(paramLabel = "KEYS") var secretKeyFile: List<String> = listOf()
 
-    @Option(names = ["--with-key-password"], paramLabel = "PASSWORD")
+    @Option(names = [OPT_WITH_KEY_PASSWORD], paramLabel = "PASSWORD")
     var withKeyPassword: List<String> = listOf()
 
     override fun run() {
@@ -34,14 +34,7 @@ class InlineSignCmd : AbstractSopCmd() {
             throw IncompatibleOptions(errorMsg)
         }
 
-        type?.let {
-            try {
-                inlineSign.mode(it)
-            } catch (unsupportedOption: UnsupportedOption) {
-                val errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--as")
-                throw UnsupportedOption(errorMsg, unsupportedOption)
-            }
-        }
+        type?.let { throwIfUnsupportedOption(OPT_AS) { inlineSign.mode(it) } }
 
         if (secretKeyFile.isEmpty()) {
             val errorMsg = getMsg("sop.error.usage.parameter_required", "KEYS")
@@ -50,12 +43,10 @@ class InlineSignCmd : AbstractSopCmd() {
 
         for (passwordFile in withKeyPassword) {
             try {
-                val password = stringFromInputStream(getInput(passwordFile))
-                inlineSign.withKeyPassword(password)
-            } catch (unsupportedOption: UnsupportedOption) {
-                val errorMsg =
-                    getMsg("sop.error.feature_support.option_not_supported", "--with-key-password")
-                throw UnsupportedOption(errorMsg, unsupportedOption)
+                throwIfUnsupportedOption(OPT_WITH_KEY_PASSWORD) {
+                    val password = stringFromInputStream(getInput(passwordFile))
+                    inlineSign.withKeyPassword(password)
+                }
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }
@@ -76,7 +67,7 @@ class InlineSignCmd : AbstractSopCmd() {
         }
 
         if (!armor) {
-            inlineSign.noArmor()
+            throwIfUnsupportedOption(OPT_NO_ARMOR) { inlineSign.noArmor() }
         }
 
         try {
@@ -85,5 +76,11 @@ class InlineSignCmd : AbstractSopCmd() {
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+    }
+
+    companion object {
+        const val OPT_NO_ARMOR = "--no-armor"
+        const val OPT_AS = "--as"
+        const val OPT_WITH_KEY_PASSWORD = "--with-key-password"
     }
 }

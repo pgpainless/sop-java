@@ -18,11 +18,11 @@ class InlineVerifyCmd : AbstractSopCmd() {
 
     @Parameters(arity = "0..*", paramLabel = "CERT") var certificates: List<String> = listOf()
 
-    @Option(names = ["--not-before"], paramLabel = "DATE") var notBefore: String = "-"
+    @Option(names = [OPT_NOT_BEFORE], paramLabel = "DATE") var notBefore: String = "-"
 
-    @Option(names = ["--not-after"], paramLabel = "DATE") var notAfter: String = "now"
+    @Option(names = [OPT_NOT_AFTER], paramLabel = "DATE") var notAfter: String = "now"
 
-    @Option(names = ["--verifications-out"], paramLabel = "VERIFICATIONS")
+    @Option(names = [OPT_VERIFICATIONS_OUT], paramLabel = "VERIFICATIONS")
     var verificationsOut: String? = null
 
     override fun run() {
@@ -31,18 +31,9 @@ class InlineVerifyCmd : AbstractSopCmd() {
 
         throwIfOutputExists(verificationsOut)
 
-        try {
-            inlineVerify.notAfter(parseNotAfter(notAfter))
-        } catch (unsupportedOption: UnsupportedOption) {
-            val errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--not-after")
-            throw UnsupportedOption(errorMsg, unsupportedOption)
-        }
-
-        try {
+        throwIfUnsupportedOption(OPT_NOT_AFTER) { inlineVerify.notAfter(parseNotAfter(notAfter)) }
+        throwIfUnsupportedOption(OPT_NOT_BEFORE) {
             inlineVerify.notBefore(parseNotBefore(notBefore))
-        } catch (unsupportedOption: UnsupportedOption) {
-            val errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--not-before")
-            throw UnsupportedOption(errorMsg, unsupportedOption)
         }
 
         for (certInput in certificates) {
@@ -89,5 +80,11 @@ class InlineVerifyCmd : AbstractSopCmd() {
                 throw RuntimeException(e)
             }
         }
+    }
+
+    companion object {
+        const val OPT_NOT_BEFORE = "--not-before"
+        const val OPT_NOT_AFTER = "--not-after"
+        const val OPT_VERIFICATIONS_OUT = "--verifications-out"
     }
 }

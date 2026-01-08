@@ -47,9 +47,12 @@ import sop.exception.SOPGPException
             GenerateCompletion::class])
 class SopCLI {
 
-    @Option(names = ["-l", "--locale"], descriptionKey = "sop.locale") lateinit var ignored: String
+    @Option(names = ["-l", OPT_LOCALE], descriptionKey = "sop.locale") lateinit var ignored: String
 
     companion object {
+        const val OPT_LOCALE = "--locale"
+        const val OPT_DEBUG = "--debug"
+
         @JvmStatic private var sopInstance: SOP? = null
 
         @JvmStatic
@@ -66,7 +69,7 @@ class SopCLI {
         @JvmField var EXECUTABLE_NAME = "sop"
 
         @JvmField
-        @Option(names = ["--stacktrace", "--debug"], scope = ScopeType.INHERIT)
+        @Option(names = ["--stacktrace", OPT_DEBUG], scope = ScopeType.INHERIT)
         var stacktrace = false
 
         @JvmStatic
@@ -113,7 +116,7 @@ class SopCLI {
      */
     @Command
     class InitLocale {
-        @Option(names = ["-l", "--locale"], descriptionKey = "sop.locale")
+        @Option(names = ["-l", OPT_LOCALE], descriptionKey = "sop.locale")
         fun setLocale(locale: String) = Locale.setDefault(Locale(locale))
 
         @Unmatched

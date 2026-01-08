@@ -17,14 +17,14 @@ import sop.exception.SOPGPException.BadData
     exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 class ExtractCertCmd : AbstractSopCmd() {
 
-    @Option(names = ["--no-armor"], negatable = true) var armor = true
+    @Option(names = [OPT_NO_ARMOR], negatable = true) var armor = true
 
     override fun run() {
         val extractCert =
             throwIfUnsupportedSubcommand(SopCLI.getSop().extractCert(), "extract-cert")
 
         if (!armor) {
-            extractCert.noArmor()
+            throwIfUnsupportedOption(OPT_NO_ARMOR) { extractCert.noArmor() }
         }
 
         try {
@@ -36,5 +36,9 @@ class ExtractCertCmd : AbstractSopCmd() {
             val errorMsg = getMsg("sop.error.input.stdin_not_a_private_key")
             throw BadData(errorMsg, badData)
         }
+    }
+
+    companion object {
+        const val OPT_NO_ARMOR = "--no-armor"
     }
 }

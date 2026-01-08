@@ -17,12 +17,12 @@ import sop.exception.SOPGPException
     exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 class ChangeKeyPasswordCmd : AbstractSopCmd() {
 
-    @Option(names = ["--no-armor"], negatable = true) var armor: Boolean = true
+    @Option(names = [OPT_NO_ARMOR], negatable = true) var armor: Boolean = true
 
-    @Option(names = ["--old-key-password"], paramLabel = "PASSWORD")
+    @Option(names = [OPT_OLD_KEY_PASSWORD], paramLabel = "PASSWORD")
     var oldKeyPasswords: List<String> = listOf()
 
-    @Option(names = ["--new-key-password"], arity = "0..1", paramLabel = "PASSWORD")
+    @Option(names = [OPT_NEW_KEY_PASSWORD], arity = "0..1", paramLabel = "PASSWORD")
     var newKeyPassword: String? = null
 
     override fun run() {
@@ -30,7 +30,7 @@ class ChangeKeyPasswordCmd : AbstractSopCmd() {
             throwIfUnsupportedSubcommand(SopCLI.getSop().changeKeyPassword(), "change-key-password")
 
         if (!armor) {
-            changeKeyPassword.noArmor()
+            throwIfUnsupportedOption(OPT_NO_ARMOR) { changeKeyPassword.noArmor() }
         }
 
         oldKeyPasswords.forEach {
@@ -48,5 +48,11 @@ class ChangeKeyPasswordCmd : AbstractSopCmd() {
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+    }
+
+    companion object {
+        const val OPT_NO_ARMOR = "--no-armor"
+        const val OPT_OLD_KEY_PASSWORD = "--old-key-password"
+        const val OPT_NEW_KEY_PASSWORD = "--new-key-password"
     }
 }

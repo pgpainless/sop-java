@@ -16,16 +16,16 @@ import sop.exception.SOPGPException.UnsupportedProfile
     exitCodeOnInvalidInput = UnsupportedOption.EXIT_CODE)
 class GenerateKeyCmd : AbstractSopCmd() {
 
-    @Option(names = ["--no-armor"], negatable = true) var armor = true
+    @Option(names = [OPT_NO_ARMOR], negatable = true) var armor = true
 
     @Parameters(paramLabel = "USERID") var userId: List<String> = listOf()
 
-    @Option(names = ["--with-key-password"], paramLabel = "PASSWORD")
+    @Option(names = [OPT_WITH_KEY_PASSWORD], paramLabel = "PASSWORD")
     var withKeyPassword: String? = null
 
-    @Option(names = ["--profile"], paramLabel = "PROFILE") var profile: String? = null
+    @Option(names = [OPT_PROFILE], paramLabel = "PROFILE") var profile: String? = null
 
-    @Option(names = ["--signing-only"]) var signingOnly: Boolean = false
+    @Option(names = [OPT_SIGNING_ONLY]) var signingOnly: Boolean = false
 
     override fun run() {
         val generateKey =
@@ -35,14 +35,13 @@ class GenerateKeyCmd : AbstractSopCmd() {
             try {
                 generateKey.profile(it)
             } catch (e: UnsupportedProfile) {
-                val errorMsg =
-                    getMsg("sop.error.usage.profile_not_supported", "generate-key", profile!!)
+                val errorMsg = getMsg("sop.error.usage.profile_not_supported", "generate-key", it)
                 throw UnsupportedProfile(errorMsg, e)
             }
         }
 
         if (signingOnly) {
-            generateKey.signingOnly()
+            throwIfUnsupportedOption(OPT_SIGNING_ONLY) { generateKey.signingOnly() }
         }
 
         for (userId in userId) {
@@ -50,17 +49,15 @@ class GenerateKeyCmd : AbstractSopCmd() {
         }
 
         if (!armor) {
-            generateKey.noArmor()
+            throwIfUnsupportedOption(OPT_NO_ARMOR) { generateKey.noArmor() }
         }
 
         withKeyPassword?.let {
             try {
-                val password = stringFromInputStream(getInput(it))
-                generateKey.withKeyPassword(password)
-            } catch (e: UnsupportedOption) {
-                val errorMsg =
-                    getMsg("sop.error.feature_support.option_not_supported", "--with-key-password")
-                throw UnsupportedOption(errorMsg, e)
+                throwIfUnsupportedOption(OPT_WITH_KEY_PASSWORD) {
+                    val password = stringFromInputStream(getInput(it))
+                    generateKey.withKeyPassword(password)
+                }
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }
@@ -72,5 +69,12 @@ class GenerateKeyCmd : AbstractSopCmd() {
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+    }
+
+    companion object {
+        const val OPT_NO_ARMOR = "--no-armor"
+        const val OPT_WITH_KEY_PASSWORD = "--with-key-password"
+        const val OPT_PROFILE = "--profile"
+        const val OPT_SIGNING_ONLY = "--signing-only"
     }
 }

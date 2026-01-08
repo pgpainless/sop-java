@@ -16,32 +16,32 @@ import sop.exception.SOPGPException.*
     exitCodeOnInvalidInput = UnsupportedOption.EXIT_CODE)
 class UpdateKeyCmd : AbstractSopCmd() {
 
-    @Option(names = ["--no-armor"], negatable = true) var armor = true
+    @Option(names = [OPT_NO_ARMOR], negatable = true) var armor = true
 
-    @Option(names = ["--signing-only"]) var signingOnly = false
+    @Option(names = [OPT_SIGNING_ONLY]) var signingOnly = false
 
-    @Option(names = ["--no-added-capabilities"]) var noAddedCapabilities = false
+    @Option(names = [OPT_NO_ADDED_CAPABILITIES]) var noAddedCapabilities = false
 
     @Option(names = [OPT_REVOKE_DEPRECATED_KEYS]) var revokeDeprecatedKeys = false
 
-    @Option(names = ["--with-key-password"], paramLabel = "PASSWORD")
+    @Option(names = [OPT_WITH_KEY_PASSWORD], paramLabel = "PASSWORD")
     var withKeyPassword: List<String> = listOf()
 
-    @Option(names = ["--merge-certs"], paramLabel = "CERTS") var mergeCerts: List<String> = listOf()
+    @Option(names = [OPT_MERGE_CERTS], paramLabel = "CERTS") var mergeCerts: List<String> = listOf()
 
     override fun run() {
         val updateKey = throwIfUnsupportedSubcommand(SopCLI.getSop().updateKey(), "update-key")
 
         if (!armor) {
-            updateKey.noArmor()
+            throwIfUnsupportedOption(OPT_NO_ARMOR) { updateKey.noArmor() }
         }
 
         if (signingOnly) {
-            updateKey.signingOnly()
+            throwIfUnsupportedOption(OPT_SIGNING_ONLY) { updateKey.signingOnly() }
         }
 
         if (noAddedCapabilities) {
-            updateKey.noAddedCapabilities()
+            throwIfUnsupportedOption(OPT_NO_ADDED_CAPABILITIES) { updateKey.noAddedCapabilities() }
         }
 
         if (revokeDeprecatedKeys) {
@@ -52,12 +52,10 @@ class UpdateKeyCmd : AbstractSopCmd() {
 
         for (passwordFileName in withKeyPassword) {
             try {
-                val password = stringFromInputStream(getInput(passwordFileName))
-                updateKey.withKeyPassword(password)
-            } catch (unsupportedOption: UnsupportedOption) {
-                val errorMsg =
-                    getMsg("sop.error.feature_support.option_not_supported", "--with-key-password")
-                throw UnsupportedOption(errorMsg, unsupportedOption)
+                throwIfUnsupportedOption(OPT_WITH_KEY_PASSWORD) {
+                    val password = stringFromInputStream(getInput(passwordFileName))
+                    updateKey.withKeyPassword(password)
+                }
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }
@@ -86,6 +84,11 @@ class UpdateKeyCmd : AbstractSopCmd() {
     }
 
     companion object {
+        const val OPT_NO_ARMOR = "--no-armor"
+        const val OPT_SIGNING_ONLY = "--signing-only"
+        const val OPT_NO_ADDED_CAPABILITIES = "--no-added-capabilities"
         const val OPT_REVOKE_DEPRECATED_KEYS = "--revoke-deprecated-keys"
+        const val OPT_WITH_KEY_PASSWORD = "--with-key-password"
+        const val OPT_MERGE_CERTS = "--merge-certs"
     }
 }

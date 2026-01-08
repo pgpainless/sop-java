@@ -17,20 +17,20 @@ import sop.exception.SOPGPException
     exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE)
 class InlineDetachCmd : AbstractSopCmd() {
 
-    @Option(names = ["--signatures-out"], paramLabel = "SIGNATURES")
+    @Option(names = [OPT_SIGNATURES_OUT], paramLabel = "SIGNATURES")
     var signaturesOut: String? = null
 
-    @Option(names = ["--no-armor"], negatable = true) var armor: Boolean = true
+    @Option(names = [OPT_NO_ARMOR], negatable = true) var armor: Boolean = true
 
     override fun run() {
         val inlineDetach =
             throwIfUnsupportedSubcommand(SopCLI.getSop().inlineDetach(), "inline-detach")
 
         throwIfOutputExists(signaturesOut)
-        throwIfMissingArg(signaturesOut, "--signatures-out")
+        throwIfMissingArg(signaturesOut, OPT_SIGNATURES_OUT)
 
         if (!armor) {
-            inlineDetach.noArmor()
+            throwIfUnsupportedOption(OPT_NO_ARMOR) { inlineDetach.noArmor() }
         }
 
         try {
@@ -43,5 +43,10 @@ class InlineDetachCmd : AbstractSopCmd() {
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+    }
+
+    companion object {
+        const val OPT_NO_ARMOR = "--no-armor"
+        const val OPT_SIGNATURES_OUT = "--signatures-out"
     }
 }

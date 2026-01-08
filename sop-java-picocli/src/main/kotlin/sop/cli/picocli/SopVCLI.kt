@@ -29,6 +29,9 @@ import sop.exception.SOPGPException
 class SopVCLI {
 
     companion object {
+        const val OPT_LOCALE = "--locale"
+        const val OPT_DEBUG = "--debug"
+
         @JvmStatic private var sopvInstance: SOPV? = null
 
         @JvmStatic
@@ -46,7 +49,7 @@ class SopVCLI {
 
         @JvmField
         @CommandLine.Option(
-            names = ["--stacktrace", "--debug"], scope = CommandLine.ScopeType.INHERIT)
+            names = ["--stacktrace", OPT_DEBUG], scope = CommandLine.ScopeType.INHERIT)
         var stacktrace = false
 
         @JvmStatic
@@ -89,7 +92,7 @@ class SopVCLI {
      */
     @CommandLine.Command
     class InitLocale {
-        @CommandLine.Option(names = ["-l", "--locale"], descriptionKey = "sop.locale")
+        @CommandLine.Option(names = ["-l", OPT_LOCALE], descriptionKey = "sop.locale")
         fun setLocale(locale: String) = Locale.setDefault(Locale(locale))
 
         @CommandLine.Unmatched

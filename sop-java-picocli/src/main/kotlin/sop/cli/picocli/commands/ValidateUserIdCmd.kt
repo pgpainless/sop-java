@@ -20,9 +20,9 @@ import sop.util.HexUtil.Companion.bytesToHex
     showEndOfOptionsDelimiterInUsageHelp = true)
 class ValidateUserIdCmd : AbstractSopCmd() {
 
-    @Option(names = ["--addr-spec-only"]) var addrSpecOnly: Boolean = false
+    @Option(names = [OPT_ADDR_SPEC_ONLY]) var addrSpecOnly: Boolean = false
 
-    @Option(names = ["--validate-at"]) var validateAt: Date? = null
+    @Option(names = [OPT_VALIDATE_AT]) var validateAt: Date? = null
 
     @Parameters(index = "0", arity = "1", paramLabel = "USERID") lateinit var userId: String
 
@@ -34,14 +34,12 @@ class ValidateUserIdCmd : AbstractSopCmd() {
             throwIfUnsupportedSubcommand(SopCLI.getSop().validateUserId(), "validate-userid")
 
         if (addrSpecOnly) {
-            validateUserId.addrSpecOnly()
+            throwIfUnsupportedOption(OPT_ADDR_SPEC_ONLY) { validateUserId.addrSpecOnly() }
         }
 
-        if (validateAt != null) {
-            validateUserId.validateAt(validateAt!!)
+        validateAt?.let {
+            throwIfUnsupportedOption(OPT_VALIDATE_AT) { validateUserId.validateAt(it) }
         }
-
-        validateUserId.userId(userId)
 
         for (authority in authorities) {
             try {
@@ -78,5 +76,10 @@ class ValidateUserIdCmd : AbstractSopCmd() {
         } catch (e: IOException) {
             throw RuntimeException(e)
         }
+    }
+
+    companion object {
+        const val OPT_ADDR_SPEC_ONLY = "--addr-spec-only"
+        const val OPT_VALIDATE_AT = "--validate-at"
     }
 }

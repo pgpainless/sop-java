@@ -20,25 +20,17 @@ class VerifyCmd : AbstractSopCmd() {
     @Parameters(index = "1..*", arity = "1..*", paramLabel = "CERT")
     lateinit var certificates: List<String>
 
-    @Option(names = ["--not-before"], paramLabel = "DATE") var notBefore: String = "-"
+    @Option(names = [OPT_NOT_BEFORE], paramLabel = "DATE") var notBefore: String = "-"
 
-    @Option(names = ["--not-after"], paramLabel = "DATE") var notAfter: String = "now"
+    @Option(names = [OPT_NOT_AFTER], paramLabel = "DATE") var notAfter: String = "now"
 
     override fun run() {
         val detachedVerify =
             throwIfUnsupportedSubcommand(SopCLI.getSop().detachedVerify(), "verify")
-        try {
-            detachedVerify.notAfter(parseNotAfter(notAfter))
-        } catch (unsupportedOption: UnsupportedOption) {
-            val errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--not-after")
-            throw UnsupportedOption(errorMsg, unsupportedOption)
-        }
 
-        try {
+        throwIfUnsupportedOption(OPT_NOT_AFTER) { detachedVerify.notAfter(parseNotAfter(notAfter)) }
+        throwIfUnsupportedOption(OPT_NOT_BEFORE) {
             detachedVerify.notBefore(parseNotBefore(notBefore))
-        } catch (unsupportedOption: UnsupportedOption) {
-            val errorMsg = getMsg("sop.error.feature_support.option_not_supported", "--not-before")
-            throw UnsupportedOption(errorMsg, unsupportedOption)
         }
 
         for (certInput in certificates) {
@@ -77,5 +69,10 @@ class VerifyCmd : AbstractSopCmd() {
         for (verification in verifications) {
             println(verification.toString())
         }
+    }
+
+    companion object {
+        const val OPT_NOT_BEFORE = "--not-before"
+        const val OPT_NOT_AFTER = "--not-after"
     }
 }
