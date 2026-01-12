@@ -82,12 +82,14 @@ public class UpdateKeyTest extends AbstractSOPTest {
                 .key(updatedKey)
                 .getBytes();
 
+        // Verify that now we can use the updated cert to encrypt messages...
         byte[] ciphertext = sop.encrypt()
                 .withCert(updatedCert)
                 .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8))
                 .toByteArrayAndResult()
                 .getBytes();
 
+        // ...and the updated key for successful decryption.
         assertArrayEquals(
                 TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8),
                 sop.decrypt()
