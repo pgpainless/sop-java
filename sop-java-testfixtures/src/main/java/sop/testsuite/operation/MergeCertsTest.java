@@ -161,4 +161,35 @@ public class MergeCertsTest extends AbstractSOPTest {
         assertArrayEquals(aliceCert, merged);
     }
 
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void testApplyUpdateToMissingBaseDoesNothingNoArmor(SOP sop) throws IOException {
+        byte[] aliceKey = assumeSupported(sop::generateKey)
+                .userId("Alice <alice@pgpainless.org>")
+                .generate()
+                .getBytes();
+
+        byte[] aliceCert = assumeSupported(sop::extractCert)
+                .noArmor()
+                .key(aliceKey)
+                .getBytes();
+
+        byte[] bobKey = assumeSupported(sop::generateKey)
+                .userId("Bob <bob@pgpainless.org>")
+                .generate()
+                .getBytes();
+
+        byte[] bobCert = assumeSupported(sop::extractCert)
+                .key(bobKey)
+                .getBytes();
+
+        byte[] merged = assumeSupported(sop::mergeCerts)
+                .noArmor()
+                .updates(bobCert)
+                .baseCertificates(aliceCert)
+                .getBytes();
+
+        assertArrayEquals(aliceCert, merged);
+    }
+
 }
