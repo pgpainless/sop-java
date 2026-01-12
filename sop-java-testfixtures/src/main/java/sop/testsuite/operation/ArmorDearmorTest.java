@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import sop.SOP;
+import sop.exception.SOPGPException;
 import sop.testsuite.JUtils;
 import sop.testsuite.TestData;
 
@@ -18,12 +19,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @EnabledIf("sop.testsuite.operation.AbstractSOPTest#hasBackends")
 public class ArmorDearmorTest extends AbstractSOPTest {
 
     static Stream<Arguments> provideInstances() {
         return AbstractSOPTest.provideBackends();
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void dearmorMalformedArmorHeaderLinesFails(SOP sop) {
+        byte[] keyWithMalformedHeader = TestData.ALICE_KEY
+                .replace("Comment: ", "Comment ") // missing colon renders armor header line malformed
+                .getBytes(StandardCharsets.UTF_8);
+
+        assertThrows(SOPGPException.BadData.class, () -> sop.dearmor().data(keyWithMalformedHeader).getBytes());
     }
 
     @ParameterizedTest
