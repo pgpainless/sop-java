@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 15.0.0-SNAPSHOT
+## 15.0.0
 - Update implementation to [SOP Specification revision 15](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-15.html)
   - `sop encrypt`: Add `--for` option support
   - `sop update-key`: Add `--revoke-deprecated-keys` support
