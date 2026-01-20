@@ -6,10 +6,16 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 14.0.3
-- Bump `logback-core` to `1.5.19`
+## 15.0.0-SNAPSHOT
 - Update implementation to [SOP Specification revision 15](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-15.html)
   - `sop encrypt`: Add `--for` option support
+  - `sop update-key`: Add `--revoke-deprecated-keys` support
+- `sop validate-userid`: Fix missing parameter bug
+- Fix expired test key
+- `SOP`: subcommands are non-null
+
+## 14.0.3
+- Bump `logback-core` to `1.5.19`
 
 ## 14.0.2
 - `sop`: Prevent error message for unmatched `--locale=` argument
