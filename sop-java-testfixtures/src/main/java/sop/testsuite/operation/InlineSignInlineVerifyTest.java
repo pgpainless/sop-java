@@ -5,6 +5,7 @@
 package sop.testsuite.operation;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -191,6 +192,7 @@ public class InlineSignInlineVerifyTest extends AbstractSOPTest {
 
     @ParameterizedTest
     @MethodSource("provideInstances")
+    @Disabled("Carol is a deprecated ElGamal key")
     public void inlineSignVerifyCarol(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
 

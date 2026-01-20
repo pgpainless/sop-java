@@ -4,6 +4,7 @@
 
 package sop.testsuite.operation;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -118,6 +119,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
 
     @ParameterizedTest
     @MethodSource("provideInstances")
+    @Disabled("Carol is a deprecated ElGamal key")
     public void encryptDecryptRoundTripCarolTest(SOP sop) throws IOException {
         byte[] message = TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = assumeSupported(sop::encrypt)
