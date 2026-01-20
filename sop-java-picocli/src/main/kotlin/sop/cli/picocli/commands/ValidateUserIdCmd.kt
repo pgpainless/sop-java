@@ -16,7 +16,7 @@ import sop.util.HexUtil.Companion.bytesToHex
 @Command(
     name = "validate-userid",
     resourceBundle = "msg_validate-userid",
-    exitCodeOnInvalidInput = SOPGPException.MissingArg.EXIT_CODE,
+    exitCodeOnInvalidInput = SOPGPException.UnsupportedOption.EXIT_CODE,
     showEndOfOptionsDelimiterInUsageHelp = true)
 class ValidateUserIdCmd : AbstractSopCmd() {
 
@@ -27,7 +27,7 @@ class ValidateUserIdCmd : AbstractSopCmd() {
     @Parameters(index = "0", arity = "1", paramLabel = "USERID") lateinit var userId: String
 
     @Parameters(index = "1..*", arity = "1..*", paramLabel = "CERTS")
-    var authorities: List<String> = listOf()
+    lateinit var authorities: List<String>
 
     override fun run() {
         val validateUserId =
@@ -51,6 +51,8 @@ class ValidateUserIdCmd : AbstractSopCmd() {
                 throw SOPGPException.BadData(errorMsg, b)
             }
         }
+
+        validateUserId.userId(userId)
 
         try {
             val valid = validateUserId.subjects(System.`in`)
