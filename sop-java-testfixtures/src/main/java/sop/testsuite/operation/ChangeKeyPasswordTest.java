@@ -91,6 +91,18 @@ public class ChangeKeyPasswordTest extends AbstractSOPTest {
 
     @ParameterizedTest
     @MethodSource("provideInstances")
+    public void changePasswordWithMissingOldPasswordFails(SOP sop) throws IOException {
+        byte[] oldPassword = "sw0rdf1sh".getBytes(UTF8Util.UTF8);
+        byte[] newPassword = "monkey123".getBytes(UTF8Util.UTF8);
+
+        byte[] protectedKey = assumeSupported(sop::generateKey).withKeyPassword(oldPassword).generate().getBytes();
+        assertThrows(SOPGPException.KeyIsProtected.class, () -> assumeSupported(sop::changeKeyPassword)
+                .newKeyPassphrase(newPassword) // do not pass in old password -> expect KeyIsProtected error
+                .keys(protectedKey).getBytes());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
     public void nonUtf8PasswordsFail(SOP sop) {
         assertThrows(SOPGPException.PasswordNotHumanReadable.class, () ->
                 assumeSupported(sop::changeKeyPassword).oldKeyPassphrase(new byte[] {(byte) 0xff, (byte) 0xfe}));
