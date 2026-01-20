@@ -469,6 +469,7 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                 "Km2QAwE=\n" +
                 "=6hyI\n" +
                 "-----END PGP PRIVATE KEY BLOCK-----";
+        System.out.println(CERT);
 
         // Encrypt message only for the storage encryption subkey
         byte[] forStorage = sop.encrypt()
@@ -489,7 +490,9 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         // Comms only subkey cannot decrypt
         assertThrows(SOPGPException.CannotDecrypt.class, () -> sop.decrypt()
                 .withKey(KEY_ONLY_COMMS.getBytes(StandardCharsets.UTF_8))
-                .ciphertext(forStorage));
+                .ciphertext(forStorage)
+                .toByteArrayAndResult()
+                .getBytes());
 
         // Encrypt message only for the comms encryption subkey
         byte[] forComms = sop.encrypt()
@@ -510,6 +513,8 @@ public class EncryptDecryptTest extends AbstractSOPTest {
         // Storage only subkey cannot decrypt
         assertThrows(SOPGPException.CannotDecrypt.class, () -> sop.decrypt()
                 .withKey(KEY_ONLY_STORAGE.getBytes(StandardCharsets.UTF_8))
-                .ciphertext(forComms));
+                .ciphertext(forComms)
+                .toByteArrayAndResult()
+                .getBytes());
     }
 }
