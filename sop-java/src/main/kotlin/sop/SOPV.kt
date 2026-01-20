@@ -15,38 +15,43 @@ interface SOPV {
     /**
      * Get information about the implementations name and version.
      *
+     * @throws sop.exception.SOPGPException.UnsupportedSubcommand if the command is not implemented.
      * @since sopv 1.0
      */
-    fun version(): Version?
+    fun version(): Version
 
     /**
      * Verify detached signatures. If you need to verify an inline-signed message, use
      * [inlineVerify] instead.
      *
+     * @throws sop.exception.SOPGPException.UnsupportedSubcommand if the command is not implemented.
      * @since sopv 1.0
      */
-    fun verify(): DetachedVerify? = detachedVerify()
+    fun verify(): DetachedVerify = detachedVerify()
 
     /**
      * Verify detached signatures. If you need to verify an inline-signed message, use
      * [inlineVerify] instead.
      *
+     * @throws sop.exception.SOPGPException.UnsupportedSubcommand if the command is not implemented.
      * @since sopv 1.0
      */
-    fun detachedVerify(): DetachedVerify?
+    fun detachedVerify(): DetachedVerify
 
     /**
      * Verify signatures of an inline-signed message. If you need to verify detached signatures over
      * a message, use [detachedVerify] instead.
      *
+     * @throws sop.exception.SOPGPException.UnsupportedSubcommand if the command is not implemented.
      * @since sopv 1.0
      */
-    fun inlineVerify(): InlineVerify?
+    fun inlineVerify(): InlineVerify
 
     /**
      * Validate a UserID in an OpenPGP certificate.
      *
+     * @throws sop.exception.SOPGPException.UnsupportedSubcommand if the command is not implemented.
      * @since sopv 1.2
      */
-    fun validateUserId(): ValidateUserId?
+    fun validateUserId(): ValidateUserId
 }
