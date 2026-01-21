@@ -469,7 +469,6 @@ public class EncryptDecryptTest extends AbstractSOPTest {
                 "Km2QAwE=\n" +
                 "=6hyI\n" +
                 "-----END PGP PRIVATE KEY BLOCK-----";
-        System.out.println(CERT);
 
         // Encrypt message only for the storage encryption subkey
         byte[] forStorage = sop.encrypt()
