@@ -9,13 +9,13 @@ package sop.enums
  * encryption-replated [key flags](https://www.rfc-editor.org/rfc/rfc9580.html#name-key-flags)
  * `0x04` (encrypt communications) and `0x08` (encrypt storage).
  */
-enum class EncryptFor {
+enum class EncryptFor(val flagMask: Int) {
     /** Encrypt for the purpose of long-term storage. */
-    storage,
+    storage(0x04),
 
     /** Encrypt for the purpose of (online) communications. */
-    communications,
+    communications(0x08),
 
     /** Encrypt for any purpose. */
-    any
+    any(0x04 or 0x08)
 }
