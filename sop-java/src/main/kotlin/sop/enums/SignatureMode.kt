@@ -10,9 +10,9 @@ package sop.enums
  * @see <a href="https://www.rfc-editor.org/rfc/rfc4880#section-5.2.1"> RFC4880 §5.2.1 - Signature
  *   Types</a>
  */
-enum class SignatureMode {
+enum class SignatureMode(val mode: Int) {
     /** Signature of a binary document (type `0x00`). */
-    binary,
+    binary(0x00),
     /** Signature of a canonical text document (type `0x01`). */
-    text
+    text(0x01)
 }

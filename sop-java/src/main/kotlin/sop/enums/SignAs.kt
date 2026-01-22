@@ -4,9 +4,9 @@
 
 package sop.enums
 
-enum class SignAs {
+enum class SignAs(val mode: Int) {
     /** Signature is made over the binary message. */
-    binary,
+    binary(0x00),
     /** Signature is made over the message in text mode. */
-    text
+    text(0x01)
 }
