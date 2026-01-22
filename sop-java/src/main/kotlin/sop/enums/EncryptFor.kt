@@ -11,10 +11,10 @@ package sop.enums
  */
 enum class EncryptFor(vararg flagMask: Int) {
     /** Encrypt for the purpose of long-term storage. */
-    storage(0x04),
+    storage(0x08),
 
     /** Encrypt for the purpose of (online) communications. */
-    communications(0x08),
+    communications(0x04),
 
     /** Encrypt for any purpose. */
     any(0x04, 0x08),
