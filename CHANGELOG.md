@@ -6,6 +6,11 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 15.0.1-SNAPSHOT
+- `EncryptFor`: Add key flag octets
+- `SignAs`: Add signature type IDs
+- `SignatureMode`: Add signature type IDs
+
 ## 15.0.0
 - Update implementation to [SOP Specification revision 15](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-15.html)
   - `sop encrypt`: Add `--for` option support
