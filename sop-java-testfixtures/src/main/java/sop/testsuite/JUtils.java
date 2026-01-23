@@ -14,6 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * Contains utility functions for JUnit tests.
+ */
 public class JUtils {
 
     /**
@@ -85,17 +88,31 @@ public class JUtils {
         }
     }
 
+    /**
+     * Returns true if the given <pre>array</pre> ends with the given <pre>end</pre> bytes.
+     *
+     * @param array array to examine
+     * @param end expected ending bytes
+     * @return true if array ends with end
+     */
     public static boolean arrayEndsWith(byte[] array, byte[] end) {
         return arrayEndsWith(array, end, 0);
     }
 
+    /**
+     * Returs true ifthe given <pre>array</pre> ends with the given <pre>end</pre> bytes.
+     *
+     * @param array array to examine
+     * @param end expected ending bytes
+     * @return true if array ends with end
+     */
     public static boolean arrayEndsWith(byte[] array, byte[] end, int offset) {
         if (end.length + offset > array.length) {
             return false;
         }
 
+        int arrOff = array.length - end.length - offset;
         for (int i = 0; i < end.length; i++) {
-            int arrOff = array.length - end.length - offset;
             if (end[i] != array[arrOff + i]) {
                 return false;
             }
@@ -103,10 +120,22 @@ public class JUtils {
         return true;
     }
 
+    /**
+     * Assert hat the given array ends with the given end bytes.
+     *
+     * @param array array
+     * @param end ending bytes
+     */
     public static void assertArrayEndsWith(byte[] array, byte[] end) {
         assertArrayEndsWith(array, end, 0);
     }
 
+    /**
+     * Assert hat the given array contains the given end bytes at the end, shifted by offset.
+     *
+     * @param array array
+     * @param end ending bytes
+     */
     public static void assertArrayEndsWith(byte[] array, byte[] end, int offset) {
         if (!arrayEndsWith(array, end, offset)) {
             byte[] actual = new byte[Math.min(end.length, array.length - offset)];
@@ -117,6 +146,12 @@ public class JUtils {
         }
     }
 
+    /**
+     * Assert hat the given array contains the given end bytes at the end, ignoring new lines.
+     *
+     * @param array array
+     * @param end ending bytes
+     */
     public static void assertArrayEndsWithIgnoreNewlines(byte[] array, byte[] end) {
         int offset = 0;
         while (offset < array.length && array[array.length - 1 - offset] == (byte) 10) {
@@ -156,10 +191,23 @@ public class JUtils {
         return string.getBytes(StandardCharsets.UTF_8);
     }
 
+    /**
+     * Assert that the expected date equals the actual instance.
+     *
+     * @param expected expected date, non-null
+     * @param actual actual date, non-null
+     */
     public static void assertDateEquals(Date expected, Date actual) {
         assertEquals(UTCUtil.formatUTCDate(expected), UTCUtil.formatUTCDate(actual));
     }
 
+    /**
+     * Returns true if the actual date equals the expected date.
+     *
+     * @param expected expected data, non-null
+     * @param actual actual date, non-null
+     * @return true if expected equals actual
+     */
     public static boolean dateEquals(Date expected, Date actual) {
         return UTCUtil.formatUTCDate(expected).equals(UTCUtil.formatUTCDate(actual));
     }
