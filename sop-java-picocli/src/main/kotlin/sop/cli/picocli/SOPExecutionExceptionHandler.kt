@@ -24,6 +24,10 @@ class SOPExecutionExceptionHandler : IExecutionExceptionHandler {
         } else {
             commandLine.getErr().println(ex.javaClass.getName())
         }
+        // Print second line with detailed cause
+        if (ex.cause?.message != null) {
+            commandLine.err.println(ex.cause?.message!!)
+        }
 
         if (SopCLI.stacktrace) {
             ex.printStackTrace(commandLine.getErr())
