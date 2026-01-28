@@ -253,7 +253,7 @@ abstract class AbstractSopCmd(locale: Locale = Locale.getDefault()) : Runnable {
                         help.colorScheme(),
                         Column(keyLength + 7, 6, Column.Overflow.SPAN),
                         Column(width(help) - (keyLength + 7), 0, Column.Overflow.WRAP))
-                table.setAdjustLineBreaksForWideCJKCharacters(adjustCJK(help))
+                table.isAdjustLineBreaksForWideCJKCharacters = adjustCJK(help)
                 table.addRowValues("@|yellow ${argument.first}|@", argument.second ?: "")
                 table.toString()
             }
@@ -309,10 +309,10 @@ abstract class AbstractSopCmd(locale: Locale = Locale.getDefault()) : Runnable {
     private fun getResString(cmd: CommandLine, key: String): String? =
         try {
                 cmd.resourceBundle.getString(key)
-            } catch (m: MissingResourceException) {
+            } catch (_: MissingResourceException) {
                 try {
                     cmd.parent.resourceBundle.getString(key)
-                } catch (m: MissingResourceException) {
+                } catch (_: MissingResourceException) {
                     null
                 }
             }
