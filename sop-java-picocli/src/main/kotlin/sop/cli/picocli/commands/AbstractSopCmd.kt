@@ -12,7 +12,6 @@ import picocli.CommandLine.Help
 import picocli.CommandLine.Help.Column
 import picocli.CommandLine.Help.TextTable
 import picocli.CommandLine.IHelpSectionRenderer
-import sop.cli.picocli.commands.AbstractSopCmd.EnvironmentVariableResolver
 import sop.exception.SOPGPException.*
 import sop.util.UTCUtil.Companion.parseUTCDate
 import sop.util.UTF8Util.Companion.decodeUTF8
