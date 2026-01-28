@@ -18,21 +18,18 @@ class SOPExecutionExceptionHandler : IExecutionExceptionHandler {
                 commandLine.exitCodeExceptionMapper.getExitCode(ex)
             else commandLine.commandSpec.exitCodeOnExecutionException()
 
-        val colorScheme = commandLine.colorScheme
-        if (ex.message != null) {
-            commandLine.getErr().println(colorScheme.errorText(ex.message))
-        } else {
-            commandLine.getErr().println(ex.javaClass.getName())
-        }
+        commandLine.errln(ex.message ?: ex.javaClass.name)
         // Print second line with detailed cause
-        if (ex.cause?.message != null) {
-            commandLine.err.println(ex.cause?.message!!)
-        }
+        commandLine.errln(ex.cause?.message)
 
         if (SopCLI.stacktrace) {
-            ex.printStackTrace(commandLine.getErr())
+            ex.printStackTrace(commandLine.err)
         }
 
         return exitCode
     }
+}
+
+fun CommandLine.errln(text: String?) {
+    text?.let { this.err.println(colorScheme.errorText(it)) }
 }

@@ -10,24 +10,23 @@ import sop.exception.SOPGPException
 class SOPExceptionExitCodeMapper : IExitCodeExceptionMapper {
 
     override fun getExitCode(exception: Throwable): Int =
-        if (exception is SOPGPException) {
-            // SOPGPExceptions have well-defined exit code
-            exception.getExitCode()
-        } else if (exception is UnmatchedArgumentException) {
-            if (exception.isUnknownOption) {
-                // Unmatched option of subcommand (e.g. `generate-key --unknown`)
-                SOPGPException.UnsupportedOption.EXIT_CODE
-            } else {
-                // Unmatched subcommand
-                SOPGPException.UnsupportedSubcommand.EXIT_CODE
+        when (exception) {
+            // SOPGPExceptions have well-defined exit codes
+            is SOPGPException -> exception.getExitCode()
+            is UnmatchedArgumentException -> {
+                // Unmatched option flag (e.g. `--unknown`)
+                if (exception.isUnknownOption) SOPGPException.UnsupportedOption.EXIT_CODE
+                // Unmatched subcommand (e.g. `sop unknown`)
+                else SOPGPException.UnsupportedSubcommand.EXIT_CODE
             }
-        } else if (exception is MissingParameterException) {
-            SOPGPException.MissingArg.EXIT_CODE
-        } else if (exception is ParameterException) {
-            // Invalid option (e.g. `--as invalid`)
-            SOPGPException.UnsupportedOption.EXIT_CODE
-        } else {
-            // Others, like IOException etc.
-            1
+
+            // Missing mandatory positional parameter
+            is MissingParameterException -> SOPGPException.MissingArg.EXIT_CODE
+
+            // Unmatched option flag value (e.g. `--as invalid`)
+            is ParameterException -> SOPGPException.UnsupportedOption.EXIT_CODE
+
+            // Others, like IOException, NullPointerException etc.
+            else -> 1
         }
 }
