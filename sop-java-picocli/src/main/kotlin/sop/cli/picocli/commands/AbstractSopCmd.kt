@@ -209,7 +209,7 @@ abstract class AbstractSopCmd(locale: Locale = Locale.getDefault()) : Runnable {
                     parseUTCDate(notAfter)
                 } catch (e: ParseException) {
                     val errorMsg = getMsg("sop.error.input.malformed_not_after")
-                    throw IllegalArgumentException(errorMsg)
+                    throw IllegalArgumentException(errorMsg, e)
                 }
         }
     }
@@ -223,7 +223,7 @@ abstract class AbstractSopCmd(locale: Locale = Locale.getDefault()) : Runnable {
                     parseUTCDate(notBefore)
                 } catch (e: ParseException) {
                     val errorMsg = getMsg("sop.error.input.malformed_not_before")
-                    throw IllegalArgumentException(errorMsg)
+                    throw IllegalArgumentException(errorMsg, e)
                 }
         }
     }
