@@ -43,12 +43,7 @@ class VersionExternal(binary: String, environment: Properties) : Version {
 
     override fun getSopSpecRevisionNumber(): Int {
         val revision = getSopSpecVersion()
-        val firstLine =
-            if (revision.contains("\n")) {
-                revision.substring(0, revision.indexOf("\n"))
-            } else {
-                revision
-            }
+        val firstLine = revision.substringBefore("\n")
 
         if (!firstLine.contains("-")) {
             return -1
@@ -61,11 +56,7 @@ class VersionExternal(binary: String, environment: Properties) : Version {
     }
 
     override fun getSopSpecImplementationRemarks(): String? {
-        val revision = getSopSpecVersion()
-        if (revision.contains("\n")) {
-            revision.substring(revision.indexOf("\n")).trim().takeIf { it.isNotBlank() }
-        }
-        return null
+        return getSopSpecVersion().substringAfter("\n").trim().takeIf { it.isNotBlank() }
     }
 
     override fun getSopVVersion(): String {
