@@ -27,12 +27,12 @@ public class UpdateKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void updateFreshKeyDoesNothing(SOP sop) throws IOException {
-        byte[] freshKey = sop.generateKey()
+        byte[] freshKey = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@pgpainless.org>")
                 .generate()
                 .getBytes();
 
-        byte[] updateKey = sop.updateKey()
+        byte[] updateKey = assumeSupported(sop::updateKey)
                 .key(freshKey)
                 .getBytes();
 
@@ -42,13 +42,13 @@ public class UpdateKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void updateFreshSignOnlyKeyWithSignOnlyFlagDoesNothing(SOP sop) throws IOException {
-        byte[] freshKey = sop.generateKey()
+        byte[] freshKey = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@pgpainless.org>")
                 .signingOnly()
                 .generate()
                 .getBytes();
 
-        byte[] updateKey = sop.updateKey()
+        byte[] updateKey = assumeSupported(sop::updateKey)
                 .signingOnly()
                 .key(freshKey)
                 .getBytes();
@@ -59,31 +59,31 @@ public class UpdateKeyTest extends AbstractSOPTest {
     @ParameterizedTest
     @MethodSource("provideInstances")
     public void updateFreshSignOnlyKeyWithoutSignOnlyFlagAddsEncryptionSubkey(SOP sop) throws IOException {
-        byte[] signOnlyKey = sop.generateKey()
+        byte[] signOnlyKey = assumeSupported(sop::generateKey)
                 .userId("Alice <alice@pgpainless.org>")
                 .signingOnly()
                 .generate()
                 .getBytes();
-        byte[] signOnlyCert = sop.extractCert().key(signOnlyKey).getBytes();
+        byte[] signOnlyCert = assumeSupported(sop::extractCert).key(signOnlyKey).getBytes();
 
         // Verify that we cannot use the sign-only cert for encryption
-        assertThrows(SOPGPException.CertCannotEncrypt.class, () -> sop.encrypt()
+        assertThrows(SOPGPException.CertCannotEncrypt.class, () -> assumeSupported(sop::encrypt)
                 .withCert(signOnlyCert)
                 .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8))
                 .toByteArrayAndResult()
                 .getBytes());
 
         // Update the key without passing in the --signing-only flag, expecting an encryption subkey to be added
-        byte[] updatedKey = sop.updateKey()
+        byte[] updatedKey = assumeSupported(sop::updateKey)
                 .key(signOnlyKey)
                 .getBytes();
 
-        byte[] updatedCert = sop.extractCert()
+        byte[] updatedCert = assumeSupported(sop::extractCert)
                 .key(updatedKey)
                 .getBytes();
 
         // Verify that now we can use the updated cert to encrypt messages...
-        byte[] ciphertext = sop.encrypt()
+        byte[] ciphertext = assumeSupported(sop::encrypt)
                 .withCert(updatedCert)
                 .plaintext(TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8))
                 .toByteArrayAndResult()
@@ -92,7 +92,7 @@ public class UpdateKeyTest extends AbstractSOPTest {
         // ...and the updated key for successful decryption.
         assertArrayEquals(
                 TestData.PLAINTEXT.getBytes(StandardCharsets.UTF_8),
-                sop.decrypt()
+                assumeSupported(sop::decrypt)
                         .withKey(updatedKey)
                         .ciphertext(ciphertext)
                         .toByteArrayAndResult().getBytes());
