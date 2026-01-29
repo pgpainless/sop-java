@@ -10,6 +10,8 @@ SPDX-License-Identifier: Apache-2.0
 - `EncryptFor`: Add key flag octets
 - `SignAs`: Add signature type IDs
 - `SignatureMode`: Add signature type IDs
+- `sop-java-picocli`: Improve emission of error messages
+- Bump `logback-classic` to `1.5.25`
 
 ## 15.0.0
 - Update implementation to [SOP Specification revision 15](https://www.ietf.org/archive/id/draft-dkg-openpgp-stateless-cli-15.html)
