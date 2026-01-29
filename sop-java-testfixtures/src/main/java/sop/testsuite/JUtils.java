@@ -100,10 +100,11 @@ public class JUtils {
     }
 
     /**
-     * Returs true ifthe given <pre>array</pre> ends with the given <pre>end</pre> bytes.
+     * Returns true if the given <pre>array</pre> ends with the given <pre>end</pre> bytes.
      *
      * @param array array to examine
      * @param end expected ending bytes
+     * @param offset from the end
      * @return true if array ends with end
      */
     public static boolean arrayEndsWith(byte[] array, byte[] end, int offset) {
@@ -135,6 +136,7 @@ public class JUtils {
      *
      * @param array array
      * @param end ending bytes
+     * @param offset offset from the end
      */
     public static void assertArrayEndsWith(byte[] array, byte[] end, int offset) {
         if (!arrayEndsWith(array, end, offset)) {
