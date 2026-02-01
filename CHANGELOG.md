@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 15.0.1-SNAPSHOT
+## 15.0.1
 - `EncryptFor`: Add key flag octets
 - `SignAs`: Add signature type IDs
 - `SignatureMode`: Add signature type IDs
