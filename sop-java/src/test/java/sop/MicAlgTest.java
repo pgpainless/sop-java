@@ -6,6 +6,7 @@ package sop;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,5 +49,18 @@ public class MicAlgTest {
             MicAlg micAlg = MicAlg.fromHashAlgorithmId(id);
             assertEquals(knownAlgorithmMicalgs.get(id), micAlg.getMicAlg());
         }
+    }
+
+    @Test
+    public void testWriteTo() {
+        MicAlg m = MicAlg.fromHashAlgorithmId(10);
+        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+        m.writeTo(bOut);
+        assertEquals("pgp-sha512", bOut.toString());
+
+        m = MicAlg.empty();
+        bOut = new ByteArrayOutputStream();
+        m.writeTo(bOut);
+        assertEquals("", bOut.toString());
     }
 }
