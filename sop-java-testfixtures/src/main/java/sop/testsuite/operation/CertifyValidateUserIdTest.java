@@ -192,4 +192,29 @@ public class CertifyValidateUserIdTest extends AbstractSOPTest {
                         .certs(bobCert)
                         .getBytes());
     }
+
+    @ParameterizedTest
+    @MethodSource("provideInstances")
+    public void certifyValidateAddrSpecOnly(SOP sop) throws IOException {
+        byte[] aliceKey = assumeSupported(sop::generateKey)
+                .userId("Alice <alice@pgpainless.org>")
+                .generate()
+                .getBytes();
+        byte[] aliceCert = assumeSupported(sop::extractCert)
+                .key(aliceKey)
+                .getBytes();
+
+        assertThrows(SOPGPException.CertUserIdNoMatch.class, () ->
+                assumeSupported(sop::validateUserId)
+                        .authorities(aliceCert)
+                        // addrSpecOnly is false, so only match exact user-ids
+                        .userId("alice@pgpainless.org")
+                        .subjects(aliceCert));
+
+        assertTrue(assumeSupported(sop::validateUserId)
+                .addrSpecOnly() // match the addrSpecOnly
+                .authorities(aliceCert)
+                .userId("alice@pgpainless.org")
+                .subjects(aliceCert));
+    }
 }
