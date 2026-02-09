@@ -38,7 +38,8 @@ class VersionExternal(binary: String, environment: Properties) : Version {
     }
 
     override fun getExtendedVersion(): String {
-        return executeForLines(commandList.plus("--extended"))
+        return executeForLines(commandList.plus("--extended")) +
+            "\nvia external-sop ${getSopJavaVersion()}"
     }
 
     override fun getSopSpecRevisionNumber(): Int {
