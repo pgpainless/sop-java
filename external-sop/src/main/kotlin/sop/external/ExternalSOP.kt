@@ -11,7 +11,6 @@ import javax.annotation.Nonnull
 import sop.Ready
 import sop.SOP
 import sop.exception.SOPGPException.*
-import sop.external.ExternalSOP.TempDirProvider
 import sop.external.operation.*
 import sop.operation.*
 
