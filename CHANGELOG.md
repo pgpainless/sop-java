@@ -6,6 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 15.0.2-SNAPSHOT
+- Set automatic module name `org.pgpainless.sop_java` for `sop-java` (fixes #33)
+
 ## 15.0.1
 - `EncryptFor`: Add key flag octets
 - `SignAs`: Add signature type IDs
