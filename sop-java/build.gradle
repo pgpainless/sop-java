@@ -35,3 +35,9 @@ processResources {
 test {
     useJUnitPlatform()
 }
+
+tasks.named('jar') {
+    manifest {
+        attributes('Automatic-Module-Name': 'org.pgpainless.sop_java')
+    }
+}
