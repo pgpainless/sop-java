@@ -9,8 +9,8 @@ import sop.util.Optional
 /**
  * Result of decrypting a message.
  *
- * @param sessionKey optional session key retrieved during decryption.
- * If this value is null, the implementation did not support extracting the session key.
+ * @param sessionKey optional session key retrieved during decryption. If this value is null, the
+ *   implementation did not support extracting the session key.
  * @param verifications successfully verified signatures.
  */
 class DecryptionResult(sessionKey: SessionKey?, val verifications: List<Verification>) {
