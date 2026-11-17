@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
-## 15.0.2-SNAPSHOT
+## 15.0.2
 - Set automatic module name `org.pgpainless.sop_java` for `sop-java` (fixes #33)
 
 ## 15.0.1
